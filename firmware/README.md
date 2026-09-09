@@ -1,11 +1,12 @@
-# MPE firmware 1.2.5
+# MPE firmware 1.2.6
 
-Download [MPE_Firmware-V1.2.5.hex](MPE_Firmware-V1.2.5.hex) for TeensyROM+
+Download [MPE_Firmware-V1.2.6.hex](MPE_Firmware-V1.2.6.hex) for TeensyROM+
 v0.4 / Teensy 4.1. This combines the latest desktop, graphical Clock,
 Appearance/Input fixes, NUFLIX host and MHS Doom F1 colour converter.
+It also includes Travis's latest TeensyROM changes and Final Cartridge III support.
 
 Copy the HEX to the SD root, select it in the firmware updater, confirm the
-installation and leave power connected until restart. About should show 1.2.5.
+installation and leave power connected until restart. About should show 1.2.6.
 Reinstall manually if you used an earlier test with the same version label.
 Automatic discovery only offers strictly newer versions.
 

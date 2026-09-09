@@ -451,10 +451,11 @@ bool SetTypeFromCRT(StructMenuItem* MyMenuItem, uint8_t EXROM, uint8_t GAME)
    //check configuration
    
 #ifdef Fab04_Freezers
-   if (IO1[rwRegNextIOHndlr] == IOH_SuperSnapshotV5)
+   if (IO1[rwRegNextIOHndlr] == IOH_SuperSnapshotV5 ||
+       IO1[rwRegNextIOHndlr] == IOH_FinalCartridgeIII)
    {  //EXROM==1 && GAME==1, Addr==$8000, Size==$4000
-      MyMenuItem->ItemType = rtBin8kLo; //set in IOH_SuperSnapshotV5, using Lo here to not enable VIC cycle
-      SendMsgPrintfln("SSv5 config");
+      MyMenuItem->ItemType = rtBin8kLo; //set in IOH handler, using Lo here to not enable VIC cycle
+      SendMsgPrintfln("SSv5/FCIII config");
       return true;
    }      
 #endif

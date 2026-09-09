@@ -48,23 +48,24 @@ testing; it uses the same DoomVM package and MPE contract.
 
 ## Downloads
 
-- [GUI firmware 1.2.5](firmware/MPE_Firmware-V1.2.5.hex)
+- [GUI firmware 1.2.6](firmware/MPE_Firmware-V1.2.6.hex)
 - [DoomVM 1.2](vms/DOOMVM.zip)
 - [NESVM](vms/NESVM.zip) — mapper 0/11 NES emulation, with the Crossbow demo
   ([setup and controls](docs/NESVM.md))
 
 VMs and firmware have separate version numbers: DoomVM 1.2 pairs with
-firmware 1.2.5. Use the same current firmware for NESVM. VM ZIPs contain
+firmware 1.2.6. Use the same current firmware for NESVM. VM ZIPs contain
 runtime files, with firmware downloaded separately.
 
-Firmware 1.2.5 includes the graphical Clock, repaired Appearance/Input pages,
+Firmware 1.2.6 includes Travis's latest TeensyROM updates and Final Cartridge
+III support. It retains the graphical Clock, repaired Appearance/Input pages,
 NUFLIX display support and MHS colour fitting for Doom F1. The status bar uses
 solid colours. The two-button startup flasher has been removed; the normal
 firmware updater remains. Install both downloads for the new Doom picture.
 F7 Sharp, controls, sound and game data are unchanged. Keep existing music.
 
-See the [release notes](docs/FIRMWARE-1.2.5.md), or use the
-[1.2.5 downloads](https://github.com/ziggystar12/MHS-Teensy-Rom-Power-Engine/releases/tag/v1.2.5).
+See the [release notes](docs/FIRMWARE-1.2.6.md), or use the
+[1.2.6 downloads](https://github.com/ziggystar12/MHS-Teensy-Rom-Power-Engine/releases/tag/v1.2.6).
 
 ## Install
 

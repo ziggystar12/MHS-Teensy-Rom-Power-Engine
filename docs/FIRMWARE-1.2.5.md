@@ -10,10 +10,10 @@ status bar. F7 Sharp, the launcher, sound and game data are unchanged.
 The two-button startup firmware flasher is removed. Install firmware through
 the normal menu. If the firmware cannot start, use the PJRC hardware loader.
 
-Copy [MPE_Firmware-V1.2.5.hex](../firmware/MPE_Firmware-V1.2.5.hex) to the SD
-root and install it manually, even if About already shows 1.2.5 from an earlier
-test. Restart, then extract the full [DOOMVM.zip](../vms/DOOMVM.zip) onto the
+These changes are retained in the [current firmware](../firmware/). Install
+the current full HEX through the normal updater. Restart, then extract the
+full [DOOMVM.zip](../vms/DOOMVM.zip) onto the
 card. Preserve your music files. There is no separate update-only package.
 
 The source builds and automated rendering, transfer and updater checks pass.
-This replacement build still needs physical C64 testing.
+See the current release notes for the combined build's testing status.

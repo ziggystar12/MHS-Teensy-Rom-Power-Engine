@@ -147,6 +147,7 @@ StructHWID_IOH_Assoc HWID_IOH_Assoc[]=
 #ifdef Fab04_Freezers
    (uint16_t)Cart_SuperSnapshotV5, IOH_SuperSnapshotV5,
    (uint16_t)Cart_RetroReplay,     IOH_RetroReplay,
+   (uint16_t)Cart_FinalCartridgeIII,IOH_FinalCartridgeIII,
    (uint16_t)Cart_ActionReplay,    IOH_ActionReplay,
 #endif
 #endif

@@ -337,7 +337,8 @@ void MenuChange()
    IO1[rwRegCursorItemOnPg] = 0;
 }
 
-bool LoadFile(FS *sourceFS, const char* FilePath, StructMenuItem* MyMenuItem) 
+// Foreground SD/USB loading only. Keep it out of the timing-critical RAM bank.
+FLASHMEM __attribute__((noinline)) bool LoadFile(FS *sourceFS, const char* FilePath, StructMenuItem* MyMenuItem)
 {
    char FullFilePath[MaxNamePathLength];
 

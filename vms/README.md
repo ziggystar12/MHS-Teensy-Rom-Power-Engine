@@ -22,7 +22,7 @@ are separate: [NES engine](../Source/NESEngine/) and
 [Download DoomVM 1.2](DOOMVM.zip)
 
 DoomVM is versioned separately from the firmware. This is DoomVM **1.2**,
-paired with firmware **1.2.5**. The download keeps the name `DOOMVM.zip`;
+paired with current firmware **1.2.6**. The download keeps the name `DOOMVM.zip`;
 its README and `VMS/DOOMVM/version.json` identify the installed VM version.
 
 Extract the ZIP to the root of your SD card and launch `DOOMVM.crt`.
@@ -30,7 +30,7 @@ It includes the engine, launcher and ready-to-use `doom1.gbd` game data from
 Doom shareware 1.9 (the free demo). The same launcher works on PAL and NTSC
 C64s with TeensyROM+.
 
-Install [GUI firmware 1.2.5](../firmware/) and this full ZIP for improved
+Install the [current GUI firmware](../firmware/) and this full ZIP for improved
 F1 multicolor shading. F7 Sharp is unchanged. The package retains the
 status-read recovery launcher and existing shareware game data.
 Music is optional: gameplay and sound effects work with no music files

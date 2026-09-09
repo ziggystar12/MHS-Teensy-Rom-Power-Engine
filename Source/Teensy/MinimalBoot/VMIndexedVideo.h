@@ -212,7 +212,7 @@ static FLASHMEM bool transferIndexedVideo(){
     if(indexedVideo.nuflix)return transferNuflix();
 #endif
 #if defined(FeatVMVideoDMA) && defined(Fab04_FullDMACapable)
-    auto &v=indexedVideo;if((videoTiming&0xfc)!=0x80)return false;
+    auto &v=indexedVideo;if((videoTiming&0xfc)!=0x80&&(videoTiming&0xfe)!=0x8e)return false;
     nS_DMASetup=(videoTiming&1)?Def_nS_DMASetupNTSC:Def_nS_DMASetupPAL;
     nS_MaxAdj=(videoTiming&1)?Def_nS_MaxAdjNTSC:Def_nS_MaxAdjPAL;
     uint8_t row[400];bool started=false,okay=true;

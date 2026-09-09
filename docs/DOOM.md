@@ -1,7 +1,7 @@
 # DoomVM 1.2
 
 DoomVM and firmware are versioned separately. This download is DoomVM 1.2;
-use firmware 1.2.5 for its improved F1 display mode.
+use the current firmware for its improved F1 display mode.
 
 TeensyROM hardware and Travis's original firmware:
 [SensoriumEmbedded/TeensyROM](https://github.com/SensoriumEmbedded/TeensyROM/tree/main).
@@ -49,7 +49,7 @@ These select a mode rather than toggle it. F3 and F5 can update less smoothly
 than the simpler modes.
 
 F1 improves shading and colour selection without FLI or alternating frames.
-Install firmware 1.2.5 and the new full Doom ZIP to enable it; older firmware
+Install the current firmware and the full Doom ZIP to enable it; older firmware
 falls back to the previous F1 picture. F7 Sharp is unchanged.
 
 ## Music

@@ -554,6 +554,7 @@ enum enumIOHandlers //Synch order/qty with IOHandler[] (IOHandlers.h)
    #ifdef Fab04_Freezers
       IOH_SuperSnapshotV5,
       IOH_RetroReplay,
+      IOH_FinalCartridgeIII,
       IOH_ActionReplay,
    #endif
       IOH_ASID,
