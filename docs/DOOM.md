@@ -63,6 +63,8 @@ The VM picks the right one automatically. Press M to turn music on or off.
 Sound effects briefly use one of the three SID voices, then return it to the
 music. Without music files, sound effects still work normally.
 
+You can get a great music file here: https://csdb.dk/release/?id=205284
+
 These are converted SID-register files, not ordinary S3M tracker songs.
 The [source notes](../Source/VM/doom/README.md) explain how to prepare them.
 
