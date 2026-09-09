@@ -1,9 +1,9 @@
 # NESVM corresponding engine source
 
 This source snapshot rebuilds the public NESVM engine with SHA-256
-`35a8af00892a5cb2bb9ce2c3224432aba12450ea6c4a8ac27af2e84d941a4564`.
+`f259251711dfe7d47d4f720eeaa7c6f131ded158befafba13d3486ffe12f2873`.
 The compiled source and build script are exported unchanged from commit
-`21b744514ee42d3f7738e47d6e3b53d3a4683249`.
+`145f4b7646a4666d9ee841e05627df89bcdab72b`.
 Documentation is adapted for this standalone source layout.
 
 ## Build

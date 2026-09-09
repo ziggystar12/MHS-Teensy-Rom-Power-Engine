@@ -91,12 +91,23 @@ static uint8_t MPE6RequestedMode,MPE6ConfiguredMode;
 static bool MPE6NuflixVideo;
 static void *MPE6VideoStorage;
 static uint8_t MPE6NuflixPalette[48],MPE6NuflixMap[64];
+// F5 keeps native horizontal pixels and trims the usual eight overscan lines
+// at either end. Dirty cells describe this 320x200 output, including its fixed
+// black margins, and stay frozen for the same lifetime as MPE6Pixels.
+static uint8_t MPE6NuflixDirty[125],MPE6NuflixRows[240],MPE6NuflixSourceRows[200];
+static void MPE6NuflixForceDirty(){
+   for(unsigned row=0;row<25;row++){
+      auto *dirty=MPE6NuflixDirty+row*5;
+      dirty[0]=0xf0;dirty[1]=dirty[2]=dirty[3]=0xff;dirty[4]=0x0f;
+   }
+}
 
 static FLASHMEM bool MPE6ConfigureMode(uint8_t mode){
    if(mode==2){
       VmCenterVideoSetup setup{{sizeof(VmCenterVideoSetup),MPE6VideoStorage,VM_NUFLIX_VIDEO_WORKSPACE_BYTES,2,4,
          VM_INDEXED_NUFLIX_F5|VM_INDEXED_SEPARATE_SELECTORS},0,25,0};
       if(!ModuleHost->video_configure(&setup.setup))return false;
+      MPE6NuflixForceDirty();
    }else{
       VmIndexedVideoSetup setup{sizeof(VmIndexedVideoSetup),MPE6VideoStorage,mpe_video::DeltaWorkspaceBytes,mode,11,
          VM_INDEXED_SPRITE_F5|VM_INDEXED_SPRITE_TAGS|VM_INDEXED_CROP_F3};
@@ -105,8 +116,8 @@ static FLASHMEM bool MPE6ConfigureMode(uint8_t mode){
    MPE6ConfiguredMode=mode;MPE6NuflixVideo=mode==2;return true;
 }
 static uint8_t MPE6NuflixPixel(void *context,uint16_t x,uint16_t y){
-   const unsigned nx=(unsigned(x)*2+1)*256/640,ny=(unsigned(y)*2+1)*240/400;
-   return MPE6NuflixMap[static_cast<const uint8_t *>(context)[ny*256+nx]&63];
+   if(x<32||x>=288||y>=200)return 0;
+   return MPE6NuflixMap[static_cast<const uint8_t *>(context)[unsigned(MPE6NuflixSourceRows[y])*256+x-32]&63];
 }
 
 static FLASHMEM bool MPE6FlushSave(){
@@ -304,6 +315,17 @@ struct MPE6RasterContext { nes::SquishRenderer *renderer; bool capturing; };
 static MPE6RasterContext MPE6Raster;
 static void MPE6Pixel(void *context,uint16_t x,uint16_t y,uint8_t color)
 { (void)context;if(x<256&&y<240)MPE6Pixels[y*256u+x]=color; }
+static void MPE6NuflixCapturePixel(void *context,uint16_t x,uint16_t y,uint8_t color){
+   (void)context;if(x>=256||y>=240)return;
+   auto &previous=MPE6Pixels[y*256u+x];
+   const unsigned row=MPE6NuflixRows[y];
+   if(row!=255){
+      const unsigned column=(x>>3)+4,bit=1u<<(column&7);
+      auto &dirty=MPE6NuflixDirty[row+(column>>3)];
+      if(!(dirty&bit)&&MPE6NuflixMap[previous&63]!=MPE6NuflixMap[color&63])dirty|=bit;
+   }
+   previous=color;
+}
 static void MPE6Frame(void *context,uint64_t frame)
 {
    MPE6RasterContext *r=static_cast<MPE6RasterContext *>(context);
@@ -318,7 +340,13 @@ static void MPE6Frame(void *context,uint64_t frame)
    // not spend that interval converting images which cannot be presented.
    // When the prior frame drains, arm at vblank so the next capture is whole.
    if(!MPE6FrameReady&&MPE6ModeState==MPE6Mode::Game)
-   { r->capturing=true;MPE6Machine->raster.pixel=MPE6Pixel; }
+   {
+      r->capturing=true;
+      if(MPE6NuflixVideo){
+         memset(MPE6NuflixDirty,0,sizeof MPE6NuflixDirty);
+         MPE6Machine->raster.pixel=MPE6NuflixCapturePixel;
+      }else MPE6Machine->raster.pixel=MPE6Pixel;
+   }
    nes::SidPacket packet;if(MPE6Sid->render(MPE6Machine->apu,packet))
    {
       // Several APU frames may complete while one video/audio transfer is
@@ -364,6 +392,7 @@ static FLASHMEM bool MPE6LoadSelected()
    if(prgRam)memset(cartridge.prg_ram,0,prgRam);
    if(!MPE6Saves.load(ModuleHost,cartridge.prg_ram,prgRam,digest)){MPE6SetMessage("SAVE READ FAILED - RESTORE SAVE BACKUP");return false;}
    *MPE6Renderer=nes::SquishRenderer(MPE6DisplayState&1);*MPE6Sid=nes::SidAdapter{};MPE6LatestSid={};MPE6Raster={MPE6Renderer,true};
+   MPE6NuflixForceDirty();
    if(!MPE6Machine->init(cartridge,{&MPE6Raster,MPE6Pixel,MPE6Frame})){MPE6SetMessage("NES MACHINE START FAILED");return false;}
    MPE6Machine->spriteTags=MPE6SpriteVideo;
    *MPE6Presented=nes::VicFrame{};MPE6ModeState=MPE6Mode::Game;MPE6RomLength=entry.bytes;
@@ -473,6 +502,11 @@ static FLASHMEM bool MPE6Start(uint32_t root)
    if(!MPE6Pixels||!MPE6Palette||!videoStorage)return false;
    for(unsigned i=0;i<64;i++){auto c=nes::diagnostic_nes_rgb(i);MPE6Palette[i*3]=c.r;MPE6Palette[i*3+1]=c.g;MPE6Palette[i*3+2]=c.b;}
    MPE6VideoStorage=videoStorage;nes::make_lut(MPE6NuflixMap);
+   memset(MPE6NuflixRows,255,sizeof MPE6NuflixRows);
+   for(unsigned y=0;y<200;y++){
+      const unsigned sourceY=8+(2*y+1)*224/400;
+      MPE6NuflixSourceRows[y]=uint8_t(sourceY);MPE6NuflixRows[sourceY]=uint8_t((y>>3)*5);
+   }
    for(unsigned i=0;i<16;i++){auto c=nes::c64_rgb(i);MPE6NuflixPalette[i*3]=c.r;MPE6NuflixPalette[i*3+1]=c.g;MPE6NuflixPalette[i*3+2]=c.b;}
    VmIndexedVideoSetup videoSetup{sizeof(VmIndexedVideoSetup),videoStorage,mpe_video::DeltaWorkspaceBytes,0,11,VM_INDEXED_SPRITE_F5|VM_INDEXED_SPRITE_TAGS|VM_INDEXED_CROP_F3};
    MPE6CropVideo=MPE6SpriteVideo=ModuleHost->video_configure(&videoSetup);
@@ -537,6 +571,7 @@ static FLASHMEM void MPE6NextPacket()
          nuflix.raster.frame={sizeof nuflix,MPE6VideoGeneration,nullptr,MPE6NuflixPalette,0,48,320,200,320,16,2};
          nuflix.raster.read_pixel=MPE6NuflixPixel;
          nuflix.raster.context=MPE6Pixels;
+         nuflix.source_dirty=MPE6NuflixDirty;
          VmIndexedFrame *source=MPE6NuflixVideo?&nuflix.raster.frame:&native;
          MPE6VideoSubmitted=true;
          const auto result=ModuleHost->video_indexed(source);

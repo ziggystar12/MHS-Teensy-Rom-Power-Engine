@@ -4,7 +4,7 @@ This source snapshot rebuilds the C64 client in the public NESVM runtime
 download. Its SHA-256 is
 `c664db0e05c7840aab80f4845c025068b50f111cef3fd3d2457c855ebc7423bd`.
 The source files are exported unchanged from commit
-`21b744514ee42d3f7738e47d6e3b53d3a4683249`.
+`145f4b7646a4666d9ee841e05627df89bcdab72b`.
 
 ## Build
 

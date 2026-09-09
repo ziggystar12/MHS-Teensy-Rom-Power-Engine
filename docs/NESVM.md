@@ -1,6 +1,8 @@
-# NESVM 1.1 for TeensyROM+
+# NESVM 1.1.1 for TeensyROM+
 
-NESVM 1.1 adds mappers 1, 2, 3, 4 and 7, cartridge saves and the NUFLIX F5 display.
+NESVM 1.1.1 centers the NUFLIX F5 picture, skips conversion work for unchanged
+areas, and preserves green NES shades when matching the C64 palette. It retains
+the mapper 1, 2, 3, 4 and 7 support and cartridge saves added in NESVM 1.1.
 Use **MPE firmware 1.2.6 or later**, TeensyROM+ v0.4 and a Teensy 4.1.
 Download [NESVM.zip](https://github.com/ziggystar12/MHS-Teensy-Rom-Power-Engine/raw/refs/heads/main/vms/NESVM.zip)
 and extract it to the SD card root, replacing the supplied runtime files while
@@ -21,10 +23,15 @@ Hold **Commodore + Control** and press an unshifted function key:
 
 - **F1 Standard:** full-frame multicolor view.
 - **F3 Pan and scan:** a 160x200 native-pixel crop; hold WASD to pan.
-- **F5 NUFLIX:** full-frame conversion using the MPE NUFLIX display service.
+- **F5 NUFLIX:** native 256-pixel width centered between 32-pixel black side
+  borders. Eight source lines are trimmed from the top and bottom, then the
+  remaining 224 lines are squeezed into 200.
 - **F7 Sharp:** centered hires view.
 
-F5 uses a different display conversion and can take longer to update.
+F5 tracks changed picture cells and skips conversion for unchanged images.
+This reduces conversion work; the amount of picture data sent can still limit
+smoothness. The C64 palette approximates NES colors. Green shades remain green
+across games; very dark green is brighter because the C64 has no darker green.
 The new engine and launcher must be installed together.
 
 ## Compatibility and saves
@@ -67,7 +74,8 @@ SID sound. Noise shares SID voice 3 with triangle; the NES triangle linear
 counter and cycle-exact DMA overlap/joypad quirks remain outside this build.
 
 Mapper, DMC, save recovery, module input/audio, and PAL/NTSC VICE display
-checks passed. Super Mario Bros., Zelda and Dr. Mario reached gameplay in
+checks passed, including centered F5 geometry and frozen change maps through
+video/audio acknowledgements. Super Mario Bros., Zelda and Dr. Mario reached gameplay in
 the actual module under a host harness; display captures use the C64 client
 in VICE. These are software checks, not new physical hardware measurements
 or a claim that every game is compatible.

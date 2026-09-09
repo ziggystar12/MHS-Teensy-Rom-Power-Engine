@@ -50,7 +50,7 @@ testing; it uses the same DoomVM package and MPE contract.
 
 - [GUI firmware 1.2.6](firmware/MPE_Firmware-V1.2.6.hex)
 - [DoomVM 1.2](vms/DOOMVM.zip)
-- [NESVM 1.1](vms/NESVM.zip) — mappers 0/1/2/3/4/7/11 NES emulation, saves and NUFLIX F5, with the Crossbow demo
+- [NESVM 1.1.1](vms/NESVM.zip) — centered NUFLIX F5, improved greens, mappers 0/1/2/3/4/7/11 and cartridge saves
   ([setup and controls](docs/NESVM.md))
 
 VMs and firmware have separate version numbers: DoomVM 1.2 pairs with
@@ -81,9 +81,11 @@ effects work without music files. See [controls and optional music](docs/DOOM.md
 For NESVM, extract `NESVM.zip` to the SD card root and launch `NESVM.crt`,
 or select a `.nes` file in the GUI. Keep your existing ROMs and saves.
 The ZIP includes the authorized Crossbow demo; add compatible NTSC mapper
-0/1/2/3/4/7/11 ROMs to `/VMS/NESVM/ROMS/`. NESVM 1.1 requires firmware 1.2.6 or later.
-Mapper 1/4 saves are kept in `/VMS/NESVM/SAVES/`. SID sound is approximate.
-[Controls, display modes and compatibility](docs/NESVM.md).
+0/1/2/3/4/7/11 ROMs to `/VMS/NESVM/ROMS/`. NESVM 1.1.1 requires firmware 1.2.6 or later.
+F5 now centers the native 256-pixel width, fits the visible 224 rows into 200,
+and tracks changed cells to reduce conversion work. F5 green tones are improved
+across games. Mapper 1/4 saves remain in `/VMS/NESVM/SAVES/`.
+SID sound is approximate. [Controls, display modes and compatibility](docs/NESVM.md).
 
 ## What's included
 

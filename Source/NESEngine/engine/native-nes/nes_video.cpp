@@ -70,19 +70,33 @@ static uint32_t distance(Rgb a,Rgb b) {
     }
     return uint32_t(2*r*r+4*g*g+bl*bl+hue_error+((ca>48 && cb<24)?8*ca*ca:0));
 }
+// Generated from the same source RGB and mapping rule as the host reference.
+// Keep this table checked against all 64 computed entries in nes_palette_test.
+static constexpr uint8_t fixed_vic_lut[64]={
+    11,6,6,6,4,4,2,2,9,5,5,5,6,0,0,0,15,6,6,6,4,4,2,8,9,5,5,5,3,0,0,0,
+    1,3,14,14,4,4,10,10,7,13,13,13,3,11,0,0,1,3,1,1,1,1,1,7,7,13,13,13,3,15,0,0};
+#ifndef MHS_NES_FIXED_VIC_LUT
+static uint8_t map_nes_rgb(Rgb source) {
+    // Saturated colors with a clearly dominant green channel must remain
+    // green. C64 yellow/brown can otherwise win the luminance comparison,
+    // merging green sprites with yellow scenery. Choose between the two C64
+    // greens using the existing distance; all other hues keep the old search.
+    const int chroma=int(std::max({source.r,source.g,source.b}))-std::min({source.r,source.g,source.b});
+    const bool green=chroma>48&&int(source.g)-source.r>=24&&int(source.g)-source.b>=24;
+    uint32_t best=0xffffffffu;uint8_t selected=0;
+    for(uint8_t c=0;c<16;++c) {
+        if(green&&c!=5&&c!=13)continue;
+        const uint32_t d=distance(source,c64_rgb(c));
+        if(d<best){best=d;selected=c;}
+    }
+    return selected;
+}
+#endif
 static void make_lut(uint8_t lut[64]) {
 #ifdef MHS_NES_FIXED_VIC_LUT
-    static constexpr uint8_t fixed[64]={11,6,6,6,4,4,2,2,9,9,5,5,6,0,0,0,15,6,6,6,4,4,2,8,9,5,5,5,3,0,0,0,
-        1,3,14,14,4,4,10,10,7,7,13,13,3,11,0,0,1,3,1,1,1,1,1,7,7,7,13,13,3,15,0,0};
-    std::memcpy(lut,fixed,sizeof(fixed));
+    std::memcpy(lut,fixed_vic_lut,sizeof(fixed_vic_lut));
 #else
-    for(uint8_t n=0;n<64;++n) {
-        uint32_t best=0xffffffffu;
-        for(uint8_t c=0;c<16;++c) {
-            const uint32_t d=distance(diagnostic_nes_rgb(n),c64_rgb(c));
-            if(d<best) { best=d; lut[n]=c; }
-        }
-    }
+    for(uint8_t n=0;n<64;++n)lut[n]=map_nes_rgb(diagnostic_nes_rgb(n));
 #endif
 }
 NES_CODE static void encode_cell(const uint8_t pixels[32],uint8_t background,uint8_t cell[10]) {

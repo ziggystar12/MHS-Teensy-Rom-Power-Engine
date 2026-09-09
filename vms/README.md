@@ -1,13 +1,17 @@
 # VM downloads
 
-## NESVM 1.1
+## NESVM 1.1.1
 
-[Download NESVM 1.1](NESVM.zip)
+[Download NESVM 1.1.1](NESVM.zip)
 
-NESVM runs compatible NTSC mappers 0/1/2/3/4/7/11 NES games through MPE on TeensyROM+
-v0.4 with a Teensy 4.1. This release adds mappers 1/2/3/4/7, cartridge saves and
-NUFLIX F5 alongside Standard F1, pan and scan F3, and Sharp F7. Use
-**firmware 1.2.6 or later**, downloaded separately.
+NESVM runs compatible NTSC mapper 0/1/2/3/4/7/11 NES games through MPE on TeensyROM+
+v0.4 with a Teensy 4.1. F5 now centers the native 256-pixel image with black
+side margins, trims eight overscan rows at each end, and fits the remaining
+224 rows into 200. Changed-cell tracking reduces conversion work; the C64
+NUFLIX display and transfer protocol remain the same. F5 green tones are improved
+across games. Standard F1, pan and scan F3, Sharp F7, supported
+mappers and cartridge saves are retained. Use **firmware 1.2.6 or later**,
+downloaded separately.
 
 Extract to the SD root and launch `NESVM.crt`. The authorized Crossbow demo
 is included; put compatible ROMs in `/VMS/NESVM/ROMS/`. Keep existing saves
@@ -16,6 +20,8 @@ in `/VMS/NESVM/SAVES/`. Install the matching engine and launcher together.
 Port-2 Fire is A; a C64GS-compatible second button or Space is B. Return is
 Start and Shift is Select. Sound is approximated through the SID; DMC sample
 playback is emulated for game operation but is not mixed into SID sound.
+MMC3 timing remains approximate, and Battletoads still stalls after its intro.
+Host and VICE checks do not establish physical gameplay speed.
 [Setup, controls, display modes and exact compatibility limits](../docs/NESVM.md).
 
 Licenses and notices are included. Corresponding source and build instructions

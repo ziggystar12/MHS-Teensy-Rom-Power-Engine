@@ -1,19 +1,19 @@
 {
-  "version": "1.1",
-  "engineSourceCommit": "21b744514ee42d3f7738e47d6e3b53d3a4683249",
-  "clientSourceCommit": "21b744514ee42d3f7738e47d6e3b53d3a4683249",
+  "version": "1.1.1",
+  "engineSourceCommit": "145f4b7646a4666d9ee841e05627df89bcdab72b",
+  "clientSourceCommit": "145f4b7646a4666d9ee841e05627df89bcdab72b",
   "firmwareIncluded": false,
   "abi": 2,
   "module": {
     "abi": 2,
     "codeBase": 98304,
     "dataBase": 536952832,
-    "codeBytes": 95044,
+    "codeBytes": 95300,
     "dataBytes": 2432,
-    "bssBytes": 13728,
+    "bssBytes": 14304,
     "guestRamBytes": 524288,
-    "sha256": "35a8af00892a5cb2bb9ce2c3224432aba12450ea6c4a8ac27af2e84d941a4564",
-    "workspaceBytes": 180448
+    "sha256": "f259251711dfe7d47d4f720eeaa7c6f131ded158befafba13d3486ffe12f2873",
+    "workspaceBytes": 179872
   },
   "clientSha256": "c664db0e05c7840aab80f4845c025068b50f111cef3fd3d2457c855ebc7423bd",
   "files": [
@@ -29,8 +29,8 @@
     },
     {
       "path": "VMS/NESVM/engine.mvm",
-      "bytes": 97540,
-      "sha256": "35a8af00892a5cb2bb9ce2c3224432aba12450ea6c4a8ac27af2e84d941a4564"
+      "bytes": 97796,
+      "sha256": "f259251711dfe7d47d4f720eeaa7c6f131ded158befafba13d3486ffe12f2873"
     },
     {
       "path": "VMS/NESVM/LICENSE-MHS.txt",
@@ -59,8 +59,8 @@
     },
     {
       "path": "VMS/NESVM/README.md",
-      "bytes": 4480,
-      "sha256": "787edb206db5d0eefcada4b93fa5193471f730edc74b341df8086297e0c94745"
+      "bytes": 5087,
+      "sha256": "398c1b2d98e2a7742424798c3e3405c8a539e275e94d823df9d09879def7082a"
     },
     {
       "path": "VMS/NESVM/ROMS/Crossbow.nes",
@@ -69,8 +69,8 @@
     },
     {
       "path": "VMS/NESVM/version.json",
-      "bytes": 111,
-      "sha256": "2a2d96d39332adbb64057ceee1be23397c44bd52f3ffdfba3a850df99efcd498"
+      "bytes": 113,
+      "sha256": "863db6b62ba4d306414df14d1cf2f920922bfb89e19ae41b69aca22411bb8549"
     }
   ],
   "minimumFirmwareVersion": "1.2.6",
@@ -78,37 +78,30 @@
   "downloads": [
     {
       "file": "NESVM.zip",
-      "bytes": 104252,
-      "sha256": "7f48a8b69f0f9e999965ce3d59bd6d5829de963e70f9c146e4629555f4ec2cbc",
+      "bytes": 104738,
+      "sha256": "257153c9b88d927b6bce0e2a7cb796140db9cd08da325020cd2f9fba94f1d356",
       "members": 11
     }
   ],
-  "publication": "nesvm-v1.1",
+  "publication": "nesvm-v1.1.1",
   "publicSourceVerification": {
     "engineRebuildMatches": true,
     "clientRebuildMatches": true,
-    "engineBytes": 97540,
+    "engineBytes": 97796,
     "clientBytes": 24688,
     "compiler": "Arm GNU Toolchain 11.3.Rel1, 11.3.1 20220712",
     "engineSourceManifest": "Source/NESEngine/SOURCE-MANIFEST.json",
-    "clientSourceManifest": "Source/NESClient/CLIENT-SOURCE.json"
+    "clientSourceManifest": "Source/NESClient/CLIENT-SOURCE.json",
+    "manifestEntries": {
+      "NESEngine": 36,
+      "NESClient": 20
+    },
+    "zipMembersVerified": 11
   },
   "verification": {
     "physicalHardware": false,
-    "mapper1Checks": 655,
-    "extraMapperChecks": 2382,
-    "syntheticExtraMapperPrograms": 32,
-    "dmcChecks": 2113,
-    "nativeBaselineChecks": 428371,
-    "sidEnvelopeChecks": 228,
-    "gameplayCaptures": [
-      "Super Mario Bros.",
-      "The Legend of Zelda",
-      "Dr. Mario"
-    ],
-    "originalScenePixelsUnchanged": true,
-    "zeldaSramRestored": true,
-    "palNtscClientAndHost": true,
+    "packageAndSourceRebuild": true,
+    "performanceScope": "Host converter measurements are not physical gameplay frame rates.",
     "knownLimitations": [
       "Battletoads stalls after its intro in the current scanline PPU.",
       "MMC3 timing is approximate.",
