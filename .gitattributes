@@ -1,0 +1,10 @@
+* text=auto eol=lf
+*.hex binary
+*.bin binary
+*.crt binary
+*.img binary
+*.prg binary
+*.mvm binary
+*.zip binary
+*.png binary
+/Source/Teensy/src/** -text

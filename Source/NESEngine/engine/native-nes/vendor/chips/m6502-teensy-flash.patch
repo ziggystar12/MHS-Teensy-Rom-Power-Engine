@@ -1,0 +1,27 @@
+diff --git a/Source/Teensy/MinimalBoot/Common/NativeNES/vendor/chips/m6502.h b/Source/Teensy/MinimalBoot/Common/NativeNES/vendor/chips/m6502.h
+--- a/Source/Teensy/MinimalBoot/Common/NativeNES/vendor/chips/m6502.h
++++ b/Source/Teensy/MinimalBoot/Common/NativeNES/vendor/chips/m6502.h
+@@ -203,2 +203,5 @@
+ #include <stdint.h>
+ #include <stdbool.h>
++#ifndef M6502_CODE
++#define M6502_CODE
++#endif
+@@ -351,5 +354,5 @@
+ /* initialize a new m6502 instance and return initial pin mask */
+-uint64_t m6502_init(m6502_t* cpu, const m6502_desc_t* desc);
++M6502_CODE uint64_t m6502_init(m6502_t* cpu, const m6502_desc_t* desc);
+ /* execute one tick */
+-uint64_t m6502_tick(m6502_t* cpu, uint64_t pins);
++M6502_CODE uint64_t m6502_tick(m6502_t* cpu, uint64_t pins);
+ /* perform m6510 port IO (only call this if M6510_CHECK_IO(pins) is true) */
+@@ -624,3 +627,3 @@
+-uint64_t m6502_init(m6502_t* c, const m6502_desc_t* desc) {
++M6502_CODE uint64_t m6502_init(m6502_t* c, const m6502_desc_t* desc) {
+     CHIPS_ASSERT(c && desc);
+     memset(c, 0, sizeof(*c));
+@@ -716,3 +719,3 @@
+-uint64_t m6502_tick(m6502_t* c, uint64_t pins) {
++M6502_CODE uint64_t m6502_tick(m6502_t* c, uint64_t pins) {
+     if (pins & (M6502_SYNC|M6502_IRQ|M6502_NMI|M6502_RDY|M6502_RES)) {
+         // interrupt detection also works in RDY phases, but only NMI is "sticky"

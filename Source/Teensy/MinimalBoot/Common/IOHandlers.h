@@ -1,0 +1,152 @@
+// MIT License
+// 
+// Copyright (c) 2023 Travis Smith
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
+// and associated documentation files (the "Software"), to deal in the Software without 
+// restriction, including without limitation the rights to use, copy, modify, merge, publish, 
+// distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom 
+// the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or 
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING 
+// BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#ifdef MinimumBuild
+   //from IOH_TeensyROM.c :
+   uint8_t RegNextIOHndlr;
+   volatile uint8_t doReset = false;
+   const unsigned char *HIROM_Image = NULL;
+   const unsigned char *LOROM_Image = NULL;
+
+#else
+   //Only in full build
+   USBHost myusbHost;
+   USBHub hub1(myusbHost);
+   USBHub hub2(myusbHost);
+   MIDIDevice_BigBuffer usbHostMIDI(myusbHost);
+   USBDrive myDrive(myusbHost);
+   USBFilesystem firstPartition(myusbHost);
+
+   USBHIDParser hid1(myusbHost);
+   USBHIDParser hid2(myusbHost);
+   USBHIDParser hid3(myusbHost);  //need all 3?
+
+   USBSerial USBHostSerial(myusbHost);   //update HostSerialType to match, defined in PN532_UHSU.h
+   //USBSerial           USBHostSerial(myusbHost);    // only for those Serial devices who transfer <=64 bytes (like T3.x, FTDI...)
+   //    Works with CH340(NFC), T3.2, Lolin D32 Pro,  *not* T4
+   //USBSerial_BigBuffer USBHostSerial(myusbHost, 1); // Handles anything up to 512 bytes
+   //    Needed for T4, also works with others,  uses an extra 3,456 bytes of RAM1
+   //    *Crashes* NFC, addr2line points to  libraries/PN532/PN532.cpp:line 543
+   //USBSerial_BigBuffer USBHostSerial(myusbHost);    // Handles up to 512 but by default only for those > 64 bytes.  
+   //    doesn't work for most, "by default only for those > 64 bytes"
+
+   EthernetUDP udp;
+   EthernetClient client;
+
+   #ifndef USB_MIDI_SERIAL
+      #error TeensyROM requires Tools > USB Type: "Serial + MIDI" in the Arduino IDE
+   #endif
+   #define usbDevMIDI usbMIDI
+   #define nfcStateEnabled       0
+   #define nfcStateBitDisabled   1
+   #define nfcStateBitPaused     2
+#endif
+
+#define IOHNameLength 20  //limited by display location on C64
+
+struct stcIOHandlers
+{
+  char Name[IOHNameLength];                        //Name of handler
+  void (*InitHndlr)();                             //Called once at handler startup
+  void (*IO1Hndlr)(uint8_t Address, bool R_Wn);    //IO1 R/W handler
+  void (*IO2Hndlr)(uint8_t Address, bool R_Wn);    //IO2 R/W handler
+  void (*ROMLHndlr)(uint32_t Address, bool R_Wn);  //ROML Read handler, in addition to any ROM data sent
+  void (*ROMHHndlr)(uint32_t Address, bool R_Wn);  //ROMH Read handler, in addition to any ROM data sent
+  void (*PollingHndlr)();                          //Polled in main routine
+  void (*CycleHndlr)(bool R_Wn);                   //called at the end of EVERY c64 cycle
+};
+
+#ifndef MinimumBuild
+      #include "IO_Handlers/IOH_MIDI.c"
+      #include "IO_Handlers/IOH_Debug.c"
+   #ifdef Fab04_REU
+      #include "IO_Handlers/IOH_REU.c"
+   #endif 
+   #ifdef Fab04_KernalReplace
+      #include "IO_Handlers/IOH_KernalReplace.c"
+   #endif    
+      #include "IO_Handlers/IOH_TeensyROM.c" 
+   #ifdef Fab04_Freezers
+      #include "IO_Handlers/IOH_SuperSnapshotV5.c"
+      #include "IO_Handlers/IOH_RetroReplay.c"
+      #include "IO_Handlers/IOH_ActionReplay.c"
+   #endif
+      #include "IO_Handlers/IOH_TR_BASIC.c" 
+      #include "IO_Handlers/IOH_Swiftlink.c"
+      #include "IO_Handlers/IOH_ASID.c"
+#endif
+   #include "IO_Handlers/IOH_None.c"
+   #include "IO_Handlers/IOH_EpyxFastLoad.c"
+   #include "IO_Handlers/IOH_MagicDesk.c"
+   #include "IO_Handlers/IOH_Dinamic.c"
+   #include "IO_Handlers/IOH_Ocean1.c"
+   #include "IO_Handlers/IOH_FunPlay.c"
+   #include "IO_Handlers/IOH_SuperGames.c"
+   #include "IO_Handlers/IOH_C64GameSystem3.c"
+   #include "IO_Handlers/IOH_EasyFlash.c"
+   #include "IO_Handlers/IOH_ZaxxonSuper.c"
+   #include "IO_Handlers/IOH_GMod2.c"
+   #include "IO_Handlers/IOH_MagicDesk2.c"
+
+
+stcIOHandlers* IOHandler[] =  //Synch order/qty with enum enumIOHandlers
+{
+//manually selectable:
+   &IOHndlr_None,               //IOH_None,
+#ifndef MinimumBuild
+   // only supported in full build:
+      &IOHndlr_SwiftLink,          //IOH_Swiftlink,
+      &IOHndlr_MIDI_Datel,         //IOH_MIDI_Datel,      
+      &IOHndlr_MIDI_Sequential,    //IOH_MIDI_Sequential, 
+      &IOHndlr_MIDI_Passport,      //IOH_MIDI_Passport,   
+      &IOHndlr_MIDI_NamesoftIRQ,   //IOH_MIDI_NamesoftIRQ,
+   #ifdef Fab04_REU
+      &IOHndlr_REU,                //IOH_REU,
+   #endif  
+   #ifdef Fab04_KernalReplace
+      &IOHndlr_KernalReplace,      //IOH_KernalReplace,
+   #endif  
+      &IOHndlr_Debug,              //IOH_Debug, 
+      
+   //*not* manually selectable, see LastSelectableIOH
+                                   
+      &IOHndlr_TeensyROM,          //IOH_TeensyROM, 
+   #ifdef Fab04_Freezers
+      &IOHndlr_SuperSnapshotV5,    //IOH_SuperSnapshotV5
+      &IOHndlr_RetroReplay,        //IOH_RetroReplay
+      &IOHndlr_ActionReplay,       //IOH_ActionReplay
+   #endif
+      &IOHndlr_ASID,               //IOH_ASID,
+      &IOHndlr_TR_BASIC,           //IOH_TR_BASIC,
+#endif  //full build only above here
+
+   &IOHndlr_EpyxFastLoad,       //IOH_EpyxFastLoad,
+   &IOHndlr_MagicDesk,          //IOH_MagicDesk,
+   &IOHndlr_Dinamic,            //IOH_Dinamic,
+   &IOHndlr_Ocean1,             //IOH_Ocean1,
+   &IOHndlr_FunPlay,            //IOH_FunPlay,
+   &IOHndlr_SuperGames,         //IOH_SuperGames,
+   &IOHndlr_C64GameSystem3,     //IOH_C64GameSystem3,
+   &IOHndlr_EasyFlash,          //IOH_EasyFlash,
+   &IOHndlr_ZaxxonSuper,        //IOH_ZaxxonSuper,
+   &IOHndlr_GMod2,              //IOH_GMod2,
+   &IOHndlr_MagicDesk2,         //IOH_MagicDesk2,
+};
+static_assert(sizeof(IOHandler) / sizeof(IOHandler[0]) == IOH_Num_Handlers,
+              "IOHandler[] / enumIOHandlers count mismatch");

@@ -1,0 +1,327 @@
+
+//add PROGMEM to declaration of all main menu binaries:
+#include "TRMenuFiles/ROMs/ccgms_2021_Swiftlink_DE_38400.prg.h"
+//#include "TRMenuFiles/ROMs/v1541wrap.prg.h"
+#include "TRMenuFiles/ROMs/SST.prg.h"
+#include "TRMenuFiles/ROMs/cynthcart_201.prg.h"
+#include "TRMenuFiles/ROMs/sta64_v2_6.prg.h"
+#include "TRMenuFiles/ROMs/sid_wizard_1.9.prg.h"
+#include "TRMenuFiles/ROMs/SID_Wizard_2SID.prg.h"
+#include "TRMenuFiles/ROMs/sw_1.9_manual.prg.h"
+#include "TRMenuFiles/ROMs/Epyx_Fast_Load.crt.h"
+#include "TRMenuFiles/ROMs/80columns.prg.h"
+#include "TRMenuFiles/ROMs/hex_mon.prg.h"
+#include "TRMenuFiles/ROMs/586220ast_Diagnostics.h" 
+#include "TRMenuFiles/ROMs/781220_Dead_Test.h"
+#include "TRMenuFiles/ROMs/1541_Diagnostics.h" 
+#include "TRMenuFiles/ROMs/SID_Tester.h" 
+#include "TRMenuFiles/ROMs/game_controller_tester.prg.h"
+#include "TRMenuFiles/ROMs/rom_chksum_137kernals.prg.h"
+#include "TRMenuFiles/ROMs/C128_789010.crt.h"
+#include "TRMenuFiles/ROMs/Jupiter_Lander.h" 
+#include "TRMenuFiles/ROMs/jupiter_lander_crack.prg.h" 
+#include "TRMenuFiles/ROMs/joust.prg.h"
+#include "TRMenuFiles/ROMs/Beach_Head_II.crt.h" 
+#include "TRMenuFiles/ROMs/Joystick_Tester.h" 
+#include "TRMenuFiles/ROMs/Keyboard_Tester.h" 
+#include "TRMenuFiles/ROMs/Donkey_Kong.h" 
+#include "TRMenuFiles/ROMs/Dig_Dug.bin.h" 
+#include "TRMenuFiles/ROMs/DualCopy.prg.h"
+#include "TRMenuFiles/ROMs/draw01.prg.h"
+#include "TRMenuFiles/ROMs/super.m.bros.64.prg.h"
+#include "TRMenuFiles/ROMs/Ms._Pac_Man.crt.h"
+#include "TRMenuFiles/ROMs/C64618_Gorf_8000.crt.h"
+#include "TRMenuFiles/ROMs/KawariQuickChange.prg.h"
+#include "TRMenuFiles/ROMs/Mario_Bros.prg.h"
+#include "TRMenuFiles/ROMs/minesweeper_game.prg.h"
+#include "TRMenuFiles/ROMs/sam.prg.h"
+#include "TRMenuFiles/ROMs/SID_check.prg.h"
+#include "TRMenuFiles/ROMs/swinth_LIGHT_FANTASTIC.PRG.h"
+#include "TRMenuFiles/ROMs/Tetris.prg.h"
+#include "TRMenuFiles/ROMs/super_expander_64.crt.h" 
+#include "TRMenuFiles/ROMs/Robocop_2_EasyFlash.crt.h" 
+#include "TRMenuFiles/ROMs/MIDI2SID.prg.h" 
+#include "TRMenuFiles/ROMs/ASIDPlayer.prg.h" 
+#include "TRMenuFiles/ROMs/TRCBC.prg.h"
+#include "TRMenuFiles/ROMs/destest_max.rom.h"
+#include "TRMenuFiles/ROMs/empty.prg.h"
+#include "TRMenuFiles/ROMs/DMACheck.prg.h"
+#include "TRMenuFiles/ROMs/cia_tod.prg.h"
+#include "TRMenuFiles/ROMs/TODCheck.prg.h"
+#include "TRMenuFiles/ROMs/Load8Run.prg.h"
+#include "TRMenuFiles/ROMs/retromate_teensyrom.prg.h"
+#include "TRMenuFiles/ROMs/SettingsMenu.prg.h"
+#include "TRMenuFiles/ROMs/TRHelpScreens.prg.h"
+#include "TRMenuFiles/ROMs/TRExtPortCheck.prg.h"
+#include "TRMenuFiles/ROMs/shclock_tr.prg.h"
+#ifdef Fab04_REU
+   #include "TRMenuFiles/ROMs/ExpansionPortTest.prg.h"
+   #include "TRMenuFiles/ROMs/reutest.prg.h"
+   #include "TRMenuFiles/ROMs/reu_checker_v1.0.prg.h"
+#endif
+//#include "TRMenuFiles/ROMs/Terminator_2.crt.h" //can require minimal build if Ethernet, etc enabled
+//#include "TRMenuFiles/ROMs/ember_head.prg.h"   //now /Pics/T_Ember_Head.kla
+//#include "TRMenuFiles/ROMs/disp_fract.prg.h"   //now /Pics/T_BlackHole.kla
+
+#include "TRMenuFiles/Text_PETSCII/Text_Viewer_Instructions.seq.h"
+#include "TRMenuFiles/Text_PETSCII/color_weave.seq.h"
+#include "TRMenuFiles/Text_PETSCII/Cygnus_X_1_Book_I___The_Voyage.txt.h"
+#include "TRMenuFiles/Text_PETSCII/do_not_panic.seq.h"
+#include "TRMenuFiles/Text_PETSCII/electric_guitar.seq.h"
+#include "TRMenuFiles/Text_PETSCII/inter.circuits.seq.h"
+#include "TRMenuFiles/Text_PETSCII/irnmdn_aceshigh.seq.h"
+#include "TRMenuFiles/Text_PETSCII/Jousters___c_g179.seq.h"
+#include "TRMenuFiles/Text_PETSCII/living_color.1.seq.h"
+#include "TRMenuFiles/Text_PETSCII/Small_Kindnesses.txt.h"
+#include "TRMenuFiles/Text_PETSCII/Stripes__Shoeshine_Boy___13picturedisk_2.seq.h"
+#include "TRMenuFiles/Text_PETSCII/tiger.cg.seq.h"
+#include "TRMenuFiles/Text_PETSCII/Time_Travel__Shoeshine_Boy__11picturedisk_2.seq.h"
+#include "TRMenuFiles/Text_PETSCII/Trains_II__Yoda______12picturedisk_6.seq.h"
+#include "TRMenuFiles/Text_PETSCII/Wish_You_Were_Here.txt.h"
+
+#include "TRMenuFiles/SIDs/Echoes.sid.h"
+#include "TRMenuFiles/SIDs/SleepDirt_norm_ntsc_1000_6581.sid.h"
+#include "TRMenuFiles/SIDs/Aces_High.sid.h"
+#include "TRMenuFiles/SIDs/Comfortably_Numb.sid.h"
+#include "TRMenuFiles/SIDs/Medley.sid.h"
+#include "TRMenuFiles/SIDs/Pink_Floyd.sid.h"
+#include "TRMenuFiles/SIDs/Popcorn.sid.h"
+#include "TRMenuFiles/SIDs/Switch_625.sid.h"
+#include "TRMenuFiles/SIDs/Tom_Sawyer.sid.h"
+#include "TRMenuFiles/SIDs/YYZ.sid.h"
+#include "TRMenuFiles/SIDs/Wish_You_Were_Here.sid.h"
+#include "TRMenuFiles/SIDs/Odisey_2001_AD.sid.h"
+#include "TRMenuFiles/SIDs/When_Im_64.sid.h"
+
+#include "TRMenuFiles/SIDs/Av_Still_Time.sid.h"
+#include "TRMenuFiles/SIDs/Av_Twilight_Destruction.sid.h"
+#include "TRMenuFiles/SIDs/Av_Endless_Sands.sid.h"
+#include "TRMenuFiles/SIDs/Div_Death_Is_no_Evil.sid.h"
+#include "TRMenuFiles/SIDs/Div_Harvest.sid.h"
+#include "TRMenuFiles/SIDs/Div_KarmaDoor_SickSteveWhore.sid.h"
+#include "TRMenuFiles/SIDs/LH_Alpha.sid.h"
+#include "TRMenuFiles/SIDs/LH_Bootloader.sid.h"
+#include "TRMenuFiles/SIDs/LH_Raster_Bar.sid.h"
+#include "TRMenuFiles/SIDs/ts_Debut_and_Credit.sid.h"
+//#include "TRMenuFiles/SIDs/Div_Sometimes_Low_key_O__m.sid.h"
+
+#include "TRMenuFiles/Pics/Ex_Pie2.art.h"
+#include "TRMenuFiles/Pics/HA_Bluejay.kla.h"
+#include "TRMenuFiles/Pics/HA_Hummingbird.kla.h"
+#include "TRMenuFiles/Pics/HA_Sugar_Skull.kla.h"
+#include "TRMenuFiles/Pics/KP_Bird.kla.h"
+#include "TRMenuFiles/Pics/KP_Burger.kla.h"
+#include "TRMenuFiles/Pics/KP_Koala.kla.h"
+#include "TRMenuFiles/Pics/KP_Tiger.kla.h"
+#include "TRMenuFiles/Pics/LP_Boston.kla.h"
+#include "TRMenuFiles/Pics/LP_ELP_Tarkus.kla.h"
+#include "TRMenuFiles/Pics/LP_Zappa_Apostrophe.kla.h"
+#include "TRMenuFiles/Pics/LP_Zappa_Sleep_Dirt.kla.h"
+#include "TRMenuFiles/Pics/T_BlackHole.kla.h"
+#include "TRMenuFiles/Pics/T_Ember_Head.kla.h"
+#include "TRMenuFiles/Pics/T_Sensorium_Heatmap.kla.h"
+#include "TRMenuFiles/Pics/T_TeensyROM.kla.h"
+
+
+StructMenuItem dirGames[] = 
+{
+    rtDirectory, IOH_None         , (char*)UpDirString                        , NULL, 0 , //one dir level max, up Dir is always root
+    rtFilePrg  , IOH_Swiftlink    , (char*)"Retromate Internet Chess+SwiftLnk", (uint8_t*)retromate_teensyrom_prg    , sizeof(retromate_teensyrom_prg) ,
+    rtFileCrt  , IOH_None         , (char*)"Beach Head II         256k MC"    , (uint8_t*)Beach_Head_II_crt          , sizeof(Beach_Head_II_crt) ,
+    rtBin16k   , IOH_None         , (char*)"Dig Dug"                          , (uint8_t*)Dig_Dug_bin                , sizeof(Dig_Dug_bin) ,      
+    rtBin16k   , IOH_None         , (char*)"Donkey Kong"                      , (uint8_t*)Donkey_Kong_BIN            , sizeof(Donkey_Kong_BIN) ,      
+    rtFileCrt  , IOH_None         , (char*)"Gorf!"                            , (uint8_t*)C64618_Gorf_8000_crt       , sizeof(C64618_Gorf_8000_crt) ,
+    rtFilePrg  , IOH_None         , (char*)"Joust!"                           , (uint8_t*)joust_prg                  , sizeof(joust_prg) ,
+    rtBin8kHi  , IOH_None         , (char*)"Jupiter Lander"                   , (uint8_t*)Jupiter_Lander_BIN         , sizeof(Jupiter_Lander_BIN) ,  
+    rtFilePrg  , IOH_None         , (char*)"Jupiter Lander (Cracked)"         , (uint8_t*)jupiter_lander_crack_prg   , sizeof(jupiter_lander_crack_prg) ,  
+    rtFilePrg  , IOH_None         , (char*)"Mario Brothers"                   , (uint8_t*)Mario_Bros_prg             , sizeof(Mario_Bros_prg) ,
+    rtFilePrg  , IOH_None         , (char*)"Minesweeper"                      , (uint8_t*)minesweeper_game_prg       , sizeof(minesweeper_game_prg) ,   
+    rtFileCrt  , IOH_None         , (char*)"Ms. Pac-Man"                      , (uint8_t*)Ms__Pac_Man_crt            , sizeof(Ms__Pac_Man_crt) ,
+    rtFileCrt  , IOH_None         , (char*)"Robocop 2             224k EZF"   , (uint8_t*)Robocop_2_EasyFlash_crt    , sizeof(Robocop_2_EasyFlash_crt) ,
+    rtFilePrg  , IOH_None         , (char*)"Super Mario Brothers   48k PRG"   , (uint8_t*)super_m_bros_64_prg        , sizeof(super_m_bros_64_prg) ,  
+    rtFilePrg  , IOH_None         , (char*)"Tetris"                           , (uint8_t*)Tetris_prg                 , sizeof(Tetris_prg) ,
+//    rtFileCrt  , IOH_None         , (char*)"Terminator 2 +MM+IM   512k Ocean" , (uint8_t*)Terminator_2_crt           , sizeof(Terminator_2_crt) ,
+};
+
+StructMenuItem dirTest_Diags[] = 
+{
+   rtDirectory, IOH_None         , (char*)UpDirString                        , NULL, 0 , //one dir level max, up Dir is always root
+   rtBin8kLo  , IOH_None         , (char*)"1541 Diagnostics"                 , (uint8_t*)a1541_Diagnostics_BIN      , sizeof(a1541_Diagnostics_BIN) ,
+   rtBin8kLo  , IOH_None         , (char*)"586220(ast) C64 Diagnostics"      , (uint8_t*)a586220ast_Diagnostics_BIN , sizeof(a586220ast_Diagnostics_BIN) ,
+   rtBin8kHi  , IOH_None         , (char*)"781220 C64 Dead Test"             , (uint8_t*)a781220_Dead_Test_BIN      , sizeof(a781220_Dead_Test_BIN) ,
+   rtBin8kHi  , IOH_None         , (char*)"DesTestMAX:  Desmond's RAM Test"  , (uint8_t*)destest_max_rom            , sizeof(destest_max_rom) ,
+   rtFileCrt  , IOH_None         , (char*)"789010 C128 Diagnostics"          , (uint8_t*)C128_789010_crt            , sizeof(C128_789010_crt) ,
+   rtFilePrg  , IOH_None         , (char*)"Game Controller Tester"           , (uint8_t*)game_controller_tester_prg , sizeof(game_controller_tester_prg) ,
+   rtBin8kLo  , IOH_None         , (char*)"Joystick Tester"                  , (uint8_t*)Joystick_Tester_BIN        , sizeof(Joystick_Tester_BIN) ,
+   rtBin8kLo  , IOH_None         , (char*)"Keyboard Tester"                  , (uint8_t*)Keyboard_Tester_BIN        , sizeof(Keyboard_Tester_BIN) ,
+   rtFilePrg  , IOH_None         , (char*)"ROM Checksum read"                , (uint8_t*)rom_chksum_137kernals_prg  , sizeof(rom_chksum_137kernals_prg) ,
+   rtBin8kLo  , IOH_None         , (char*)"SID Tester"                       , (uint8_t*)SID_Tester_BIN             , sizeof(SID_Tester_BIN) ,
+   rtFilePrg  , IOH_None         , (char*)"SID checker+finder"               , (uint8_t*)SID_check_prg              , sizeof(SID_check_prg) ,
+   rtFilePrg  , IOH_None         , (char*)"CIA TimeOfDay clock check(BASIC)" , (uint8_t*)cia_tod_prg                , sizeof(cia_tod_prg) ,
+   rtFilePrg  , IOH_None         , (char*)"CIA TimeOfDay clock check(assy)"  , (uint8_t*)TODCheck_prg                , sizeof(cia_tod_prg) ,
+   rtFilePrg  , IOH_TR_BASIC     , (char*)"DMA Pause Check"                  , (uint8_t*)DMACheck_prg               , sizeof(DMACheck_prg) , 
+#ifdef Fab04_REU
+   rtFilePrg  , IOH_REU          , (char*)"CMD 1750-1750XL REU Test    +REU" , (uint8_t*)reutest_prg                , sizeof(reutest_prg) , 
+   rtFilePrg  , IOH_REU          , (char*)"REU-Checker v1.0            +REU" , (uint8_t*)reu_checker_v1_0_prg       , sizeof(reu_checker_v1_0_prg) , 
+#endif
+};
+
+StructMenuItem dirUtilities[] = 
+{
+     rtDirectory, IOH_None         , (char*)UpDirString                        , NULL, 0 , //one dir level max, up Dir is always root
+     rtFilePrg  , IOH_Swiftlink    , (char*)"CCGMS 2021 Term       +SwiftLink ", (uint8_t*)ccgms_2021_Swift_DE_38k_prg, sizeof(ccgms_2021_Swift_DE_38k_prg) ,
+/*2*/rtFilePrg  , IOH_None         , (char*)"Exit to BASIC"                    , (uint8_t*)empty_prg                  , sizeof(empty_prg) ,    //used by location, see ExitToBASIC:
+/*3*/rtFilePrg  , IOH_None         , (char*)"LOAD\"*\",8,1  and  RUN"          , (uint8_t*)Load8Run_prg               , sizeof(Load8Run_prg) , //used by location, see Load8Run:
+     rtFilePrg  , IOH_TR_BASIC     , (char*)"BASIC with TeensyROM Commands"    , (uint8_t*)TRCBC_prg                  , sizeof(TRCBC_prg) ,
+     rtFileCrt  , IOH_None         , (char*)"Super Expander 64"                , (uint8_t*)super_expander_64_crt      , sizeof(super_expander_64_crt) ,
+     rtFileCrt  , IOH_None         , (char*)"Epyx Fast Load Cart"              , (uint8_t*)Epyx_Fast_Load_crt         , sizeof(Epyx_Fast_Load_crt) ,
+     rtFilePrg  , IOH_None         , (char*)"80 Columns"                       , (uint8_t*)a80columns_prg             , sizeof(a80columns_prg) ,
+     rtFilePrg  , IOH_None         , (char*)"DualCopy"                         , (uint8_t*)DualCopy_prg               , sizeof(DualCopy_prg) ,
+     rtFilePrg  , IOH_None         , (char*)"Hex Mon"                          , (uint8_t*)hex_mon_prg                , sizeof(hex_mon_prg) ,
+     rtFilePrg  , IOH_None         , (char*)"Kawari Quick Change"              , (uint8_t*)KawariQuickChange_prg      , sizeof(KawariQuickChange_prg) ,
+     rtFilePrg  , IOH_None         , (char*)"S.A.M.     ]RECITER   SAY\"hello\"", (uint8_t*)sam_prg                   , sizeof(sam_prg) ,
+     rtFilePrg  , IOH_Swiftlink    , (char*)"Simple SwiftLink Term (dev ref)"  , (uint8_t*)SST_prg                    , sizeof(SST_prg) ,
+     rtFilePrg  , IOH_TR_BASIC     , (char*)"Segment+Dot Matrix Digital Clock" , (uint8_t*)shclock_tr_prg             , sizeof(shclock_tr_prg) ,
+     rtFileDesktopApp, IOH_TeensyROM, (char*)"Snake"                            , (uint8_t*)DesktopSnake_prg           , sizeof(DesktopSnake_prg) ,
+     rtFileDesktopApp, IOH_TeensyROM, (char*)"Calculator"                       , (uint8_t*)DesktopCalculator_prg      , sizeof(DesktopCalculator_prg) ,
+     rtFileDesktopApp, IOH_TeensyROM, (char*)"Text Viewer"                      , (uint8_t*)DesktopTextViewer_prg      , sizeof(DesktopTextViewer_prg) ,
+//     rtFilePrg  , IOH_Swiftlink    , (char*)"V-1541.19k.sl         +SwiftLink ", (uint8_t*)v1541wrap_prg              , sizeof(v1541wrap_prg) ,
+};
+
+StructMenuItem dirMultimedia[] = 
+{
+   rtDirectory, IOH_None         , (char*)UpDirString                        , NULL, 0 , //one dir level max, up Dir is always root
+   rtFilePrg  , IOH_None         , (char*)"Swinth+Light Fantastic"           , (uint8_t*)swinth_LIGHT_FANTASTIC_PRG , sizeof(swinth_LIGHT_FANTASTIC_PRG) ,
+   rtFilePrg  , IOH_None         , (char*)"Draw!"                            , (uint8_t*)draw01_prg                 , sizeof(draw01_prg) ,
+//   rtFilePrg  , IOH_None         , (char*)"Display Fractal"                  , (uint8_t*)disp_fract_prg             , sizeof(disp_fract_prg) ,
+//   rtFilePrg  , IOH_None         , (char*)"Ember Head"                       , (uint8_t*)ember_head_prg             , sizeof(ember_head_prg) ,
+};
+
+StructMenuItem dirFeatured_SIDs[] = 
+{  //DefSIDName should match one of these or dirSID_Covers
+    rtDirectory, IOH_None         , (char*)UpDirString                                   , NULL, 0 , //one dir level max, up Dir is always root
+    rtFileSID  , IOH_None         , (char*)"Avrilcadabra:Still Time"          , (uint8_t*)Av_Still_Time_sid               , sizeof(Av_Still_Time_sid) ,
+    rtFileSID  , IOH_None         , (char*)"Avrilcadabra:Twilight Destruction", (uint8_t*)Av_Twilight_Destruction_sid     , sizeof(Av_Twilight_Destruction_sid) ,
+    rtFileSID  , IOH_None         , (char*)"Avrilcadabra:Endless Sands"       , (uint8_t*)Av_Endless_Sands_sid            , sizeof(Av_Endless_Sands_sid) ,
+    rtFileSID  , IOH_None         , (char*)"DivertigO:   KarmaDoor"           , (uint8_t*)Div_KarmaDoor_SickSteveWhore_sid, sizeof(Div_KarmaDoor_SickSteveWhore_sid) ,
+    rtFileSID  , IOH_None         , (char*)"DivertigO:   Death Is No Evil"    , (uint8_t*)Div_Death_Is_no_Evil_sid        , sizeof(Div_Death_Is_no_Evil_sid) ,
+    rtFileSID  , IOH_None         , (char*)"DivertigO:   Harvest"             , (uint8_t*)Div_Harvest_sid                 , sizeof(Div_Harvest_sid) ,
+    rtFileSID  , IOH_None         , (char*)"LukHash:     Alpha"               , (uint8_t*)LH_Alpha_sid                    , sizeof(LH_Alpha_sid) ,
+    rtFileSID  , IOH_None         , (char*)"LukHash:     Bootloader"          , (uint8_t*)LH_Bootloader_sid               , sizeof(LH_Bootloader_sid) ,
+    rtFileSID  , IOH_None         , (char*)"LukHash:     Raster Bar"          , (uint8_t*)LH_Raster_Bar_sid               , sizeof(LH_Raster_Bar_sid) ,
+    rtFileSID  , IOH_None         , (char*)"tubesockor:  Debut and Credit"    , (uint8_t*)ts_Debut_and_Credit_sid         , sizeof(ts_Debut_and_Credit_sid) ,
+//    rtFileSID  , IOH_None         , (char*)"DivertigO Sometimes_Low_key", (uint8_t*)Div_Sometimes_Low_key_O__m_sid  , sizeof(Div_Sometimes_Low_key_O__m_sid) ,
+};
+
+StructMenuItem dirSID_Covers[] = 
+{  //DefSIDName should match one of these or dirSID_Friends
+    rtDirectory, IOH_None         , (char*)UpDirString                        , NULL, 0 , //one dir level max, up Dir is always root
+    rtFileSID  , IOH_None         , (char*)"Also sprach Zarathustra   Strauss", (uint8_t*)Odisey_2001_AD_sid         , sizeof(Odisey_2001_AD_sid) ,
+    rtFileSID  , IOH_None         , (char*)"Medley                Various"    , (uint8_t*)Medley_sid                 , sizeof(Medley_sid) ,
+    rtFileSID  , IOH_None         , (char*)"When I'm 64           The Beatles", (uint8_t*)When_Im_64_sid             , sizeof(When_Im_64_sid) ,
+    rtFileSID  , IOH_None         , (char*)"Popcorn               G. Kingsley", (uint8_t*)Popcorn_sid                , sizeof(Popcorn_sid) ,
+    rtFileSID  , IOH_None         , (char*)"Comfortably Numb      Pink Floyd" , (uint8_t*)Comfortably_Numb_sid       , sizeof(Comfortably_Numb_sid) ,
+    rtFileSID  , IOH_None         , (char*)"Echoes                Pink Floyd" , (uint8_t*)Echoes_sid                 , sizeof(Echoes_sid) ,
+    rtFileSID  , IOH_None         , (char*)"Wish You Were Here    Pink Floyd" , (uint8_t*)Wish_You_Were_Here_sid     , sizeof(Wish_You_Were_Here_sid) ,
+    rtFileSID  , IOH_None         , (char*)"Another Brick In The Wall"        , (uint8_t*)Pink_Floyd_sid             , sizeof(Pink_Floyd_sid) ,
+    rtFileSID  , IOH_None         , (char*)"Sleep Dirt            Frank Zappa", (uint8_t*)SleepDirt_norm_ntsc_1000_6581_sid , sizeof(SleepDirt_norm_ntsc_1000_6581_sid) ,
+    rtFileSID  , IOH_None         , (char*)"Tom Sawyer            Rush"       , (uint8_t*)Tom_Sawyer_sid             , sizeof(Tom_Sawyer_sid) ,
+    rtFileSID  , IOH_None         , (char*)"YYZ                   Rush"       , (uint8_t*)YYZ_sid                    , sizeof(YYZ_sid) ,    //  Watch for menu mem conflict, $7580 start address
+    rtFileSID  , IOH_None         , (char*)"Aces High             Iron Maiden", (uint8_t*)Aces_High_sid              , sizeof(Aces_High_sid) ,
+    rtFileSID  , IOH_None         , (char*)"Switch 625            Def Leppard", (uint8_t*)Switch_625_sid             , sizeof(Switch_625_sid) ,
+
+};
+
+StructMenuItem dirPic_Files[] = 
+{
+   rtDirectory, IOH_None         , (char*)UpDirString                        , NULL, 0 , //one dir level max, up Dir is always root
+   rtFileKla  , IOH_None         , (char*)"TS: TeensyROM"                    , (uint8_t*)T_TeensyROM_kla            , sizeof(T_TeensyROM_kla) ,
+   rtFileKla  , IOH_None         , (char*)"TS: BlackHole"                    , (uint8_t*)T_BlackHole_kla            , sizeof(T_BlackHole_kla) ,
+   rtFileKla  , IOH_None         , (char*)"TS: Ember Head"                   , (uint8_t*)T_Ember_Head_kla           , sizeof(T_Ember_Head_kla) ,
+   rtFileKla  , IOH_None         , (char*)"TS: Sensorium Heatmap"            , (uint8_t*)T_Sensorium_Heatmap_kla    , sizeof(T_Sensorium_Heatmap_kla) ,
+   rtFileKla  , IOH_None         , (char*)"HA: Bluejay"                      , (uint8_t*)HA_Bluejay_kla             , sizeof(HA_Bluejay_kla) ,
+   rtFileKla  , IOH_None         , (char*)"HA: Hummingbird"                  , (uint8_t*)HA_Hummingbird_kla         , sizeof(HA_Hummingbird_kla) ,
+   rtFileKla  , IOH_None         , (char*)"HA: Sugar Skull"                  , (uint8_t*)HA_Sugar_Skull_kla         , sizeof(HA_Sugar_Skull_kla) ,
+   rtFileKla  , IOH_None         , (char*)"LP: Boston"                       , (uint8_t*)LP_Boston_kla              , sizeof(LP_Boston_kla) ,
+   rtFileKla  , IOH_None         , (char*)"LP: ELP Tarkus"                   , (uint8_t*)LP_ELP_Tarkus_kla          , sizeof(LP_ELP_Tarkus_kla) ,
+   rtFileKla  , IOH_None         , (char*)"LP: Zappa Sleep Dirt"             , (uint8_t*)LP_Zappa_Sleep_Dirt_kla    , sizeof(LP_Zappa_Sleep_Dirt_kla) ,
+   rtFileKla  , IOH_None         , (char*)"LP: Zappa Apostrophe (')"         , (uint8_t*)LP_Zappa_Apostrophe_kla    , sizeof(LP_Zappa_Apostrophe_kla) ,
+   rtFileArt  , IOH_None         , (char*)"Pie2 Hi-Res"                      , (uint8_t*)Ex_Pie2_art                , sizeof(Ex_Pie2_art) ,
+   rtFileKla  , IOH_None         , (char*)"KP: Bird"                         , (uint8_t*)KP_Bird_kla                , sizeof(KP_Bird_kla) ,
+   rtFileKla  , IOH_None         , (char*)"KP: Burger"                       , (uint8_t*)KP_Burger_kla              , sizeof(KP_Burger_kla) ,
+   rtFileKla  , IOH_None         , (char*)"KP: Koala"                        , (uint8_t*)KP_Koala_kla               , sizeof(KP_Koala_kla) ,
+   rtFileKla  , IOH_None         , (char*)"KP: Tiger"                        , (uint8_t*)KP_Tiger_kla               , sizeof(KP_Tiger_kla) ,
+};
+
+StructMenuItem dirMIDI_ASID[] = 
+{
+    rtDirectory, IOH_None           , (char*)UpDirString                        , NULL, 0 , //one dir level max, up Dir is always root
+    rtFilePrg  , IOH_ASID           , (char*)"TeensyROM ASID Player    +TR ASID", (uint8_t*)ASIDPlayer_prg             , sizeof(ASIDPlayer_prg) ,
+    rtFilePrg  , IOH_TeensyROM      , (char*)"MIDI2SID          +TeensyROM MIDI", (uint8_t*)MIDI2SID_prg               , sizeof(MIDI2SID_prg) ,
+    rtFilePrg  , IOH_MIDI_Datel     , (char*)"Cynthcart 2.0.1       +Datel MIDI", (uint8_t*)cynthcart_201_prg          , sizeof(cynthcart_201_prg) ,    
+    rtFilePrg  , IOH_MIDI_Passport  , (char*)"Station64 2.6      +Passport MIDI", (uint8_t*)sta64_v2_6_prg             , sizeof(sta64_v2_6_prg) ,
+    rtFilePrg  , IOH_MIDI_Sequential, (char*)"SID-Wizard V1.94        +Seq MIDI", (uint8_t*)sid_wizard_1_9_prg         , sizeof(sid_wizard_1_9_prg) ,
+    rtFilePrg  , IOH_MIDI_Sequential, (char*)"SID-Wizard_2SID V1.94   +Seq MIDI", (uint8_t*)sid_wizard_2sid_prg        , sizeof(sid_wizard_2sid_prg) ,
+    rtFilePrg  , IOH_None           , (char*)"SID-Wizard User Manual V1.94"     , (uint8_t*)sw_1_9_manual_prg          , sizeof(sw_1_9_manual_prg) ,
+};
+
+StructMenuItem dirTEXT_PETSCII[] = 
+{
+   rtDirectory   , IOH_None      , (char*)UpDirString                        , NULL, 0 , //one dir level max, up Dir is always root
+   rtFilePETSCII , IOH_None      , (char*)"---Text Viewer Usage Document---" , (uint8_t*)Text_Viewer_Instructions_seq                   , sizeof(Text_Viewer_Instructions_seq) ,
+   rtFileTxt     , IOH_None      , (char*)"Wish You Were Here"               , (uint8_t*)Wish_You_Were_Here_txt                         , sizeof(Wish_You_Were_Here_txt) ,
+   rtFilePETSCII , IOH_None      , (char*)"Jousters"                         , (uint8_t*)Jousters___c_g179_seq                          , sizeof(Jousters___c_g179_seq) ,
+   rtFilePETSCII , IOH_None      , (char*)"Color Weave"                      , (uint8_t*)color_weave_seq                                , sizeof(color_weave_seq) ,
+   rtFileTxt     , IOH_None      , (char*)"Cygnus X-1, Book I: The_Voyage"   , (uint8_t*)Cygnus_X_1_Book_I___The_Voyage_txt             , sizeof(Cygnus_X_1_Book_I___The_Voyage_txt) ,
+   rtFilePETSCII , IOH_None      , (char*)"Electric Guitar"                  , (uint8_t*)electric_guitar_seq                            , sizeof(electric_guitar_seq) ,
+   rtFilePETSCII , IOH_None      , (char*)"Iron Maiden: Aces High"           , (uint8_t*)irnmdn_aceshigh_seq                            , sizeof(irnmdn_aceshigh_seq) ,
+   rtFilePETSCII , IOH_None      , (char*)"Do Not Panic!"                    , (uint8_t*)do_not_panic_seq                               , sizeof(do_not_panic_seq) ,
+   rtFileTxt     , IOH_None      , (char*)"Small Kindnesses"                 , (uint8_t*)Small_Kindnesses_txt                           , sizeof(Small_Kindnesses_txt) ,
+   rtFilePETSCII , IOH_None      , (char*)"Inter Circuits"                   , (uint8_t*)inter_circuits_seq                             , sizeof(inter_circuits_seq) ,
+   rtFilePETSCII , IOH_None      , (char*)"Living Color"                     , (uint8_t*)living_color_1_seq                             , sizeof(living_color_1_seq) ,
+   rtFilePETSCII , IOH_None      , (char*)"Tiger"                            , (uint8_t*)tiger_cg_seq                                   , sizeof(tiger_cg_seq) ,
+   rtFilePETSCII , IOH_None      , (char*)"Stripes by Shoeshine Boy"         , (uint8_t*)Stripes__Shoeshine_Boy___13picturedisk_2_seq   , sizeof(Stripes__Shoeshine_Boy___13picturedisk_2_seq) ,
+   rtFilePETSCII , IOH_None      , (char*)"Time Travel by Shoeshine Boy"     , (uint8_t*)Time_Travel__Shoeshine_Boy__11picturedisk_2_seq, sizeof(Time_Travel__Shoeshine_Boy__11picturedisk_2_seq) ,
+   rtFilePETSCII , IOH_None      , (char*)"Trains II by Yoda"                , (uint8_t*)Trains_II__Yoda______12picturedisk_6_seq       , sizeof(Trains_II__Yoda______12picturedisk_6_seq) ,
+};
+
+StructMenuItem dirTeensyROMSpecific[] = 
+{
+     rtDirectory   , IOH_None      , (char*)UpDirString                        , NULL, 0 , //one dir level max, up Dir is always root
+/*1*/rtFilePrg  , IOH_TeensyROM    , (char*)"TeensyROM Settings Menu"          , (uint8_t*)SettingsMenu_prg           , sizeof(SettingsMenu_prg) ,  //used by location, see TagTRSettings
+/*2*/rtFilePrg  , IOH_TeensyROM    , (char*)"TeensyROM Help Pages"             , (uint8_t*)TRHelpScreens_prg          , sizeof(TRHelpScreens_prg) , //used by location, see TagTRHelp
+/*3*/rtFilePrg  , IOH_TeensyROM    , (char*)"TeensyROM Desktop Shell"           , (uint8_t*)DesktopShell_prg           , sizeof(DesktopShell_prg) ,
+     rtFilePETSCII , IOH_None      , (char*)"Text Viewer Usage Document"       , (uint8_t*)Text_Viewer_Instructions_seq, sizeof(Text_Viewer_Instructions_seq) ,
+     rtFilePrg  , IOH_TR_BASIC     , (char*)"BASIC with TeensyROM Commands"    , (uint8_t*)TRCBC_prg                  , sizeof(TRCBC_prg) ,
+     rtFilePrg  , IOH_TR_BASIC     , (char*)"BASIC TR Command IO access only"  , (uint8_t*)empty_prg                  , sizeof(empty_prg) ,
+     rtBin8kLo  , IOH_TeensyROM    , (char*)"(This) TeensyROM Menu Cart"       , (uint8_t*)TeensyROMC64_bin           , sizeof(TeensyROMC64_bin) ,
+     rtFilePrg  , IOH_TeensyROM    , (char*)"TeensyROM External Ports Test"    , (uint8_t*)TRExtPortCheck_prg         , sizeof(TRExtPortCheck_prg) ,
+#ifdef Fab04_REU
+     rtFilePrg  , IOH_TeensyROM    , (char*)"TR+ C64 Expansion Port Test"      , (uint8_t*)ExpansionPortTest_prg      , sizeof(ExpansionPortTest_prg) ,
+#endif
+//could repeat these here...
+   //rtFilePrg  , IOH_ASID         , (char*)"TeensyROM ASID Player    +TR ASID", (uint8_t*)ASIDPlayer_prg             , sizeof(ASIDPlayer_prg) ,
+   //rtFilePrg  , IOH_TeensyROM    , (char*)"MIDI2SID          +TeensyROM MIDI", (uint8_t*)MIDI2SID_prg               , sizeof(MIDI2SID_prg) ,
+   //rtFileKla  , IOH_None         , (char*)"TS: TeensyROM"                    , (uint8_t*)T_TeensyROM_kla            , sizeof(T_TeensyROM_kla) ,
+};
+
+
+//define this last:
+StructMenuItem TeensyROMMenu[] = 
+{
+//DefSIDPath should be "/" or one of these names
+
+// Ref  regItemTypes, enumIOHandlers   
+//  #    ItemType   , IOHndlrAssoc       , Name                                      , *Code_Image                          , Size ,
+
+ /* 0 */ rtDirectory, IOH_None           , (char*)"/Games"                           , (uint8_t*)dirGames                   , sizeof(dirGames) ,
+ /* 1 */ rtDirectory, IOH_None           , (char*)"/MIDI + ASID"                     , (uint8_t*)dirMIDI_ASID               , sizeof(dirMIDI_ASID) ,
+ /* 2 */ rtDirectory, IOH_None           , (char*)"/Featured SIDs"                   , (uint8_t*)dirFeatured_SIDs           , sizeof(dirFeatured_SIDs) ,
+ /* 3 */ rtDirectory, IOH_None           , (char*)"/SID Cover Tunes"                 , (uint8_t*)dirSID_Covers              , sizeof(dirSID_Covers) ,
+ /* 4 */ rtDirectory, IOH_None           , (char*)"/Pictures"                        , (uint8_t*)dirPic_Files               , sizeof(dirPic_Files) ,
+ /* 5 */ rtDirectory, IOH_None           , (char*)"/Multimedia"                      , (uint8_t*)dirMultimedia              , sizeof(dirMultimedia) ,
+ /* 6 */ rtDirectory, IOH_None           , (char*)"/Test+Diags"                      , (uint8_t*)dirTest_Diags              , sizeof(dirTest_Diags) ,
+ /**7**/ rtDirectory, IOH_None           , (char*)"/Utilities"                       , (uint8_t*)dirUtilities               , sizeof(dirUtilities) ,
+ /* 8 */ rtDirectory, IOH_None           , (char*)"/Text + PETSCII + Docs"           , (uint8_t*)dirTEXT_PETSCII            , sizeof(dirTEXT_PETSCII) ,
+ /**9**/ rtDirectory, IOH_None           , (char*)"/TeensyROM Specific"              , (uint8_t*)dirTeensyROMSpecific       , sizeof(dirTeensyROMSpecific) ,
+};

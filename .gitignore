@@ -1,0 +1,17 @@
+/build/
+**/build/
+**/__pycache__/
+*.log
+*.elf
+*.map
+# Locally supplied/generated Doom data stays outside the public source package.
+*.wad
+*.gbd
+# Only reviewed full VM packages are published here.
+/vms/*
+!/vms/README.md
+!/vms/DOOMVM.zip
+!/vms/DOOMVM-version.json
+
+!/vms/NESVM.zip
+!/vms/NESVM-checksums.json

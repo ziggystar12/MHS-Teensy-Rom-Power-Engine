@@ -1,0 +1,67 @@
+{
+  "publication": "nesvm-2026-09-09",
+  "minimumFirmwareVersion": "1.1.13",
+  "abi": 2,
+  "sourceBundled": false,
+  "module": {
+    "abi": 2,
+    "codeBase": 98304,
+    "dataBase": 536952832,
+    "codeBytes": 94532,
+    "dataBytes": 1760,
+    "bssBytes": 13600,
+    "workspaceBytes": 181248,
+    "guestRamBytes": 524288,
+    "sha256": "8ad32d74846974bd539031190559d7cb76df2e098b92011b99f73a3dc646f2b0"
+  },
+  "files": [
+    {
+      "path": "NESVM.crt",
+      "bytes": 24688,
+      "sha256": "0ec19bce9215f9ddbfd34076325c916a687e14693f0f52cbb17150927fc54365"
+    },
+    {
+      "path": "VMS/NESVM/client.crt",
+      "bytes": 24688,
+      "sha256": "0ec19bce9215f9ddbfd34076325c916a687e14693f0f52cbb17150927fc54365"
+    },
+    {
+      "path": "VMS/NESVM/engine.mvm",
+      "bytes": 96356,
+      "sha256": "8ad32d74846974bd539031190559d7cb76df2e098b92011b99f73a3dc646f2b0"
+    },
+    {
+      "path": "VMS/NESVM/LICENSE-Nofrendo.txt",
+      "bytes": 25270,
+      "sha256": "cc535c21133c895b56b374c8a1dc1eb948d99003ed2b47372069456b62f42b24"
+    },
+    {
+      "path": "VMS/NESVM/manifest.vmi",
+      "bytes": 40,
+      "sha256": "4596577e409587c7a081cd6af97374c631477bbf2c33799b6f10e0ee1ae32ef0"
+    },
+    {
+      "path": "VMS/NESVM/NOTICES.md",
+      "bytes": 3405,
+      "sha256": "6d9c48e7d3e38c359dabd892d924cc8f7b37292303f555b102949541a16b2db3"
+    },
+    {
+      "path": "VMS/NESVM/README.md",
+      "bytes": 3220,
+      "sha256": "ae107096ac51cf901482c43ea457f4a03733121b7d023ba42c01b64cd91e8255"
+    },
+    {
+      "path": "VMS/NESVM/ROMS/Crossbow.nes",
+      "bytes": 98320,
+      "sha256": "93c1eff05b4d39992c0fd05dce9bb3d5b8349ca3a2416717d75ef4336fc715ea"
+    }
+  ],
+  "downloads": [
+    {
+      "file": "NESVM.zip",
+      "bytes": 103451,
+      "sha256": "7932c5e9d6d5fc89037b25bbfd82e2d58b42f96fad257b5a906da8cc9de5aec2",
+      "members": 8
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "sourceCommit": "5d5e75f22d57eb63e76c24c51e064de0b07abe3c",
+  "files": [
+    {
+      "path": "nes/tools/build_nesvm_terminal.mjs",
+      "bytes": 3135,
+      "sha256": "a7f1e35337a07da2977e31fb54b594e48b0fd9a31e93ad833f66f204aeb926b9"
+    },
+    {
+      "path": "nes/tools/build_nesvm_cartridge.mjs",
+      "bytes": 3215,
+      "sha256": "5dd3182a41266c30d6864545e61c59140a0c4da5fbd27a4fb4d20f653530c1a8"
+    },
+    {
+      "path": "nes/tools/nes_terminal.mjs",
+      "bytes": 11716,
+      "sha256": "f3569c44e22a09aa9c2dfbccff8b582f70af586a4ae739ae6a00f2bb1806a219"
+    },
+    {
+      "path": "vm/client/host/install-boot-bank.mjs",
+      "bytes": 6665,
+      "sha256": "ce5ce586ff90d23b1bb6a84b4d0ee61653e797fb15adcfe5c4c3135f78e5a7b1"
+    },
+    {
+      "path": "vm/client/host/loading-text.mjs",
+      "bytes": 1736,
+      "sha256": "f89339af01873565277a62e24adcadd4e71fafeaa6c88474dabb1250f6ff5b17"
+    },
+    {
+      "path": "vm/client/host/mpe-video-client.mjs",
+      "bytes": 9945,
+      "sha256": "ebb8878cec64039279bb61df68a85059eca78f07148cb5e0f8feb8018c0cb0a1"
+    },
+    {
+      "path": "vm/client/host/mpe3-title-terminal.mjs",
+      "bytes": 48873,
+      "sha256": "34009bb5d6aa885e72530bfc4dac8ddbd8ba2ab34c5012238be72be8f1cc5bc3"
+    },
+    {
+      "path": "vm/client/host/mpe4-ego-sprites.mjs",
+      "bytes": 4272,
+      "sha256": "57b92ab218973f10b7d0c2f978efc8d25975e86c9f45d543b1a25fb26efb77df"
+    },
+    {
+      "path": "vm/client/host/mpe4-keyboard.mjs",
+      "bytes": 8688,
+      "sha256": "3bd3e1f5d77951a215fded152f7b15cb984ab8dc73b74499aa9ef321ea82b8a4"
+    },
+    {
+      "path": "vm/client/host/mpe4-mouse.mjs",
+      "bytes": 7016,
+      "sha256": "d1c6d2d75c1af1b52d636b37c4baf49e11326b1ab8b052851c0c4b2f8e68f10e"
+    },
+    {
+      "path": "LICENSE.md",
+      "bytes": 1069,
+      "sha256": "e9fdfceaaa41e4dc9f81745e70e77902f340c54888ef5a9c0c6795acb2e8bf2b"
+    }
+  ]
+}

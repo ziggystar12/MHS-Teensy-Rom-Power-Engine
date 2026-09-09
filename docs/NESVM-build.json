@@ -1,0 +1,32 @@
+{
+  "engineSourceCommit": "10d27cd0cb6e4a3991850c14ea8a9225f2c1bc48",
+  "firmwareIncluded": false,
+  "abi": 2,
+  "module": {
+    "abi": 2,
+    "codeBase": 98304,
+    "dataBase": 536952832,
+    "codeBytes": 94532,
+    "dataBytes": 1760,
+    "bssBytes": 13600,
+    "workspaceBytes": 181248,
+    "guestRamBytes": 524288,
+    "sha256": "8ad32d74846974bd539031190559d7cb76df2e098b92011b99f73a3dc646f2b0"
+  },
+  "clientSha256": "0ec19bce9215f9ddbfd34076325c916a687e14693f0f52cbb17150927fc54365",
+  "verification": "Unchanged checked engine with rebuilt C64GS client; NES input/audio, video-control and PAL/NTSC VICE boot passed. The supplied C64GS two-button test passed on hardware.",
+  "clientSourceCommit": "5d5e75f22d57eb63e76c24c51e064de0b07abe3c",
+  "minimumFirmwareVersion": "1.1.13",
+  "publication": "nesvm-2026-09-09",
+  "runtimeBinariesChanged": false,
+  "packagingChanges": "Public installation and corresponding-source links; runtime binaries and Crossbow demo are unchanged.",
+  "publicSourceVerification": {
+    "engineRebuildMatches": true,
+    "engineBytes": 96356,
+    "compiler": "Arm GNU Toolchain 11.3.Rel1, 11.3.1 20220712",
+    "clientRebuildMatches": true,
+    "clientBytes": 24688,
+    "engineSourceManifest": "Source/NESEngine/SOURCE-MANIFEST.json",
+    "clientSourceManifest": "Source/NESClient/CLIENT-SOURCE.json"
+  }
+}

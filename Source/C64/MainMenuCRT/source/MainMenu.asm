@@ -1,0 +1,1689 @@
+; MIT License
+; 
+; Copyright (c) 2023 Travis Smith
+; 
+; Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
+; and associated documentation files (the "Software"), to deal in the Software without 
+; restriction, including without limitation the rights to use, copy, modify, merge, publish, 
+; distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom 
+; the Software is furnished to do so, subject to the following conditions:
+; 
+; The above copyright notice and this permission notice shall be included in all copies or 
+; substantial portions of the Software.
+; 
+; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING 
+; BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+; NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
+; DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+; ********************************   Symbols   ********************************   
+   !convtab pet   ;key in and text out conv to PetSCII throughout
+   !src "source/c64defs.i"  ;C64 colors, mem locations, etc.
+   !src "source/CommonDefs.i" ;Common between crt loader and main code in RAM
+   !src "source/Menu_Regs.i"  ;IO space registers matching Teensy code
+
+   ;other RAM Registers
+   ;$0334-033b is "free space"
+   PageIdentifyLoc    = C64ScreenRAM+40*25-1 ;bottom right corner, identifies current screen
+   PageIdentifyColor  = C64ColorRAM+40*25-1  ;to make it match background color
+   PILSIDScreen       = $f0
+
+;******************************* Main Code Start ************************************   
+
+* = MainCodeRAMStart
+Start:
+
+!ifndef DesktopShell {
+   ; A return to the compact recovery menu restores the original list indices.
+   lda rwRegMenuView+IO1Port
+   beq +
+   lda #0
+   sta rwRegMenuView+IO1Port
+   jsr WaitForTRWaitMsg
++
+}
+
+   lda #$00
+   sta $dd08       ; in case TOD wasn't running, and to get ahead of upcoming TOD check for zero...
+
+!ifdef DbgVerbose {
+   lda #<MsgMain
+   ldy #>MsgMain
+   jsr PrintString  
+}
+
+;screen setup:     
+   ;copy colors from IO1 to local RAM
+   ldx #NumColorRefs
+-  lda rwRegColorRefStart-1+IO1Port, x ;zero based offset
+   sta TblEscC-1, x
+   dex
+   bne -
+   jsr TextScreenMemColor ;update screen colors now that we have them
+
+   lda #rCtlVanishROM ;Deassert Game & ExROM
+   sta wRegControl+IO1Port
+
+   ;Get video standard and TOD frequency
+!ifdef DbgVerbose {
+   lda #<MsgClkChecks
+   ldy #>MsgClkChecks
+   jsr PrintString  
+}
+   ;Check to make sure the TOD clock is working:
+   sei             
+   lda #$00
+   tax
+   tay
+;   sta $dd08       ; already set to zero earlier
+-  cmp $dd08       ; poll TO2TEN for change
+   bne TODPass
+   inx
+   bne -
+   iny
+   bne -
+   ;fail TOD check:
+!ifdef DbgVerbose {
+   lda #<MsgFail
+   ldy #>MsgFail
+   jsr PrintString 
+   ;jsr AnyKeyMsgWait
+}
+   jmp set60NTSC
+   
+TODPass
+!ifdef DbgVerbose {
+   txa
+   pha
+   tya
+   pha
+   lda #<MsgPass
+   ldy #>MsgPass
+   jsr PrintString 
+   pla
+   jsr PrintHexByte
+   pla
+   jsr PrintHexByte
+}
+   
+   ; https://codebase64.org/doku.php?id=base:efficient_tod_initialisation
+   ; Detecting TOD frequency by Silver Dream ! / Thorgal / W.F.M.H.
+   ;sei             ; accounting for NMIs is not needed when
+   lda #$00        ; used as part of application initialisation
+   sta $dd08       ; TO2TEN start TOD - in case it wasn't running
+-  cmp $dd08       ; TO2TEN wait until tenths
+   beq -           ; register changes its value
+   lda #$ff        ; count from $ffff (65535) down
+   sta $dd04       ; TI2ALO both timer A register
+   sta $dd05       ; TI2AHI set to $ff
+   lda #%00010001  ; bit seven = 0 - 60Hz TOD mode
+   sta $dd0e       ; CI2CRA start the timer
+   lda $dd08       ; TO2TEN
+-  cmp $dd08       ; poll TO2TEN for change
+   beq -
+   lda $dd05       ; TI2AHI expect (approximate) $7f4a $70a6 $3251 $20c0
+   ;$7f4a for 60Hz TOD clock and 985248.444(PAL) CPU/CIA clock    10
+   ;$70a6 for 60Hz TOD clock and 1022727.14(NTSC) CPU/CIA clock   11
+   ;$3251 for 50Hz TOD clock and 985248.444(PAL) CPU/CIA clock    00
+   ;$20c0 for 50Hz TOD clock and 1022727.14(NTSC) CPU/CIA clock   01
+   ;convert from MSB timing to: bit 0: 1=NTSC, 0=PAL;    bit 1: 1=60Hz, 0=50Hz
+   ldy #%10000000  ;use bit 7 of Y for 50/60Hz setting, set 1=50Hz TOD default
+   cmp #$29
+   bcs +  ;(>29)
+   ldx #%00000001  ;50/NTSC
+   jmp ++
++  cmp #$51
+   bcs +  ;(>51)
+   ldx #%00000000  ;50/PAL
+   jmp ++
++  ldy #%00000000  ;0=60Hz TOD
+   cmp #$78
+   bcs +  ;(>78)
+set60NTSC
+   ldx #%00000011  ;60/NTSC
+   jmp ++
++  ldx #%00000010  ;60/PAL
+++ stx wRegVid_TOD_Clks+IO1Port   
+   ;set CIA1 50/60 Hz counter
+   sty smcTODbit+1
+   lda $dc0e
+   and #%01111111
+smcTODbit
+   ora #$00
+   sta $dc0e
+   cli
+   
+   ;store this code page range for SID conflict detection
+   lda #>MainCodeRAMStart   ;read hi byte of Start address
+   sta rwRegCodeStartPage+IO1Port
+   lda #>MainCodeRAMEnd   ;read hi byte of End address
+   sta rwRegCodeLastPage+IO1Port
+
+   ;set clock to midnight and start it by default
+   lda #0  
+   sta TODHoursBCD  ;stop TOD regs incrementing
+   sta TODMinBCD
+   sta TODSecBCD
+   sta TODTenthSecBCD ;have to write 10ths to release latch, start incrementing
+
+   ;store default register for 12/24 hour time display locally
+   lda rwRegPwrUpDefaults+IO1Port
+   and #rpudClock12_24hr
+   sta smc24HourClockDisp+1  ;local copy of 12/24 hr
+   
+   ;check for cartridge signature in RAM (as written by some games ie "Hero")  Thanks Artur Rataj!
+   ;  This causes mis-starts to BASIC and meese up restore key operation
+   ;CharAutostartKey $8004 c3c2cd3830            !byte $c3, $c2, $cd, $38, $30    ; CBM8O - Autostart key 
+   ldx #05  ;5 chars total 5:1
+-  lda CharAutostartKey-1,x
+   cmp $8004-1,x
+   bne +
+   dex
+   bne -
+   ; sig found, kill it!
+   ;inc BorderColorReg  ;indicate found
+   stx $8005  ;x==0 from above
+   
++  
+   ;store IRQ vector for wedge continuation and IRQ restoration
+   ;(Points to $EA31 for C64, $FA65 for C128)
+!ifdef DbgVerbose {
+   lda #<MsgIRQ
+   ldy #>MsgIRQ
+   jsr PrintString  
+}
+
+   lda $0315   
+   sta smcIRQDefault+2
+   
+!ifdef DbgVerbose {
+   jsr PrintHexByte
+}
+
+   lda $0314   
+   sta smcIRQDefault+1
+   
+!ifdef DbgVerbose {
+   jsr PrintHexByte
+   lda #ChrReturn
+   jsr SendChar
+}
+
+   jsr Mouse1351Init
+
+   ;check for remote launch on reset
+   lda rwRegIRQ_CMD+IO1Port
+   cmp #ricmdLaunch
+   bne +
+   ;Remote launch requested!
+!ifdef DbgVerbose {
+   lda #<MsgRemLaunch
+   ldy #>MsgRemLaunch
+   jsr PrintString  
+}
+
+   ;inc BorderColorReg
+   lda #ricmdNone
+   sta rwRegIRQ_CMD+IO1Port
+   jsr RunSelected  ;start TR selected app...
+   ;prg/crt won't return from here, likely SID or error
+   lda #rmtTeensy ; force back to TR menu
+   jsr MenuChangeInit   
+   jsr IRQEnable ;a returning remote item still needs TR IRQ and mouse sampling
+   jmp ++
+   
+   ;load SID to TR RAM
++  
+!ifdef DbgVerbose {
+   lda #<MsgSIDLoad
+   ldy #>MsgSIDLoad
+   jsr PrintString  
+}
+
+   lda #rCtlLoadSIDWAIT ; sends SID Parse messages
+   sta wRegControl+IO1Port
+   jsr WaitForTRDots
+
+   jsr SIDLoadInit  ;Load SID to C64, start the IRQ wedge, initial default is SID playback disable. 
+ 
+   ;A rejected default SID must retain its stopped/error state. It may have
+   ;conflicted with the resident Control Panel, so no valid player was loaded.
+SIDRestorePreference:
+   lda smcSIDPauseStop+1
+   cmp #rpudSIDPauseMask+1
+   bcs SIDStartupReady
+   ;check default register for music playback
+   lda rwRegPwrUpDefaults+IO1Port
+   and #rpudSIDPauseMask
+   sta smcSIDPauseStop+1  ;set default SID playback
+SIDStartupReady:
+   
+!ifdef DbgVerbose {
+   lda #<MsgThisMachine
+   ldy #>MsgThisMachine
+   jsr PrintString 
+   lda #rsstMachineInfo
+   jsr PrintSerialString
+   lda #<Msg0TOD
+   ldy #>Msg0TOD
+   jsr PrintString 
+}
+   
+++ 
+
+   ;check default register for RTC time update from net, includes Ethernet init
+   lda rwRegPwrUpDefaults+IO1Port
+   and #rpudNetTimeMask
+   beq +
+   jsr SetRTCfromEthernet
+   
+   ;always read current TOD from Teensy RTC, battery backed or not...
++  jsr SetC64TODfromRTC
+   
+   ;check for listener enabled and init ethernet
+   lda rwRegPwrUpDefaults2+IO1Port
+   and #rpud2TRTCPListen
+   beq +
+   lda #rCtlNetListenInitWAIT
+   sta wRegControl+IO1Port
+   jsr WaitForTRDots 
+ 
++
+!ifdef DbgInitWait {
+   jsr AnyKeyMsgWait ;debug for looking at load messages
+}
+
+!ifdef DesktopShell {
+   ;The expanded desktop is a flash-backed PRG.  Its local UI state is
+   ;initialized after the existing TeensyROM/TOD services are ready.
+   jsr GeosShellInit
+}
+
+!ifndef DesktopShell {
+ChooseStartupMenu:
+   lda rwRegPwrUpDefaults3+IO1Port
+   and #rpud3TextMenu
+   beq LaunchDesktopShell
+   lda #0
+   sta GeosViewMode
+   beq CompactTextMenuReady
+LaunchDesktopShell:
+   ;Keep the timing-critical cartridge below 8 KiB and use it as a bootstrap.
+   ;Item 3 in /TeensyROM Specific is the PROGMEM DesktopShell PRG.  If the
+   ;transfer ever fails, DirectRunFromTeensyMenu returns to this proven menu.
+   ldx #9
+   lda #3
+   jmp DirectRunFromTeensyMenu
+CompactTextMenuReady:
+}
+
+   ;Display main menu and enter JS/key wait loop
+   jsr ListMenuItems
+!ifdef DesktopShell {
+   jsr GeosFirmwareStartup
+   lda rwRegDesktopAppID+IO1Port
+   bpl +
+   and #$7f
+   cmp #rdaCount
+   bcs +
+   pha
+   sta rwRegDesktopAppID+IO1Port
+   pla
+   jsr GeosShellOpenApp
++
+}
+   
+HighlightCurrent:
+   lda rwRegCursorItemOnPg+IO1Port 
+   jsr InverseRow
+   lda GeosViewMode
+   beq +
+   jsr GeosDrawStatus
++
+   
+WaitForJSorKey:     
+!ifdef DesktopShell {
+   lda GeosOverlayMode
+   cmp #GeosOverlayNotice
+   bne +
+   jsr GeosDialogPoll
+   beq WaitForJSorKey
+   jsr GeosShellCloseOverlayKey
+   jmp WaitForJSorKey
++
+}
+   jsr DisplayTime
+   jsr Mouse1351ProcessMenu
+   bcc MouseNoMenuEvent
+   jmp ReadKeyboardReady
+MouseNoMenuEvent:
+   ;Use the IRQ's isolated control-port sample. Reading CIA PRA directly
+   ;here also reads keyboard matrix lows, especially during mouse clicks.
+   lda Joystick2Sample
+   lsr
+   bcs +
+   jsr CursorUp    ;js Up
+   jmp JSDelay
+   
++  lsr
+   bcs +
+   jsr CursorDown  ;js Down
+   jmp JSDelay
+   
++  lsr
+   bcs +
+   jsr PrevPage    ;js Left
+   jmp JSDelay
+   
++  lsr
+   bcs +
+   jsr NextPage    ;js Right
+   jmp JSDelay
+   
++  lsr
+   bcs ReadKeyboard
+   jsr SelectItem  ;js Fire
+   ;jmp JSDelay
+
+JSDelay:   
+   lda rwRegCursorItemOnPg+IO1Port ;HighlightCurrent
+   jsr InverseRow
+   lda GeosViewMode
+   beq +
+   jsr GeosDrawStatus
++
+   ;pause after action:
+   lda rwRegPwrUpDefaults+IO1Port
+   and #rpudJoySpeedMask  ;upper 4 bits = speed 0-15 (00-f0)
+   eor #rpudJoySpeedMask  ;make 15-0 (f0-00 step $10)
+   lsr ;conv to $78-$00 step $08
+   tay
+   iny ;can't be 0, now $79-$01 step $08
+   ;default of 9 ends up at $31 in y
+   ;prev testing:ldy #$18   ;$10 is pretty quick, but controllable(?);  $80 is fairly slow
+-- ldx #$ff
+-  dex
+   bne -
+   dey
+   bne --
+   ;lda #0
+   ;sta 198 ;clear keyboard buffer (only needed for port 1)
+   ;jmp WaitForJSorKey
+
+ReadKeyboard:
+   jsr CheckForIRQGetIn
+   beq WaitForJSorKey
+ReadKeyboardReady:
+
+!ifdef DesktopShell {
+   ;Menus, the Control Panel, and modal/back keys are handled before the
+   ;legacy shortcut map.  Carry set means the shell consumed the key.
+   jsr GeosShellHandleKey
+   bcc +
+   jmp WaitForJSorKey
++
+   jsr GeosActionKey
+   bcc GeosActionKeyNotHandled
+   cmp #2
+   bne GeosActionKeyHandled
+   jmp Load8Run
+GeosActionKeyHandled:
+   jmp HighlightCurrent
+GeosActionKeyNotHandled:
+}
+
+   cmp #MouseEventPagePrev
+   bne +
+   lda rwRegCursorItemOnPg+IO1Port
+   jsr InverseRow
+   jsr PageUp
+   lda #0
+   sta rwRegCursorItemOnPg+IO1Port
+   jmp HighlightCurrent
+
++  cmp #MouseEventPageNext
+   bne +
+   lda rwRegCursorItemOnPg+IO1Port
+   jsr InverseRow
+   jsr PageDown
+   lda #0
+   sta rwRegCursorItemOnPg+IO1Port
+   jmp HighlightCurrent
+   
+   ;inc BorderColorReg ;update border on key press
+   ;pha
+   ;jsr PrintHexByte
+   ;lda #ChrSpace
+   ;jsr SendChar
+   ;pla
+   
++  cmp #ChrReturn
+   bne +
+   jsr SelectItem
+   jmp HighlightCurrent ;highlight the same one (or dir change sets to 0)
+   
++  cmp #ChrCRSRDn  ;Move cursor down
+   bne +
+   jsr CursorDown
+   jmp HighlightCurrent
+   
++  cmp #ChrCRSRUp  ;Move cursor up
+   bne +
+   jsr CursorUp
+   jmp HighlightCurrent
+
++  cmp #ChrCRSRRight  ;Next Page
+   bne +
+   jsr NextPage
+   jmp HighlightCurrent
+
++  cmp #ChrCRSRLeft  ;Prev Page
+   bne +
+   jsr PrevPage
+   jmp HighlightCurrent  
+
++  cmp #ChrUpArrow ;Up directory
+   bne +  
+   lda #rCtlUpDirectoryWAIT
+   sta wRegControl+IO1Port
+   jsr WaitForTRWaitMsg
+   jsr ListMenuItems ; reprint menu
+   jmp HighlightCurrent 
+
++  cmp #'A' ;set auto-launch
+   bne +
+   jsr PrintBanner ;SourcesColor
+   lda #<MsgSetAutoLaunch
+   ldy #>MsgSetAutoLaunch
+   jsr PrintString
+   lda #rCtlSetAutoLaunchWAIT
+CtlWriteWaitDotsAnyKeyListMenuHighlightCur:
+   sta wRegControl+IO1Port
+   jsr WaitForTRDots
+   jsr AnyKeyMsgWait   
+   jsr ListMenuItems ; reprint menu
+   jmp HighlightCurrent    
+
++  cmp #ChrLeftArrow ;Write NFC Tag to current file
+   bne +  
+   lda #0  ;Normal File tag
+   jsr WriteNFCTag
+   jsr ListMenuItems ; reprint menu
+   jmp HighlightCurrent 
+
++  cmp #ChrQuestionMark ;Write random NFC Tag to current dir
+   bne +  
+   lda #1  ;Random dir tag
+   jsr WriteNFCTag
+   jsr ListMenuItems ; reprint menu
+   jmp HighlightCurrent 
+
++  cmp #ChrHome ;top of directory
+   bne +  
+   lda #1  ;first page
+   sta rwRegPageNumber+IO1Port
+   lda #0  ;set to first item
+   sta rwRegCursorItemOnPg+IO1Port 
+   jsr ListMenuItems ; reprint menu
+   jmp HighlightCurrent 
+
++  cmp #'v' ;plain or shifted V switches GUI / original text menu
+   beq ToggleMenuView
+   cmp #'V'
+   bne +
+ToggleMenuView:
+!ifdef DesktopShell {
+   jsr GeosShellEnterBrowser
+   lda GeosViewMode
+   eor #1
+   jsr GeosSetViewMode
+   jmp HighlightCurrent
+}
+!ifndef DesktopShell {
+   lda rwRegPwrUpDefaults3+IO1Port
+   and #$ff-rpud3TextMenu
+   sta rwRegPwrUpDefaults3+IO1Port
+   jsr WaitForTRWaitMsg
+   jmp LaunchDesktopShell
+}
+   
++  cmp #'a'  
+   bmi +   ;skip if below 'a'
+   cmp #'z'+1
+   bpl +   ;skip if above 'z'
+   sta wRegSearchLetterWAIT+IO1Port
+   jsr WaitForTRWaitMsg
+   jsr ListMenuItems ; reprint menu
+   jmp HighlightCurrent 
+
++  cmp #ChrF7  ;Teensy mem Menu
+   bne +
+   lda #rmtTeensy
+   jsr ListMenuItemsChangeInit
+   jmp HighlightCurrent  
+
++  cmp #ChrF2  ;Exit to BASIC
+   bne +
+;   lda #rCtlBasicReset ;reset to BASIC
+;   sta wRegControl+IO1Port
+;-  jmp -  ;should be resetting to BASIC
+ExitToBASIC:
+   ldx #7  ;dir Utilities
+   lda #2  ;prog Exit to BASIC
+   sta smcSkipPrintRunning+1 ; set to non-zero to skip printing MsgRunning
+   jmp DirectRunFromTeensyMenu
+
++  cmp #ChrF3  ;SD Card Menu
+   bne +
+   lda #rmtSD
+   jsr ListMenuItemsChangeInit
+   jmp HighlightCurrent  
+
++  cmp #ChrF4  ;toggle music
+   bne +
+   jsr ToggleSIDMusic
+   jmp WaitForJSorKey  
+
++  cmp #ChrF5  ;USB Drive Menu
+   bne +
+   lda #rmtUSBDrive
+   jsr ListMenuItemsChangeInit
+   jmp HighlightCurrent
+   
++  cmp #ChrF6  ;Show SID info
+   bne +
+   jsr ShowSIDInfoPage
+!ifdef DesktopShell {
+   lda GeosViewMode
+   beq SIDInfoReturnLegacy
+   jmp WaitForJSorKey
+SIDInfoReturnLegacy:
+}
+   jsr ListMenuItems
+   jmp HighlightCurrent
+
++  cmp #ChrF1  ;Help Menu
+   bne +
+TagTRHelp
+   ldx #9  ;dir TR Specific
+   lda #2  ;prog Help Pages
+   jmp DirectRunFromTeensyMenu
+
++  cmp #ChrF8  ;Settings Menu
+   bne +
+   lda #$80  ;explicitly request the Settings index page
+   sta rwRegScratch+IO1Port
+TagTRSettings
+   ldx #9  ;dir TR Specific
+   lda #1  ;prog TR Settings
+   jmp DirectRunFromTeensyMenu
+
++  cmp #'K' ;Select Kernal File
+   bne +
+   jsr PrintBanner ;SourcesColor
+   lda TblEscC+EscSourcesColor
+   sta $0286  ;set text color
+   lda #rCtlSetKERNALBinWAIT
+   jmp CtlWriteWaitDotsAnyKeyListMenuHighlightCur
+
++  cmp #'R' ;Select REU File
+   bne +
+REUPreLoadSelect:
+   jsr PrintBanner ;SourcesColor
+   lda TblEscC+EscSourcesColor
+   sta $0286  ;set text color
+   ;header message moved to SetREUFile()
+   lda #rCtlSetREUFileWAIT
+   jmp CtlWriteWaitDotsAnyKeyListMenuHighlightCur
+
++  cmp #'M' ;Mount Dxx file
+   bne +
+   jsr PrintBanner ;SourcesColor
+   lda #<MsgMountDxxFile
+   ldy #>MsgMountDxxFile
+   jsr PrintString
+   lda #rCtlMountDxxFileWAIT
+   sta wRegControl+IO1Port
+   jsr WaitForTRDots
+   lda rwRegScratch+IO1Port
+   beq ++
+-  jsr CheckForIRQGetIn
+   beq -
+   jsr SendChar
+   cmp #'y'
+   beq Load8Run
+++ jsr AnyKeyMsgWait   
+   jsr ListMenuItems ; reprint menu
+   jmp HighlightCurrent    
+
+Load8Run:
+   ldx #7  ;dir Utilities
+   lda #3  ;prog LOAD"*",8,1 and RUN
+DirectRunFromTeensyMenu:
+   ;launch from main TR menu: sub-dir # stored in X,  item # stored in acc   
+   pha ;save program #
+   txa
+   pha ;save directory #
+!ifdef DesktopShell {
+   ;PROGMEM locations are raw indices, including each directory's parent.
+   ;Keep both selections in that map; this temporary view is never persisted.
+   lda GeosViewMode
+   sta DirectRestoreView+1
+   lda #0
+   sta GeosViewMode
+   jsr GeosSyncMenuView
+}
+   lda #rmtTeensy     ;point to Teensy menu, but don't display it
+   sta rWRegCurrMenuWAIT+IO1Port  
+   jsr WaitForTRWaitMsg
+   pla ;directory #
+   sta rwRegCursorItemOnPg+IO1Port 
+   jsr SelectItem  ;enter directory
+   pla ;program #
+   sta rwRegCursorItemOnPg+IO1Port 
+   jsr SelectItem  ;won't come back from this...
+!ifdef DesktopShell {
+DirectRestoreView:
+   lda #1
+   sta GeosViewMode
+   jsr ListMenuItems
+}
+   jmp HighlightCurrent
+
++  cmp #'1' ;Launch Hot Key 
+   bmi +   ;skip if below '1'
+   cmp #'1'+NumHotKeys
+   bpl +   ;skip if above NumHotKeys
+   sec       ;set to subtract without carry
+   sbc #'1'   ;make zero based
+   sta rwRegScratch+IO1Port ; Scratch = HK num (zero based) + bit 7 low = launch
+   lda #rCtlHotKeySetLaunch
+   sta wRegControl+IO1Port
+   jmp WaitForJSorKey  
+   ;don't wait for launch or launch IRQ will be blocked.
+   
++  cmp #'!' ;Set Hot Key 
+   bmi +   ;skip if below '!'
+   cmp #'!'+NumHotKeys
+   bpl +   ;skip if above NumHotKeys
+   sec       ;set to subtract without carry
+   sbc #'!'   ;make zero based
+   ora #$80   ;set HK
+   sta rwRegScratch+IO1Port ; Scratch = HK num (zero based) + bit 7 high = set HK
+   jsr PrintBanner ;SourcesColor  
+   lda TblEscC+EscSourcesColor
+   sta $0286  ;set text color
+   lda #rCtlHotKeySetLaunch
+   jmp CtlWriteWaitDotsAnyKeyListMenuHighlightCur
+ 
+   
++  jmp WaitForJSorKey
+   
+; ******************************* Subroutines ******************************* 
+
+___Subroutines________________________________:
+
+
+;                           list out item number, type, & names
+ListMenuItemsChangeInit:  ;changing menu source.  Prep: Load acc with menu to change to
+!ifdef DesktopShell {
+   pha
+   jsr GeosShellEnterBrowser
+   pla
+}
+   sta rWRegCurrMenuWAIT+IO1Port  ;must wait on a write (load dir)
+   jsr WaitForTRWaitMsg
+!ifdef DesktopShell {
+   ; Retry an incomplete startup discovery after an explicit SD open. The
+   ; discovery exit performs the one final redraw; ordinary redraws do not
+   ; scan, and completed backend scans remain latched across Cancel.
+   lda GeosViewMode
+   beq +
+   lda GeosBitmapActive
+   beq +
+   lda rWRegCurrMenuWAIT+IO1Port
+   cmp #rmtSD
+   bne +
+   jmp GeosFirmwareStartup
++
+}
+ListMenuItems:
+!ifdef DesktopShell {
+   jsr GeosSyncMenuView
+}
+   lda GeosViewMode
+   beq ListMenuItemsClassic
+   jmp GeosDrawDesktop
+
+ListMenuItemsClassic:
+   jsr PrintBanner ;OptionColor
+   
+   ldx #23 ;row
+   ldy #0  ;col
+   clc
+   jsr SetCursor
+   lda #<MsgMainOptions1
+   ldy #>MsgMainOptions1
+   jsr PrintString
+   ;page x/y
+   lda rwRegPageNumber+IO1Port
+   jsr PrintIntByte
+   lda #'/'
+   jsr SendChar   
+   lda rRegNumPages+IO1Port
+   jsr PrintIntByte
+   
+   lda #<MsgMainOptions2
+   ldy #>MsgMainOptions2
+   jsr PrintString
+   
+   ldx #1  ;row
+   ldy #0  ;col
+   clc
+   jsr SetCursor
+   lda #<MsgSource
+   ldy #>MsgSource
+   jsr PrintString 
+   ;print menu source from table:
+   lda rWRegCurrMenuWAIT+IO1Port ;don't have to wait on a read
+   asl ;double it to point to word
+   tax
+   lda TblMsgMenuName,x
+   ldy TblMsgMenuName+1,x
+   jsr PrintString
+   
+   ;display parent dir/path
+   lda #ChrReturn
+   jsr SendChar
+   lda #rsstShortDirPath 
+   jsr PrintSerialString
+
+   ;There should always be at least one item, even if it's "Empty"
+   lda #0       ;initialize to first Item on Page
+   sta rwRegSelItemOnPage+IO1Port
+nextLine
+   lda #ChrReturn
+   jsr SendChar 
+   lda #ChrCRSRRight
+   jsr SendChar
+; print name
+   lda TblEscC+EscNameColor
+   sta $0286  ;set text color
+   lda #rsstItemName
+   jsr PrintSerialString
+;align to col
+   sec
+   jsr SetCursor ;read current to load x (row)
+   ldy #MaxItemDispLength + 1  ;set y = col
+   clc
+   jsr SetCursor
+; Assigned IO Handler? '+' if so
+   lda TblEscC+EscTypeColor
+   sta $0286  ;set text color
+   lda rRegItemTypePlusIOH+IO1Port 
+   and #$80  ;bit 7 indicates an assigned IOHandler, now we care!
+   beq +
+   lda #<MsgHasHandler
+   ldy #>MsgHasHandler
+   jsr PrintString
+; print 4(3) char type
++  lda rRegItemTypePlusIOH+IO1Port 
+   and #$7f  ;bit 7 indicates an assigned IOHandler, don't care
+;prints 4 chars from a table of continuous 4 char sets (no termination)
+;acc=index to item# (63 max)
+   asl
+   asl  ;mult by 4
+   tay
+-  lda TblItemType,y
+   jsr SendChar   ;type (4 chars)
+   iny
+   tya
+   and #3
+   bne -
+ 
+;line is done printing, check for next...
+MenuLineDone
+   inc rwRegSelItemOnPage+IO1Port
+   ldx rwRegSelItemOnPage+IO1Port
+   cpx rRegNumItemsOnPage+IO1Port
+   bne nextLine
+   ;all items listed
+   rts
+
+CheckForIRQGetIn:
+
+smcIRQFlagged
+   lda #ricmdNone  ;default to no IRQ detected (0)
+   bne +
+-  jsr GetIn ;No IRQ, read key and return it in the acc 
+   rts
+
++  lda rwRegIRQ_CMD+IO1Port  ;Read command from TR
+   sta wRegIRQ_ACK+IO1Port  ;echo command as ack 2 to TR
+   ldx #ricmdNone  ;clear local flag
+   stx smcIRQFlagged+1
+   
+   ;cmp ricmdNone   ;just check acceptable and do nothing otherwise
+   cmp #ricmdSIDPause
+   bne +
+   jsr ToggleSIDMusic
+   jmp -
+   
++  cmp #ricmdSIDInit
+   bne +
+   jsr SIDSongInit
+   ;reprint song # info if on SID page
+   lda #PILSIDScreen
+   cmp PageIdentifyLoc  
+   bne -
+   jsr PrintSongNum
+   jmp -
+   
++  cmp #ricmdSetSIDSpeed
+   bne +
+   jsr SetSidSpeedToCurrent
+    ;reprint speed info if on SID page
+   lda #PILSIDScreen
+   cmp PageIdentifyLoc  
+   bne -
+   jsr PrintSIDSpeed
+   jmp -
+
++  cmp #ricmdSIDVoiceMute
+   bne +
+   lda rwRegScratch+IO1Port 
+   sta smcVoicesMuted+1
+    ;reprint mute info if on SID page
+   lda #PILSIDScreen
+   cmp PageIdentifyLoc  
+   bne -
+   jsr PrintVoiceMutes 
+   jmp -
+
++  cmp #ricmdLaunch
+   bne -    ;no command or false irq
+
+   jsr TextScreenMemColor  ;make sure we're in text mode:
+
+   ;launch app set up by TR
+   jsr RunSelected  ;start TR selected app...
+   
+   ;menu was custom built for remote start, not display
+   ;  Force back to main TR Mem menu, display to be done after return (via F7)
+   lda #rmtTeensy
+   jsr MenuChangeInit
+
+   lda #ChrF7 ; simulate Teensy source keypress
+   rts
+   
+DirUpdate:
+   lda #rCtlStartSelItemWAIT
+   sta wRegControl+IO1Port
+   jsr WaitForTRWaitMsg
+   lda #0
+   sta rwRegCursorItemOnPg+IO1Port  ;set cursor to the first item in dir
+   jmp ListAndDone
+   
+SelectItem:
+;Execute/select an item from the list
+!ifdef DesktopShell {
+   jsr GeosShellSelectItem
+   bcc +
+   rts
++
+}
+   lda rwRegCursorItemOnPg+IO1Port 
+   sta rwRegSelItemOnPage+IO1Port ;select Item from page
+   jsr InverseRow ;unhighlight the current
+
+RunSelected:   
+   jsr Mouse1351Hide
+   lda rRegItemTypePlusIOH+IO1Port ;Read Item type selected
+   and #$7f  ;bit 7 indicates an assigned IOHandler, we don't care here
+   cmp #rtDirectory  ;check for dir selected
+   beq DirUpdate 
+   cmp #rtD64  ;check for D64 file selected
+   beq DirUpdate 
+   cmp #rtD71  ;check for D71 file selected
+   beq DirUpdate 
+   cmp #rtD81  ;check for D81 file selected
+   beq DirUpdate 
+
+   cmp #rtNone ;do nothing for 'none' type
+   bne + 
+   rts
+
++  cmp #rtFileREU ;REU pre-load file selected
+   bne + 
+   pla
+   pla ; pop the jsr return address
+   jmp REUPreLoadSelect
+
++  cmp #rtFilePETSCII  ;check for PETSCII file selected
+   beq RunSelectedText
+   cmp #rtFileTxt  ;check for Text file selected
+   bne RunSelectedBinary
+RunSelectedText:
+!ifdef DesktopShell {
+   lda GeosViewMode
+   beq RunSelectedTextLegacy
+   lda #3
+   jmp GeosShellOpenApp
+}
+RunSelectedTextLegacy:
+   jsr ViewTextFile
+   jmp ListAndDone  
+   
+   ;any type except Text, None and sub-dir/Dxx, clear screen and stop interrupts
+RunSelectedBinary:
+!ifdef DesktopShell {
+   cmp #rtFileDesktopApp
+   bne +
+   jmp RunSelectedDesktopApp
++
+   cmp #rtFileHex
+   bne +
+   ldx GeosBitmapActive
+   beq +
+   jmp GeosFirmwareConfirm
++
+}
+!ifndef DesktopShell {
+   ;The high-RAM desktop utilities depend on the expanded desktop runtime.
+   ;Carry its ID through the desktop bootstrap so one selection opens it.
+   cmp #rtFileDesktopApp
+   bne +
+   lda rwRegDesktopAppID+IO1Port
+   ora #rdaLaunchPending
+   sta rwRegDesktopAppID+IO1Port
+   jmp LaunchDesktopShell
++
+}
+   pha ;store the type
+   jsr IRQDisable  ;turn off interrupt (also stops SID playback, if on)
+!ifdef DesktopShell {
+   lda GeosBitmapActive
+   beq RunSelectedBinaryLegacy
+   pla
+   pha
+   ; Confirmation and viewer pages keep their established text presentation.
+   cmp #rtFileHex
+   beq RunSelectedBinaryLegacy
+   cmp #rtFileSID
+   beq RunSelectedBinaryLegacy
+   cmp #rtFileKla
+   beq RunSelectedBinaryLegacy
+   cmp #rtFileArt
+   beq RunSelectedBinaryLegacy
+   pla
+   jmp RunSelectedLaunch
+RunSelectedBinaryLegacy:
+}
+   jsr PrintBanner ;NameColor ;clear screen for messaging for remaining types:
+   lda TblEscC+EscNameColor
+   sta $0286  ;set text color
+   
+   pla ;restore the type
+   cmp #rtFileHex  ;check for .hex file selected
+   bne +
+   
+   ;FWUpdate  
+   lda #ChrReturn
+   jsr SendChar
+   lda #rsstItemName
+   jsr PrintSerialString
+   lda #<MsgFWVerify  ;Verification prompt
+   ldy #>MsgFWVerify
+   jsr PrintString 
+
+-  jsr GetIn    ; wait for user confirmation
+   beq -
+   cmp #'n'  
+   bne ++
+   jsr IRQEnable
+   jmp ListAndDone
+++ cmp #'y'  
+   bne -
+
+   lda #<MsgFWInProgress  ;In Progress Warning
+   ldy #>MsgFWInProgress
+   jsr PrintString  
+   jsr StartSelItem_WaitForTRDots    ;kick off the update routine
+
+   ;if we get to this point without rebooting, there's been an error...
+   lda #<MsgFWUpdateFailed 
+   ldy #>MsgFWUpdateFailed
+   jsr PrintString 
+   jsr AnyKeyErrMsgWait  ;turns IRQ back on
+   jmp ListAndDone
+      
+      
++  cmp #rtFileSID  ;check for .sid file selected
+   bne +
+   jsr StartSelItem_WaitForTRDots
+   lda #0    ;rpudSIDPauseMask ;default to enable playback (clear all bits), may be turned off if error
+   sta smcSIDPauseStop+1
+   jsr SIDLoadInit ;check success, return or transfer to RAM and start playing.  Turns IRQ on regardless
+   lda smcSIDPauseStop+1
+   bne ListAndDone  ;skip sid info page on error
+   jsr ShowSIDInfoPage
+!ifdef DesktopShell {
+   lda GeosViewMode
+   beq SIDLoadReturnLegacy
+   rts
+SIDLoadReturnLegacy:
+}
+   jmp ListAndDone  
+    
++  cmp #rtFileKla  ;check for Koala file selected
+   bne +
+-- jsr LoadViewKoala
+   jmp ListAndDone  
+
++  cmp #rtFileArt  ;check for Hi-res art file selected
+   beq --
+
+   
+   ;not a dir, "none", hex file, Koala, or SID, try to start/execute
++
+RunSelectedLaunch:
+   jsr StartSelItem_WaitForTRDots ;if it's a ROM/crt image, it won't return from this unless error
+
+   lda rRegStrAvailable+IO1Port 
+   bne XferCopyRun   ;if it's a PRG (x-fer ready), x-fer it and launch. Won't return!!!
+   
+   ;If at this point, couldn't load item, and wasn't a dir, none, .hex, .prg or .p00
+   jsr AnyKeyErrMsgWait  ;turns IRQ back on
+   ;continue to...
+   
+ListAndDone
+   jsr ListMenuItems ; reprint menu
+   rts
+
+!ifdef DesktopShell {
+RunSelectedDesktopApp:
+   jsr StartSelItem_WaitForTRDots
+   jsr FastLoadFile
+   bne RunSelectedDesktopAppFailed
+   lda #0                    ;each utility PRG selects its own native app
+   jmp GeosShellRunLoadedApp
+RunSelectedDesktopAppFailed:
+   jmp GeosShellRedraw
+}
+
+
+XferCopyRun:   
+;Init and load PRG, no going back now...
+   
+;Check for Kernal Replace Special IO and start it now
+   lda #rCtlKERNALPreStartWAIT
+   sta wRegControl+IO1Port
+   jsr WaitForTRDots ;use WaitForTRWaitMsg instead?
+
+   
+; initialize mem/ints to be ready for PRG
+; https://codebase64.org/doku.php?id=base:kernalbasicinit
+   sei
+   cld
+   ldx #$ff
+   txs
+   jsr $ff84    ; IOINIT - Initialize I/O
+
+   ; Initialize SID registers (not done by Kernal reset routine):
+   ldx #$17
+   lda #$00
+-  sta $d400,x
+   dex
+   bpl -
+
+   ; RAMTAS (JSR $FF87) - Initialize System Constants
+   ; $FF87 is not actually called because it would do
+   ; a RAM-test which lasts a few seconds.
+   ; The following code does the same as RAMTAS but
+   ; without the RAM-test:
+   lda #$00
+   tay
+-  sta $0002,y
+   sta $0200,y
+   sta $0300,y
+   iny
+   bne -
+   ldx #$00
+   ldy #$a0
+   jsr $fd8c ;do remaining RAMTAS items
+   jsr $ff8a    ; RESTOR - Restore Kernal Vectors
+   jsr $ff81    ; CINT - Initialize screen editor
+   cli
+
+   ; basic initializations:
+   jsr $e453    ; Initialize Vectors
+   jsr $e3bf    ; Initialize BASIC RAM
+   jsr $e422    ; Output Power-Up Message
+   ldx #$fb
+   txs
+
+;copy PRGLoadStart code to tape buffer area in case this area gets overwritten
+;192 byte limit, watch size of PRGLoadStart block!  check below   
+   lda #>PRGLoadStart
+   ldy #<PRGLoadStart   
+   sta PtrAddrHi
+   sty PtrAddrLo 
+   lda #>PRGLoadStartReloc
+   ldy #<PRGLoadStartReloc   
+   sta Ptr2AddrHi
+   sty Ptr2AddrLo 
+   ldy #$00
+-  lda (PtrAddrLo), y 
+   sta (Ptr2AddrLo),y
+   iny
+PrgLoaderSize
+   cpy #PRGLoadEnd-PRGLoadStart  ;check length in build report here against PRGLoadStartReloc available
+   bne -   
+   jmp PRGLoadStartReloc     
+   ;rts ;SelectItem never returns
+
+AnyKeyErrMsgWait:
+   lda #rpudSIDPauseMask    ;Pause SID playback on error
+   sta smcSIDPauseStop+1
+   jsr IRQEnable  ;turn on IRQ
+!ifdef DesktopShell {
+   lda GeosBitmapActive
+   beq +
+   jsr GeosBitmapWaitError
+   jmp GeosDialogWait
++
+}
+AnyKeyMsgWait:
+   lda #<MsgAnyKey  ;wait for any key to continue 
+   ldy #>MsgAnyKey
+   jsr PrintString
+AnyKeyMsgWaitInput:
+-  jsr CheckForIRQGetIn
+   beq -
+   rts
+
+StartSelItem_WaitForTRDots:
+   lda #rCtlStartSelItemWAIT ;kick off the selection
+   sta wRegControl+IO1Port   
+;WaitForTR* uses acc, X and Y
+WaitForTRDots:  ;prints a dot per second while waiting, doesn't move cursor
+!ifdef DesktopShell {
+   lda GeosBitmapActive
+   beq +
+   jmp GeosBitmapWait
++
+   jsr GeosBitmapPrepareLegacyWait
+}
+   ldy TODSecBCD ;reset dot second counter
+   jmp WaitForTRMain
+WaitForTRWaitMsg:  ;Print Waiting message in upper right and waits
+!ifdef DesktopShell {
+   lda GeosBitmapActive
+   beq +
+   jmp GeosBitmapWait
++
+   jsr GeosBitmapPrepareLegacyWait
+}
+   ldx #1 ;row   Show "Waiting:" over time disp
+   ldy #29  ;col
+   clc
+   jsr SetCursor
+   lda #<MsgWaiting
+   ldy #>MsgWaiting
+   jsr PrintString
+   ldy #$ff ;don't print dots
+WaitForTRMain   ;Main wait loop
+   inc C64ScreenRAM+40*2-2 ;spinner @ top-1, right-1
+   cpy #$ff
+   beq +    ;skip dot printing if wait message selected
+   cpy TODSecBCD  ;no latch/unlatch needed for only reading seconds
+   beq +
+   ldy TODSecBCD  ;print 1 dot/sec while waiting
+   lda #'.'
+   jsr SendChar
++  lda rwRegStatus+IO1Port
+   cmp #rsC64Message
+   beq ++
+   cmp #rsReady
+   bne WaitForTRMain
+++ ldx#5 ;require 1+5 consecutive reads of same rsC64Message/rsReady to continue
+-  cmp rwRegStatus+IO1Port
+   bne WaitForTRMain
+   dex
+   bne -
+   ; the ball is in the C64 court, either done or display message and cont waiting
+   cmp #rsReady
+   beq +
+   ; display message:
+   lda #rsstSerialStringBuf ;pre-populated message
+   jsr PrintSerialString
+   lda #rsContinue    ;tell fw we're done reading msg, continue
+   sta rwRegStatus+IO1Port
+   jmp WaitForTRMain
++  rts
+
+SetRTCfromEthernet:
+   ; Synchs the Teensy RTC with time acquired from Ethernet
+   lda #rCtlSetRTCfromNetWAIT
+   sta wRegControl+IO1Port
+   jsr WaitForTRDots ;use WaitForTRWaitMsg instead?
+   rts
+   
+SetC64TODfromRTC:
+   ;Sets the C64 TOD clock from the Teensy RTC (with timezone offset)
+   lda #rCtlC64TODfromRTCWAIT
+   sta wRegControl+IO1Port
+   jsr WaitForTRDots 
+   
+   lda rRegLastHourBCD+IO1Port
+   sta TODHoursBCD  ;stop TOD regs incrementing
+   lda rRegLastMinBCD+IO1Port
+   sta TODMinBCD
+   lda rRegLastSecBCD+IO1Port
+   sta TODSecBCD
+   lda #9
+   sta TODTenthSecBCD ;have to write 10ths to release latch, start incrementing
+   rts
+
+CursorUp:
+!ifdef DesktopShell {
+   jsr GeosShellCursorUp
+   bcc +
+   rts
++
+}
+   lda GeosViewMode
+   beq CursorUpClassic
+   jmp GeosMoveUp
+
+CursorUpClassic:
+   lda rwRegCursorItemOnPg+IO1Port  
+   tax
+   jsr InverseRow ;unhighlight the current
+   cpx #0
+   bne ++
+   jsr PageUp  ;at top of page, page up
+   ldx rRegNumItemsOnPage+IO1Port 
+++ dex   
+   stx rwRegCursorItemOnPg+IO1Port 
+   rts
+
+CursorDown:
+!ifdef DesktopShell {
+   jsr GeosShellCursorDown
+   bcc +
+   rts
++
+}
+   lda GeosViewMode
+   beq CursorDownClassic
+   jmp GeosMoveDown
+
+CursorDownClassic:
+   ldx rwRegCursorItemOnPg+IO1Port 
+   txa
+   jsr InverseRow ;unhighlight the current
+   inx   
+   cpx rRegNumItemsOnPage+IO1Port ;last item?
+   beq ++ 
+   stx rwRegCursorItemOnPg+IO1Port 
+   rts
+++ jsr PageDown   ;at bottom of page, page down
+   rts
+
+PrevPage:
+!ifdef DesktopShell {
+   jsr GeosShellCursorLeft
+   bcc +
+   rts
++
+}
+   lda GeosViewMode
+   beq PrevPageClassic
+   jmp GeosMoveLeft
+
+PrevPageClassic:
+   lda rwRegCursorItemOnPg+IO1Port 
+   jsr InverseRow ;unhighlight the current (in case 1 page)
+   jsr PageUp
+   lda #0
+   sta rwRegCursorItemOnPg+IO1Port ;set cursor to the first item in dir
+   rts
+   
+PageUp:
+   ldx rwRegPageNumber+IO1Port
+   cpx #1  ;on first page?
+   bne +
+   ldx rRegNumPages+IO1Port ;roll over to last
+   cpx #1
+   beq ++ ;do nothing if there's only 1 page
+   inx ;avoids a jump to skip next
++  dex   
+   stx rwRegPageNumber+IO1Port
+   jsr ListMenuItems   
+++ rts
+
+NextPage:
+!ifdef DesktopShell {
+   jsr GeosShellCursorRight
+   bcc +
+   rts
++
+}
+   lda GeosViewMode
+   beq NextPageClassic
+   jmp GeosMoveRight
+
+NextPageClassic:
+   lda rwRegCursorItemOnPg+IO1Port 
+   jsr InverseRow ;unhighlight the current (in case 1 page)
+   jsr PageDown
+   rts
+
+PageDown:
+   ldx rwRegPageNumber+IO1Port
+   cpx rRegNumPages+IO1Port ;on last page?
+   bne +
+   ldx rRegNumPages+IO1Port 
+   cpx #1
+   beq ++ ;do nothing if there's only 1 page
+   ldx #0 ;on last page, roll over to first
++  inx
+   stx rwRegPageNumber+IO1Port
+   jsr ListMenuItems
+++ lda #0  ;set to first item
+   sta rwRegCursorItemOnPg+IO1Port 
+   rts
+   
+InverseRow:
+!ifdef DesktopShell {
+   ;The selection-scope helper returns carry and uses A. Keep the requested
+   ;row for the classic renderer after a live desktop -> text switch.
+   pha
+   jsr GeosShellUsesLocalSelection
+   bcc +
+   pla
+   rts
++  pla
+}
+   ldy GeosViewMode
+   beq InverseRowClassic
+   jmp GeosToggleSelection
+
+InverseRowClassic:
+   ;Acc contains item number to toggle reverse
+   ;Uses A and Y   
+   ;get mem loc from table:
+   asl ;double it to point to word
+   tay
+   lda TblRowToMemLoc+1,y
+   sta smcInverseRowSrc+2
+   sta smcInverseRowDest+2
+   lda TblRowToMemLoc,y
+   sta smcInverseRowSrc+1 
+   sta smcInverseRowDest+1 
+   ldy #40
+smcInverseRowSrc
+-  lda $fffe, y 
+   eor #$80 ; toggle reverse 
+smcInverseRowDest
+   sta $fffe,y
+   dey
+   bne -
+   rts
+
+MenuChangeInit:  ;changing menu source.  Prep: Load acc with menu to change to
+   sta rWRegCurrMenuWAIT+IO1Port  ;must wait on a write (load dir)
+   jsr WaitForTRWaitMsg
+rets
+   rts
+
+LoadViewKoala:
+   ;Koala file is highlighted/detected before calling
+   ; acc pre-loaded with ItemType
+   cmp #rtFileArt  ;check for Hi-res art file selected
+   bne +
+   ldx #<ARTBorder
+   ldy #>ARTBorder
+   lda #$c8
+   jmp ++
++  ldx #<KLABackground ;otherwise assume multi-color
+   ldy #>KLABackground
+   lda #$d8
+++ stx smcPicBackgroundSource+1
+   sty smcPicBackgroundSource+2
+   sta smcPicVICCtlSet+1
+   
+   jsr StartSelItem_WaitForTRDots ;Tell Teensy to check file and prep for xfer
+   
+   ;force SID to stay paused (may have been overwritten)
+   lda #$ff      ;rpudSIDPauseMask  ;disable SID playback, all bits don't allow un-pause until reload
+   sta smcSIDPauseStop+1
+   
+   jsr FastLoadFile ;check for error and load file to C64 RAM
+   bne rets  ;zero flag clear if an error occurred, jump to rts from 
+
+smcPicBackgroundSource
+   lda KLABackground
+   sta BackgndColorReg  ;set vic background color
+   sta BorderColorReg   ;set border color to same
+
+   ;copy color and screen data to their final locations:
+   ldx #$00
+-  lda KLAColorRAM       ,x
+   sta C64ColorRAM       ,x
+   lda KLAColorRAM + $100,x
+   sta C64ColorRAM + $100,x
+   lda KLAColorRAM + $200,x
+   sta C64ColorRAM + $200,x
+   lda KLAColorRAM + $300,x
+   sta C64ColorRAM + $300,x
+
+   lda KLAScreenRAM       ,x
+   sta C64ScreenRAM       ,x
+   lda KLAScreenRAM + $100,x
+   sta C64ScreenRAM + $100,x
+   lda KLAScreenRAM + $200,x
+   sta C64ScreenRAM + $200,x
+   lda KLAScreenRAM + $300,x
+   sta C64ScreenRAM + $300,x
+
+   dex
+   bne -
+
+   lda #$18   
+   sta $d018  ;set vic bitmap screen data offset to 8k ($2000)
+smcPicVICCtlSet
+   lda #$d8    
+   sta $d016  ;turn on vic multi-color  or hi-res mode
+   lda #$3b    
+   sta $d011  ;bit 5 ($20) turns on bitmap graphics mode
+
+   jsr IRQEnable  ;re-start the IRQ wedge
+-  jsr CheckForIRQGetIn ;read key/IRQ
+   beq -  
+   ;a key was pressed
+   
+   cmp #ChrCRSRUp
+   bne +
+   inc BackgndColorReg 
+   inc BorderColorReg  
+   jmp -
+   
++  cmp #ChrCRSRDn
+   bne +
+   dec BackgndColorReg 
+   dec BorderColorReg  
+   jmp -
+   
++  cmp #'-'
+   bne +  
+   lda #rCtlLastPicture 
+CtlWaitReprint
+   sta wRegControl+IO1Port
+   lda #$00    
+   sta $d011   ;turn off the display   
+   jsr PrintBanner ;NameColor  ;clear screen for messaging
+   lda TblEscC+EscNameColor
+   sta $0286  ;set text color
+   jsr WaitForTRDots
+   lda rRegItemTypePlusIOH+IO1Port ;Read Item type selected
+   and #$7f  ;bit 7 indicates an assigned IOHandler, we don't care here
+   jmp LoadViewKoala
+   
++  cmp #'+'
+   bne +
+   lda #rCtlNextPicture 
+   jmp CtlWaitReprint
+   
+   ;any other key, just exit...
++  jsr TextScreenMemColor
+   rts
+
+TextScreenMemColor:
+!ifdef DesktopShell {
+   lda GeosBitmapLayoutPass
+   beq +
+   ;Compose off screen without switching the VIC or hiding the pointer.
+   lda #>GeosLayoutScreen
+   sta $0288
+   rts
++  lda #>C64ScreenRAM
+   sta $0288
+   lda #0
+   sta GeosBitmapActive
+}
+   jsr Mouse1351HideForRedraw
+   ;vic/bitmap back to default for text:
+   ;jsr $fda3   ;initialise sid, cia and irq
+   ;jsr $e5a0   ;initialize the vic
+   lda #$17  ;Lower case
+   sta $d018 
+   lda #$c8  
+   sta $d016 
+   lda #$1b  
+   sta $d011 
+ScreenColorOnly:
+   ;set screen and border colors 
+   lda TblEscC+EscBorderColor
+   sta BorderColorReg
+   lda TblEscC+EscBackgndColor
+   sta BackgndColorReg
+   rts
+
+WriteNFCTag:
+   ;write currently highlighted file (or random via dir) to NFC tag
+   ;acc set to indicate random dir before calling, save it in the scratch reg.
+   sta rwRegScratch+IO1Port
+!ifdef DesktopShell {
+   ldx GeosBitmapActive
+   beq WriteNFCTagLegacy
+   jmp GeosActionNFC
+WriteNFCTagLegacy:
+}
+   jsr PrintBanner ;SourcesColor
+   lda #<MsgWriteNFCTag
+   ldy #>MsgWriteNFCTag
+   jsr PrintString 
+
+   lda #rCtlWriteNFCTagCheckWAIT
+   sta wRegControl+IO1Port
+   jsr WaitForTRDots
+
+   ;error or ready to write?
+   lda rRegLastHourBCD+IO1Port ;using this reg as scratch to communicate outcome
+   beq +  ;skip to end if error
+
+   ;prompt to place card
+   lda #<MsgPlaceNFCTag
+   ldy #>MsgPlaceNFCTag
+   jsr PrintString 
+   
+-  jsr CheckForIRQGetIn ;read key/IRQ
+   beq -  
+   
+   lda #rCtlWriteNFCTagWAIT
+   sta wRegControl+IO1Port
+   jsr WaitForTRDots
+   
+   ;Error may have occurred, but   
+   ;Wait for tag removal either way
++  lda #<MsgRemoveNFCTag
+   ldy #>MsgRemoveNFCTag
+   jsr PrintString 
+   jsr AnyKeyMsgWait
+
+   ;re-enable NFC
+   lda #rCtlNFCReEnableWAIT
+   sta wRegControl+IO1Port
+   jsr WaitForTRDots
+   rts
+
+!ifdef DesktopShell {
+   ViewTextFile = $c004
+} else {
+   !src "source/LegacyTextViewer.s"
+   ViewTextFile = ViewTextFileImpl
+}
+
+CharAutostartKey:   
+   !byte $c3, $c2, $cd, $38, $30    ; CBM8O - Autostart key: 5 chars
+
+TblRowToMemLoc:
+   !word C64ScreenRAM+40*(3+ 0)-1
+   !word C64ScreenRAM+40*(3+ 1)-1
+   !word C64ScreenRAM+40*(3+ 2)-1
+   !word C64ScreenRAM+40*(3+ 3)-1
+   !word C64ScreenRAM+40*(3+ 4)-1
+   !word C64ScreenRAM+40*(3+ 5)-1
+   !word C64ScreenRAM+40*(3+ 6)-1
+   !word C64ScreenRAM+40*(3+ 7)-1
+   !word C64ScreenRAM+40*(3+ 8)-1
+   !word C64ScreenRAM+40*(3+ 9)-1
+   !word C64ScreenRAM+40*(3+10)-1
+   !word C64ScreenRAM+40*(3+11)-1
+   !word C64ScreenRAM+40*(3+12)-1
+   !word C64ScreenRAM+40*(3+13)-1
+   !word C64ScreenRAM+40*(3+14)-1
+   !word C64ScreenRAM+40*(3+15)-1
+   !word C64ScreenRAM+40*(3+16)-1
+   !word C64ScreenRAM+40*(3+17)-1
+   !word C64ScreenRAM+40*(3+18)-1
+   !word C64ScreenRAM+40*(3+19)-1
+   !word C64ScreenRAM+40*(3+20)-1
+   ; check MaxItemsPerPage
+   
+   
+;   !src "source/SettingsMenu.asm"
+   !src "source/GeosDesktop.s"
+!ifdef DesktopShell {
+   !src "source/GeosShell.s"
+   !src "source/GeosFileOps.s"
+   !src "source/GeosBitmap.s"
+   !src "source/GeosWidgets.s"
+   !src "source/GeosDialog.s"
+   !src "source/GeosRich.s"
+   !src "source/GeosRichAssets.s"
+}
+   !src "source/Mouse1351.s"
+   !src "source/PRGLoadStartReloc.s"
+   !src "source/SIDRelated.s"
+   !src "source/StringFunctions.s"
+   !src "source/StringsMsgs.s"
+;   !src "source/ColorConfig.s"
+!ifdef DesktopShell {
+   !src "source/GeosIEC.s"
+   !src "source/GeosIECIO.s"
+   !src "source/GeosIECLoad.s"
+}
+MainCodeRAMEnd = *
+!ifdef DesktopShell {
+!if MainCodeRAMEnd > $a000 {
+   !error "Desktop payload exceeds RAM below BASIC ROM"
+}
+}
+!ifndef DesktopShell {
+   !byte 0
+}
