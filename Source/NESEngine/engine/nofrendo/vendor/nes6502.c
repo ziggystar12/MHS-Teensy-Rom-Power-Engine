@@ -35,6 +35,12 @@
 #endif /* __GNUC__ */
 
 
+/* MPE port: expose the original-value RMW bus write for mapper register side effects.
+ * The adapter supplies the hook; other integrations keep their original path. */
+#ifndef MPE_MAPPER_RMW_DUMMY
+#define MPE_MAPPER_RMW_DUMMY(address, value) ((void)0)
+#endif
+
 #define  ADD_CYCLES(x) \
 { \
    remaining_cycles -= (x); \
@@ -447,6 +453,7 @@
 #define ASL(cycles, read_func, write_func, addr) \
 { \
    read_func(addr, data); \
+   MPE_MAPPER_RMW_DUMMY(addr, data); \
    c_flag = data >> 7; \
    data <<= 1; \
    write_func(addr, data); \
@@ -599,6 +606,7 @@
 #define DCP(cycles, read_func, write_func, addr) \
 { \
    read_func(addr, data); \
+   MPE_MAPPER_RMW_DUMMY(addr, data); \
    data--; \
    write_func(addr, data); \
    CMP(cycles, EMPTY_READ); \
@@ -607,6 +615,7 @@
 #define DEC(cycles, read_func, write_func, addr) \
 { \
    read_func(addr, data); \
+   MPE_MAPPER_RMW_DUMMY(addr, data); \
    data--; \
    write_func(addr, data); \
    SET_NZ_FLAGS(data); \
@@ -645,6 +654,7 @@
 #define INC(cycles, read_func, write_func, addr) \
 { \
    read_func(addr, data); \
+   MPE_MAPPER_RMW_DUMMY(addr, data); \
    data++; \
    write_func(addr, data); \
    SET_NZ_FLAGS(data); \
@@ -669,6 +679,7 @@
 #define ISB(cycles, read_func, write_func, addr) \
 { \
    read_func(addr, data); \
+   MPE_MAPPER_RMW_DUMMY(addr, data); \
    data++; \
    write_func(addr, data); \
    SBC(cycles, EMPTY_READ); \
@@ -758,6 +769,7 @@
 #define LSR(cycles, read_func, write_func, addr) \
 { \
    read_func(addr, data); \
+   MPE_MAPPER_RMW_DUMMY(addr, data); \
    c_flag = data & 1; \
    data >>= 1; \
    write_func(addr, data); \
@@ -826,6 +838,7 @@
 #define RLA(cycles, read_func, write_func, addr) \
 { \
    read_func(addr, data); \
+   MPE_MAPPER_RMW_DUMMY(addr, data); \
    btemp = c_flag; \
    c_flag = data >> 7; \
    data = (data << 1) | btemp; \
@@ -839,6 +852,7 @@
 #define ROL(cycles, read_func, write_func, addr) \
 { \
    read_func(addr, data); \
+   MPE_MAPPER_RMW_DUMMY(addr, data); \
    btemp = c_flag; \
    c_flag = data >> 7; \
    data = (data << 1) | btemp; \
@@ -859,6 +873,7 @@
 #define ROR(cycles, read_func, write_func, addr) \
 { \
    read_func(addr, data); \
+   MPE_MAPPER_RMW_DUMMY(addr, data); \
    btemp = c_flag << 7; \
    c_flag = data & 1; \
    data = (data >> 1) | btemp; \
@@ -880,6 +895,7 @@
 #define RRA(cycles, read_func, write_func, addr) \
 { \
    read_func(addr, data); \
+   MPE_MAPPER_RMW_DUMMY(addr, data); \
    btemp = c_flag << 7; \
    c_flag = data & 1; \
    data = (data >> 1) | btemp; \
@@ -1039,6 +1055,7 @@
 #define SLO(cycles, read_func, write_func, addr) \
 { \
    read_func(addr, data); \
+   MPE_MAPPER_RMW_DUMMY(addr, data); \
    c_flag = data >> 7; \
    data <<= 1; \
    write_func(addr, data); \
@@ -1051,6 +1068,7 @@
 #define SRE(cycles, read_func, write_func, addr) \
 { \
    read_func(addr, data); \
+   MPE_MAPPER_RMW_DUMMY(addr, data); \
    c_flag = data & 1; \
    data >>= 1; \
    write_func(addr, data); \

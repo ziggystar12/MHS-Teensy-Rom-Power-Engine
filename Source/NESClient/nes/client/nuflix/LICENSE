@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2023 Travis Smith
+Copyright (c) 2024 Patai Gergely
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,8 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-The MIT notice above remains applicable to the original TeensyROM code.
-The MHS colour converter is MIT-licensed. NUFLIX display support retains
-Patai Gergely's MIT notice. VM engines and other components retain their
-own licences and copyright notices.

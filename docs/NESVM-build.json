@@ -1,32 +1,118 @@
 {
-  "engineSourceCommit": "10d27cd0cb6e4a3991850c14ea8a9225f2c1bc48",
+  "version": "1.1",
+  "engineSourceCommit": "21b744514ee42d3f7738e47d6e3b53d3a4683249",
+  "clientSourceCommit": "21b744514ee42d3f7738e47d6e3b53d3a4683249",
   "firmwareIncluded": false,
   "abi": 2,
   "module": {
     "abi": 2,
     "codeBase": 98304,
     "dataBase": 536952832,
-    "codeBytes": 94532,
-    "dataBytes": 1760,
-    "bssBytes": 13600,
-    "workspaceBytes": 181248,
+    "codeBytes": 95044,
+    "dataBytes": 2432,
+    "bssBytes": 13728,
     "guestRamBytes": 524288,
-    "sha256": "8ad32d74846974bd539031190559d7cb76df2e098b92011b99f73a3dc646f2b0"
+    "sha256": "35a8af00892a5cb2bb9ce2c3224432aba12450ea6c4a8ac27af2e84d941a4564",
+    "workspaceBytes": 180448
   },
-  "clientSha256": "0ec19bce9215f9ddbfd34076325c916a687e14693f0f52cbb17150927fc54365",
-  "verification": "Unchanged checked engine with rebuilt C64GS client; NES input/audio, video-control and PAL/NTSC VICE boot passed. The supplied C64GS two-button test passed on hardware.",
-  "clientSourceCommit": "5d5e75f22d57eb63e76c24c51e064de0b07abe3c",
-  "minimumFirmwareVersion": "1.1.13",
-  "publication": "nesvm-2026-09-09",
-  "runtimeBinariesChanged": false,
-  "packagingChanges": "Public installation and corresponding-source links; runtime binaries and Crossbow demo are unchanged.",
+  "clientSha256": "c664db0e05c7840aab80f4845c025068b50f111cef3fd3d2457c855ebc7423bd",
+  "files": [
+    {
+      "path": "NESVM.crt",
+      "bytes": 24688,
+      "sha256": "c664db0e05c7840aab80f4845c025068b50f111cef3fd3d2457c855ebc7423bd"
+    },
+    {
+      "path": "VMS/NESVM/client.crt",
+      "bytes": 24688,
+      "sha256": "c664db0e05c7840aab80f4845c025068b50f111cef3fd3d2457c855ebc7423bd"
+    },
+    {
+      "path": "VMS/NESVM/engine.mvm",
+      "bytes": 97540,
+      "sha256": "35a8af00892a5cb2bb9ce2c3224432aba12450ea6c4a8ac27af2e84d941a4564"
+    },
+    {
+      "path": "VMS/NESVM/LICENSE-MHS.txt",
+      "bytes": 1344,
+      "sha256": "eed4be4f0372c75f45ae44c023b0a579297658ad2e2db4a1b3230a722df58c4b"
+    },
+    {
+      "path": "VMS/NESVM/LICENSE-Nofrendo.txt",
+      "bytes": 25270,
+      "sha256": "cc535c21133c895b56b374c8a1dc1eb948d99003ed2b47372069456b62f42b24"
+    },
+    {
+      "path": "VMS/NESVM/LICENSE-NUFLIX.txt",
+      "bytes": 1070,
+      "sha256": "1a969dd98763da79faa7d888975880da8529f8eea768fe7cc8f43befe0c2750f"
+    },
+    {
+      "path": "VMS/NESVM/manifest.vmi",
+      "bytes": 40,
+      "sha256": "4596577e409587c7a081cd6af97374c631477bbf2c33799b6f10e0ee1ae32ef0"
+    },
+    {
+      "path": "VMS/NESVM/NOTICES.md",
+      "bytes": 2466,
+      "sha256": "bd17c2637f85d1dbe3f6cb096ce7858436d49803de981c8351acb432a39f381d"
+    },
+    {
+      "path": "VMS/NESVM/README.md",
+      "bytes": 4480,
+      "sha256": "787edb206db5d0eefcada4b93fa5193471f730edc74b341df8086297e0c94745"
+    },
+    {
+      "path": "VMS/NESVM/ROMS/Crossbow.nes",
+      "bytes": 98320,
+      "sha256": "93c1eff05b4d39992c0fd05dce9bb3d5b8349ca3a2416717d75ef4336fc715ea"
+    },
+    {
+      "path": "VMS/NESVM/version.json",
+      "bytes": 111,
+      "sha256": "2a2d96d39332adbb64057ceee1be23397c44bd52f3ffdfba3a850df99efcd498"
+    }
+  ],
+  "minimumFirmwareVersion": "1.2.6",
+  "sourceBundled": false,
+  "downloads": [
+    {
+      "file": "NESVM.zip",
+      "bytes": 104252,
+      "sha256": "7f48a8b69f0f9e999965ce3d59bd6d5829de963e70f9c146e4629555f4ec2cbc",
+      "members": 11
+    }
+  ],
+  "publication": "nesvm-v1.1",
   "publicSourceVerification": {
     "engineRebuildMatches": true,
-    "engineBytes": 96356,
-    "compiler": "Arm GNU Toolchain 11.3.Rel1, 11.3.1 20220712",
     "clientRebuildMatches": true,
+    "engineBytes": 97540,
     "clientBytes": 24688,
+    "compiler": "Arm GNU Toolchain 11.3.Rel1, 11.3.1 20220712",
     "engineSourceManifest": "Source/NESEngine/SOURCE-MANIFEST.json",
     "clientSourceManifest": "Source/NESClient/CLIENT-SOURCE.json"
+  },
+  "verification": {
+    "physicalHardware": false,
+    "mapper1Checks": 655,
+    "extraMapperChecks": 2382,
+    "syntheticExtraMapperPrograms": 32,
+    "dmcChecks": 2113,
+    "nativeBaselineChecks": 428371,
+    "sidEnvelopeChecks": 228,
+    "gameplayCaptures": [
+      "Super Mario Bros.",
+      "The Legend of Zelda",
+      "Dr. Mario"
+    ],
+    "originalScenePixelsUnchanged": true,
+    "zeldaSramRestored": true,
+    "palNtscClientAndHost": true,
+    "knownLimitations": [
+      "Battletoads stalls after its intro in the current scanline PPU.",
+      "MMC3 timing is approximate.",
+      "DMC samples are not mixed into SID audio."
+    ]
   }
 }

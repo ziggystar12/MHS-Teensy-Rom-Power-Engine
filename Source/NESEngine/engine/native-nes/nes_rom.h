@@ -25,7 +25,8 @@ struct RomInfo {
 };
 // Inspect only the supplied 16-byte header; never dereference payload here.
 NES_CODE RomError inspect(const uint8_t* header, size_t header_bytes, uint64_t file_bytes, RomInfo& out);
-// R1: NROM-128/256 or mapper 11, no battery/PRG RAM. Host fit is not firmware fit.
+// Conventional NTSC boards on mappers 0, 1, 2, 3, 4, 7 and 11.
+// Mapper 2/3/7 submappers 1/2 select no-conflict/AND-conflict wiring.
 NES_CODE RomError supported(const RomInfo& info);
 NES_CODE const char* describe(RomError error);
 }

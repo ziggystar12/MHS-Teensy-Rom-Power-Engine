@@ -1,4 +1,4 @@
-// Rebuild/relink just NESVM from the corresponding sources in its download.
+// Rebuild/relink NESVM from the repository or a retained source snapshot.
 // Node.js + GNU Arm Embedded 11.3.1; no firmware build, ROM or Arduino libraries.
 import fs from 'node:fs';
 import path from 'node:path';

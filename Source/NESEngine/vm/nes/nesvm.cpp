@@ -7,6 +7,7 @@
 #define NES_CODE
 #define MHS_NES_EXTERNAL_RAM 1
 #include "font8x8.h"
+#include "saves.h"
 static const VmHost *ModuleHost;
 static char NesRomDirectory[256];
 static bool ModulePacketPending;
@@ -45,6 +46,12 @@ static void MPE3TitlePublish(uint8_t type,uint8_t flags,uint8_t bytes){
 static VmInput InputQueue[32];
 static uint8_t InputHead,InputTail;
 static void module_input(const VmInput *input){
+    VmInput normalized=*input;
+    if(input->protocol==0x91){
+        if(input->display>3)return;
+        MPE6RequestedMode=input->display;
+        normalized.protocol=0x81;normalized.display=input->display>=2?1:0;input=&normalized;
+    }
     if(input->protocol!=0x81 || (input->display&~1))return;
     // Held gameplay state can advance while a display packet waits for ACK.
     if(MPE6ModeState==MPE6Mode::Game && (input->buttons&12)!=12){
@@ -60,7 +67,7 @@ static void module_pump(){
         MPE6InputButtons=in.buttons;MPE6InputDisplay=in.display;MPE6InputOverflow=in.overflow;MPE6InputPending=true;
     }
     if(MPE6ModeState==MPE6Mode::Game && MPE6Machine->error!=nes::MachineError::None && !ModulePacketPending&&!MPE6FrameReady){
-        const auto error=MPE6Machine->error;MPE6ReturnToMenu();MPE6SetMessage(nes::describe(error));
+        const auto error=MPE6Machine->error;MPE6ReturnToMenu();if(!MPE6SaveBlocked)MPE6SetMessage(nes::describe(error));
     }
     MPE6Pump();
 }
@@ -79,7 +86,8 @@ extern "C" __attribute__((section(".entry"),used)) const VmModule *vm_entry(cons
     // This matched Fab0.4 module requires the indexed firmware video service.
     // The picker retains CELL packets; gameplay submits native indexed pixels.
     constexpr uint32_t required=VM_SERVICE_FILES|VM_SERVICE_CLOCK|VM_SERVICE_PACKETS|VM_SERVICE_GUEST_RAM|VM_SERVICE_VIDEO|VM_SERVICE_INDEXED_VIDEO;
-    if(!host||host->abi!=VM_ABI||host->bytes<sizeof(VmHost)||(host->services&required)!=required||!host->video_configure||!host->video_indexed)return nullptr;
+    constexpr uint32_t hostBytes=offsetof(VmHost,video_indexed)+sizeof(VmHost::video_indexed);
+    if(!host||host->abi!=VM_ABI||host->bytes<hostBytes||(host->services&required)!=required||!host->video_configure||!host->video_indexed)return nullptr;
     ModuleHost=host;
     if(!host->guest_ram||host->guest_ram_bytes!=VM_RAM_BYTES)return nullptr;
     if(host->content_path[0]){

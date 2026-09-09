@@ -16,7 +16,7 @@ export const NES_INPUT=Object.freeze({
 
 // Generate the complete emitter with fixed low-RAM matrix addresses. Keeping
 // the matrix outside emitted code also lets VICE inspect it directly.
-export function emitNesController(e,rasterTicks,p=NES_INPUT) {
+export function emitNesController(e,rasterTicks,p=NES_INPUT,{moduleModes=false}={}) {
   const matrix=0x02d8;
   const get=a=>e.abs(0xad,a,'read'),put=a=>e.abs(0x8d,a,'write');
   const set=(a,v)=>{e.emit(0xa9,v);put(a);};
@@ -25,25 +25,29 @@ export function emitNesController(e,rasterTicks,p=NES_INPUT) {
   e.label('game_input_init');set(p.active,0);set(p.pending,0);set('nes_sequence',0);
   set('nes_queue_head',0);set('nes_queue_tail',0);set('nes_overflows',0);set('nes_cursor_shift',0);set('nes_crop_active',0);set('nes_gs_b',0);
   set('nes_last_buttons',0xff);set('nes_last_display',0xff);set('nes_sharp',0);set('nes_sharp_held',0);set('nes_service_tick',0xff);
+  if(moduleModes)set('nes_last_protocol',0);
   set(0xdc00,0x80);set(0xdc02,0xc0);set(p.active,1);e.emit(0x60);
   // Forward IRQ-captured changes even when the host has no packet ready.
   // Keep IO2 transactions in the main loop and bound idle retries to one
   // per scanner tick rather than flooding the bus on each polling spin.
   e.label('nes_service_input');get(p.active);e.branch(0xf0,'nes_service_done');
   get(rasterTicks);e.abs(0xcd,'nes_service_tick','read');e.branch(0xf0,'nes_service_done');
-  put('nes_service_tick');jump('sample_game_input');e.label('nes_service_done');e.emit(0x60);
+  put('nes_service_tick');
+  if(moduleModes){get(0x02e3);e.branch(0xf0,'nes_service_send');e.abs(0x20,'nes_capture_input');get(rasterTicks);put('nes_service_tick');e.label('nes_service_send');}
+  jump('sample_game_input');e.label('nes_service_done');e.emit(0x60);
   e.label('sample_game_input');get(p.pending);e.branch(0xf0,'nes_input_dequeue');
   get(p.ack);e.abs(0xcd,'nes_sequence','read');e.branch(0xf0,'nes_input_accepted');jump('nes_input_send');
   e.label('nes_input_accepted');set(p.pending,0);e.label('nes_input_dequeue');
   get('nes_queue_head');e.abs(0xcd,'nes_queue_tail','read');e.branch(0xd0,'nes_input_available');e.emit(0x60);
   e.label('nes_input_available');e.emit(0xaa);e.abs(0xbd,'nes_queue_buttons','read');put('nes_send_buttons');
   e.abs(0xbd,'nes_queue_display','read');put('nes_send_display');e.emit(0xe8,0x8a,0x29,31);put('nes_queue_head');
+  if(moduleModes){e.emit(0xca);e.abs(0xbd,'nes_queue_protocol','read');put('nes_send_protocol');}
   e.abs(0xee,'nes_sequence','write');get('nes_sequence');e.branch(0xd0,'nes_sequence_ready');e.abs(0xee,'nes_sequence','write');
   e.label('nes_sequence_ready');set(p.pending,1);e.label('nes_input_send');
   get('nes_send_buttons');put(p.buttonsRegister);get('nes_send_display');put(p.displayRegister);
-  get('nes_overflows');put(p.overflowRegister);set(p.protocolRegister,p.protocol);get('nes_sequence');put(p.sequenceRegister);
+  get('nes_overflows');put(p.overflowRegister);if(moduleModes){get('nes_send_protocol');put(p.protocolRegister);}else set(p.protocolRegister,p.protocol);get('nes_sequence');put(p.sequenceRegister);
   e.emit(0xa9,0xa5);for(const a of ['nes_send_buttons','nes_send_display','nes_overflows'])e.abs(0x4d,a,'read');
-  e.emit(0x49,p.protocol);e.abs(0x4d,'nes_sequence','read');put(p.checksumRegister);set(0xdff4,p.command);e.emit(0x60);
+  if(moduleModes)e.abs(0x4d,'nes_send_protocol','read');else e.emit(0x49,p.protocol);e.abs(0x4d,'nes_sequence','read');put(p.checksumRegister);set(0xdff4,p.command);e.emit(0x60);
 
   e.label('nes_capture_input');get(p.active);e.branch(0xd0,'nes_capture_scan');e.emit(0x60);
   // Keep CIA PA7 high between scans so the SID has a complete frame to sense
@@ -81,6 +85,13 @@ export function emitNesController(e,rasterTicks,p=NES_INPUT) {
   e.label('nes_directions_ready');
 
   emitVideoSelectors(e,matrix,'nes_sharp','nes_sharp_held');
+  if(moduleModes){
+    // A mode request reaches the module before the host may interpret camera
+    // input. Only the ACKed crop resume can arm protocol 83 again.
+    get('nes_last_display');e.emit(0x29,3);e.abs(0xcd,'nes_sharp','read');e.branch(0xf0,'nes_mode_unchanged');
+    set('nes_crop_active',0);e.label('nes_mode_unchanged');set('nes_protocol_candidate',0x91);
+    get('nes_sharp');e.emit(0xc9,1);e.branch(0xd0,'nes_protocol_ready');get('nes_crop_active');e.branch(0xf0,'nes_protocol_ready');set('nes_protocol_candidate',0x83);e.label('nes_protocol_ready');
+  }
   // The F3/Commodore rectangle ghosts Cursor Right. Consume it throughout
   // the selector hold, including modifier-first release, instead of moving.
   get('nes_sharp_held');e.emit(0x29,0x20);e.branch(0xf0,'nes_selector_not_f3');
@@ -97,18 +108,22 @@ export function emitNesController(e,rasterTicks,p=NES_INPUT) {
   }
   e.label('nes_camera_ready');
   get('nes_candidate');e.abs(0xcd,'nes_last_buttons','read');e.branch(0xd0,'nes_queue_changed');
-  get('nes_display_candidate');e.abs(0xcd,'nes_last_display','read');e.branch(0xd0,'nes_queue_changed');e.emit(0x60);
+  get('nes_display_candidate');e.abs(0xcd,'nes_last_display','read');e.branch(0xd0,'nes_queue_changed');
+  if(moduleModes){get('nes_protocol_candidate');e.abs(0xcd,'nes_last_protocol','read');e.branch(0xd0,'nes_queue_changed');}e.emit(0x60);
   e.label('nes_queue_changed');get('nes_candidate');put('nes_last_buttons');get('nes_display_candidate');put('nes_last_display');
+  if(moduleModes){get('nes_protocol_candidate');put('nes_last_protocol');}
   get('nes_queue_tail');e.emit(0x18,0x69,1,0x29,31);put('nes_queue_next');e.abs(0xcd,'nes_queue_head','read');e.branch(0xd0,'nes_queue_room');
   e.abs(0xee,'nes_overflows','write');get('nes_queue_tail');e.emit(0x38,0xe9,1,0x29,31,0xaa);jump('nes_queue_store');
   e.label('nes_queue_room');e.abs(0xae,'nes_queue_tail','read');
   e.label('nes_queue_store');get('nes_candidate');e.abs(0x9d,'nes_queue_buttons','write');get('nes_display_candidate');e.abs(0x9d,'nes_queue_display','write');
+  if(moduleModes){get('nes_protocol_candidate');e.abs(0x9d,'nes_queue_protocol','write');}
   get('nes_queue_next');e.abs(0xcd,'nes_queue_head','read');e.branch(0xf0,'nes_queue_done');put('nes_queue_tail');
   e.label('nes_queue_done');e.emit(0x60);
 
   for(const label of ['nes_sequence','nes_send_buttons','nes_send_display','nes_overflows','nes_queue_head','nes_queue_tail','nes_queue_next',
     'nes_last_buttons','nes_last_display','nes_sharp','nes_sharp_held','nes_joy','nes_baseline','nes_mask','nes_candidate','nes_gs_b','nes_shift','nes_cursor_shift','nes_crop_active','nes_display_candidate','nes_service_tick']){e.label(label);e.emit(0);}
   e.label('nes_queue_buttons');e.emit(...Array(32).fill(0));e.label('nes_queue_display');e.emit(...Array(32).fill(0));
+  if(moduleModes){for(const name of ['nes_send_protocol','nes_last_protocol','nes_protocol_candidate']){e.label(name);e.emit(0);}e.label('nes_queue_protocol');e.emit(...Array(32).fill(0));}
 }
 
 export async function loadNesTerminal(agiRoot, options = {}) {

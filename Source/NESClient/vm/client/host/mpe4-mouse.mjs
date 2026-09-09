@@ -8,7 +8,7 @@ export const MPE4_MOUSE = Object.freeze({
   lastX:0x0316, lastY:0x0317, sprite:0x4400, spritePointer:0x5ff8
 });
 
-export function emitMpe4Mouse(e,rasterTicks,baseline,port2Grounds) {
+export function emitMpe4Mouse(e,rasterTicks,baseline,port2Grounds,{relative=false,preSampledFlag=null}={}) {
   const s=MPE4_MOUSE;
   const get=a=>e.abs(0xad,a,'read'),put=a=>e.abs(0x8d,a,'write');
   const set=(a,v)=>{e.emit(0xa9,v);put(a);};
@@ -16,13 +16,15 @@ export function emitMpe4Mouse(e,rasterTicks,baseline,port2Grounds) {
   e.label('game_mouse_init');
   for(const a of [s.accumX,s.accumY,s.calibrated,s.present,s.confirmation,s.live,s.idle,
     s.buttons,s.lastButtons,s.queued])set(a,0);
-  set(s.x,80);set(s.lastX,80);set(s.y,100);set(s.lastY,100);set(s.probe,7);
+  set(s.x,relative?0:80);set(s.lastX,relative?0:80);set(s.y,relative?0:100);set(s.lastY,relative?0:100);set(s.probe,7);
   get(rasterTicks);e.emit(0x38,0xe9,1);put(s.lastTick);
+  if(!relative){
   e.emit(0xa2,63);
   e.label('game_mouse_copy_shape');e.abs(0xbd,'game_mouse_shape','read');e.abs(0x9d,s.sprite,'write');
   e.emit(0xca);e.branch(0x10,'game_mouse_copy_shape');
   set(s.spritePointer,0x10);set(0xd027,1);
   for(const a of [0xd015,0xd017,0xd01b,0xd01c,0xd01d]){get(a);e.emit(0x29,254);put(a);}
+  }
   set(0xdc03,0);set(0xdc02,0xc0);set(0xdc00,0x40);e.emit(0x60);
 
   e.label('sample_game_mouse');
@@ -40,11 +42,16 @@ export function emitMpe4Mouse(e,rasterTicks,baseline,port2Grounds) {
   e.abs(0xee,s.probe,'write');get(s.probe);e.emit(0x29,7);put(s.probe);
   e.jumpUnless(0xf0,'game_mouse_after_axes');
   e.label('game_mouse_sample');
+  // An opt-in foreground sampler can read the already settled POT axes
+  // before a keyboard scan changes the CIA mux. Otherwise retain the full
+  // settling interval, including after a scan interrupted by raster work.
+  if(preSampledFlag!==null){get(preSampledFlag);e.branch(0xd0,'game_mouse_pot_ready');}
   // CIA PA6/7 select port 1 POT; PA0..4 remain port 2 digital inputs.
   set(0xdc02,0xc0);set(0xdc00,0x40);e.emit(0xa2,160);
   e.label('game_mouse_settle');e.emit(0xea,0xea,0xea,0xca);e.branch(0xd0,'game_mouse_settle');
   get(0xd419);e.emit(0x29,127);put(s.sampleX);
   get(0xd41a);e.emit(0x29,127,0x49,127);put(s.sampleY);
+  if(preSampledFlag!==null)e.label('game_mouse_pot_ready');
   get(s.calibrated);e.branch(0xd0,'game_mouse_axes');
   get(s.sampleX);put(s.rawX);get(s.sampleY);put(s.rawY);set(s.calibrated,1);jump('game_mouse_sample_done');
   e.label('game_mouse_axes');e.emit(0xa2,1);
@@ -63,12 +70,12 @@ export function emitMpe4Mouse(e,rasterTicks,baseline,port2Grounds) {
   e.emit(0xa9,255);
   e.label('game_mouse_negative_residual');e.abs(0x9d,s.accumX,'write');e.emit(0x68,0x4a,0xa8);
   e.branch(0xf0,'game_mouse_axis_done');call('game_mouse_mark_present');
-  e.label('game_mouse_negative_step');e.abs(0xbd,s.x,'read');e.branch(0xf0,'game_mouse_bound');
+  e.label('game_mouse_negative_step');if(!relative){e.abs(0xbd,s.x,'read');e.branch(0xf0,'game_mouse_bound');}
   e.abs(0xde,s.x,'write');e.emit(0x88);e.branch(0xd0,'game_mouse_negative_step');jump('game_mouse_axis_done');
   e.label('game_mouse_positive_accum');e.emit(0x48,0x29,1);e.abs(0x9d,s.accumX,'write');e.emit(0x68,0x4a,0xa8);
   e.branch(0xf0,'game_mouse_axis_done');call('game_mouse_mark_present');
-  e.label('game_mouse_positive_step');e.abs(0xbd,s.x,'read');e.abs(0xdd,'game_mouse_maximum','read');
-  e.branch(0xb0,'game_mouse_bound');e.abs(0xfe,s.x,'write');e.emit(0x88);
+  e.label('game_mouse_positive_step');if(!relative){e.abs(0xbd,s.x,'read');e.abs(0xdd,'game_mouse_maximum','read');
+  e.branch(0xb0,'game_mouse_bound');}e.abs(0xfe,s.x,'write');e.emit(0x88);
   e.branch(0xd0,'game_mouse_positive_step');jump('game_mouse_axis_done');
   e.label('game_mouse_bound');e.emit(0xa9,0);e.abs(0x9d,s.accumX,'write');
   e.label('game_mouse_axis_done');e.abs(0xbd,s.sampleX,'read');e.abs(0x9d,s.rawX,'write');
@@ -79,7 +86,7 @@ export function emitMpe4Mouse(e,rasterTicks,baseline,port2Grounds) {
   e.abs(0xee,s.idle,'write');get(s.idle);e.emit(0xc9,90);e.branch(0x90,'game_mouse_after_axes');
   set(s.live,0);set(s.idle,0);set(s.probe,0);
   e.label('game_mouse_after_axes');
-  call('game_mouse_publish_cursor');
+  if(!relative)call('game_mouse_publish_cursor');
   // One frozen mouse event waits behind an already accepted keyboard event.
   get(s.queued);e.branch(0xd0,'game_mouse_done');
   get(s.buttons);e.abs(0xcd,s.lastButtons,'read');e.branch(0xd0,'game_mouse_queue');
@@ -95,6 +102,7 @@ export function emitMpe4Mouse(e,rasterTicks,baseline,port2Grounds) {
   get(s.confirmation);e.branch(0xd0,'game_mouse_present');set(s.confirmation,1);e.emit(0x60);
   e.label('game_mouse_present');set(s.present,1);
   e.label('game_mouse_mark_done');e.emit(0x60);
+  if(!relative){
   e.label('game_mouse_publish_cursor');
   get(s.x);e.emit(0x0a,0x18,0x69,24);put(0xd000);
   get(0xd010);e.emit(0x29,254);e.abs(0xae,s.x,'read');e.emit(0xe0,116);e.branch(0x90,'game_mouse_x_low');e.emit(0x09,1);
@@ -105,4 +113,5 @@ export function emitMpe4Mouse(e,rasterTicks,baseline,port2Grounds) {
   e.label('game_mouse_shape');
   const rows=[0x80,0xc0,0xe0,0xf0,0xf8,0xfc,0xfe,0xff,0xfc,0xcc,0x86,6,3,3];
   e.emit(...Array.from({length:64},(_,i)=>i%3===0&&i/3<rows.length?rows[i/3]:0));
+  }
 }

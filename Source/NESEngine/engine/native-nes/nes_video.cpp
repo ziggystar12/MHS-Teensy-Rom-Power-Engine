@@ -3,12 +3,29 @@
 #include <cmath>
 #include <cstring>
 namespace nes {
+// Precomputed from the diagnostic color formula below, verified entry-for-entry.
+// Fixed module palettes avoid linking transcendental math into the 96 KiB image.
+static constexpr Rgb fixed_nes_palette[64]={
+    {98,98,98},{0,46,150},{12,17,192},{59,0,192},{100,0,150},{124,0,78},{124,0,0},{100,25,0},
+    {59,54,0},{12,78,0},{0,91,0},{0,89,0},{0,72,78},{0,0,0},{0,0,0},{0,0,0},
+    {171,171,171},{0,100,242},{53,60,255},{118,28,255},{173,10,242},{205,13,143},{205,36,28},{173,71,0},
+    {118,111,0},{53,143,0},{0,160,0},{0,158,28},{0,135,143},{0,0,0},{0,0,0},{0,0,0},
+    {255,255,255},{75,181,255},{133,140,255},{200,106,255},{255,88,255},{255,91,226},{255,115,107},{255,151,4},
+    {200,192,0},{133,226,0},{75,244,4},{42,241,107},{42,218,226},{78,78,78},{0,0,0},{0,0,0},
+    {255,255,255},{183,225,255},{206,209,255},{233,195,255},{255,188,255},{255,189,243},{255,199,196},{255,213,154},
+    {233,230,130},{206,243,130},{183,251,154},{170,249,196},{170,240,243},{184,184,184},{0,0,0},{0,0,0}
+};
+#ifndef MHS_NES_FIXED_VIC_LUT
 static uint8_t component(double v) {
     if(v<0) return 0;
     if(v>1) return 255;
     return uint8_t(v*255+0.5);
 }
+#endif
 Rgb diagnostic_nes_rgb(uint8_t index) {
+#ifdef MHS_NES_FIXED_VIC_LUT
+    return fixed_nes_palette[index&63];
+#else
     // Original flat-color model using the measured voltage facts in NESdev's
     // NTSC_video page. Decode the square wave's first harmonic, not neighboring
     // pixel artifacts. Fixed -15 degree display tint; no emphasis/CRT claim.
@@ -28,6 +45,7 @@ Rgb diagnostic_nes_rgb(uint8_t index) {
     const double angle=(30.0*(int(hue)-2)-15.0)*pi/180.0;
     const double u=amplitude*std::cos(angle),v=amplitude*std::sin(angle);
     return {component(y+1.139883*v),component(y-0.394642*u-0.580622*v),component(y+2.032062*u)};
+#endif
 }
 Rgb c64_rgb(uint8_t i) {
     // Same fixed palette as DOSVM's CgaVideo::renderSharp.

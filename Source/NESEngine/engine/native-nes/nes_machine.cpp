@@ -3,27 +3,162 @@
 #include <cstring>
 
 namespace nes {
-uint8_t Cartridge::cpu_read(uint16_t a) const {
+void Cartridge::reset_mapper() {
+    bank=0;bank_writes=bus_conflicts=prg_ram_writes=0;prg_ram_dirty=false;
+    mmc1_shift=0x10;mmc1_control=0x0c;mmc1_chr0=mmc1_chr1=mmc1_prg=0;
+    mmc1_last_write=uint64_t(-1);
+    mmc3_select=0;const uint8_t initial[8]={0,2,4,5,6,7,0,1};memcpy(mmc3_regs,initial,8);
+    mmc3_mirror=info.vertical?0:1;mmc3_ram_control=0x80;mmc3_irq_latch=mmc3_irq_counter=mmc3_sprite_a12=0;
+    mmc3_irq_reload=mmc3_irq_enabled=mmc3_irq_pending=mmc3_a12_high=false;mmc3_low_since=0;mmc3_irq_clocks=0;
+}
+uint32_t Cartridge::prg_offset(uint16_t a) const {
     uint32_t offset=a&0x7fff;
     if (info.mapper==11) offset += uint32_t(bank&3)*32768u;
-    return prg[offset & (info.prg_bytes-1)];
+    else if(info.mapper==7)offset+=uint32_t(bank&7)*32768u;
+    else if(info.mapper==2)offset=(a<0xc000?uint32_t(bank&15)*16384u:info.prg_bytes-16384u)+(a&0x3fff);
+    else if(info.mapper==4) {
+        const unsigned page=(a-0x8000)>>13,last=info.prg_bytes/8192-1;
+        unsigned selected;
+        if(page==3)selected=last;
+        else if(page==1)selected=mmc3_regs[7];
+        else selected=((page==0)==!(mmc3_select&0x40))?mmc3_regs[6]:last-1;
+        offset=selected*8192u+(a&0x1fff);
+    }
+    else if(info.mapper==1) {
+        const uint8_t mode=(mmc1_control>>2)&3;
+        if(mode<2)offset+=uint32_t(mmc1_prg&0x0e)*16384u;
+        else {
+            uint32_t selected=mmc1_prg&15;
+            if(mode==2 && a<0xc000)selected=0;
+            if(mode==3 && a>=0xc000)selected=(info.prg_bytes/16384)-1;
+            offset=selected*16384u+(a&0x3fff);
+        }
+    }
+    return offset & (info.prg_bytes-1);
 }
-void Cartridge::cpu_write(uint16_t a,uint8_t value) {
-    if (info.mapper!=11) return;
-    // Explicit default discrete-logic policy. No automatic no-conflict fallback.
-    const uint8_t masked=value & cpu_read(a);
+uint8_t Cartridge::cpu_read(uint16_t a) const {
+    if(a<0x8000)return a>=0x6000 && prg_ram_enabled()?prg_ram[a&0x1fff]:0xff;
+    return prg[prg_offset(a)];
+}
+// Serial register/SRAM writes are infrequent beside CPU/PPU reads. Keep this
+// handler compact without changing optimization of either emulation hot loop.
+__attribute__((noinline,optimize("Os"))) void Cartridge::cpu_write(uint16_t a,uint8_t value,uint64_t cycle) {
+    if(a<0x8000) {
+        if(a>=0x6000 && prg_ram_writable() && prg_ram[a&0x1fff]!=value) {
+            prg_ram[a&0x1fff]=value;prg_ram_dirty=true;++prg_ram_writes;
+        }
+        return;
+    }
+    if(info.mapper==1) {
+        const bool consecutive=cycle!=uint64_t(-1) && mmc1_last_write!=uint64_t(-1) && cycle==mmc1_last_write+1;
+        mmc1_last_write=cycle;
+        // Reset is acted upon even for the second RMW write; only D0 is gated.
+        if(value&0x80) {mmc1_shift=0x10;mmc1_control|=0x0c;++bank_writes;return;}
+        if(consecutive)return;
+        const bool full=mmc1_shift&1;
+        mmc1_shift=(mmc1_shift>>1)|((value&1)<<4);
+        if(full) {
+            switch((a>>13)&3) {
+            case 0:mmc1_control=mmc1_shift;break;
+            case 1:mmc1_chr0=mmc1_shift;break;
+            case 2:mmc1_chr1=mmc1_shift;break;
+            case 3:mmc1_prg=mmc1_shift;break;
+            }
+            mmc1_shift=0x10;++bank_writes;
+        }
+        return;
+    }
+    if(info.mapper==4) {
+        switch(a&0xe001) {
+        case 0x8000:mmc3_select=value;++bank_writes;break;
+        case 0x8001:{const unsigned r=mmc3_select&7;mmc3_regs[r]=r<2?value&0xfe:r>=6?value&0x3f:value;++bank_writes;break;}
+        case 0xa000:mmc3_mirror=value&1;++bank_writes;break;
+        case 0xa001:mmc3_ram_control=value;++bank_writes;break;
+        case 0xc000:mmc3_irq_latch=value;break;
+        case 0xc001:mmc3_irq_counter=0;mmc3_irq_reload=true;break;
+        case 0xe000:mmc3_irq_enabled=mmc3_irq_pending=false;break;
+        case 0xe001:mmc3_irq_enabled=true;break;
+        }
+        return;
+    }
+    if(info.mapper!=2 && info.mapper!=3 && info.mapper!=7 && info.mapper!=11)return;
+    // NES 2.0 resolves discrete-board conflicts explicitly. Legacy UxROM and
+    // CNROM use AND; legacy AxROM follows ANROM's no-conflict wiring.
+    const bool conflict=info.mapper==11 || info.submapper==2 || (!info.submapper && info.mapper!=7);
+    const uint8_t masked=conflict?value & cpu_read(a):value;
     if (masked!=value) ++bus_conflicts;
     bank=masked;
     ++bank_writes;
 }
-uint8_t Cartridge::ppu_read(uint16_t a) const {
-    if (!info.chr_bytes) return chr_ram[a&0x1fff];
+uint32_t Cartridge::chr_offset(uint16_t a) const {
     uint32_t offset=a&0x1fff;
     if (info.mapper==11) offset += uint32_t(bank>>4)*8192u;
-    return chr[offset & (info.chr_bytes-1)];
+    else if(info.mapper==3)offset+=uint32_t(bank&3)*8192u;
+    else if(info.mapper==4) {
+        const unsigned page=(a>>10)^((mmc3_select&0x80)?4:0);
+        const unsigned selected=page<4?(mmc3_regs[page>>1]&0xfe)+(page&1):mmc3_regs[page-2];
+        offset=selected*1024u+(a&1023);
+    }
+    else if(info.mapper==1) {
+        if(mmc1_control&0x10)offset=uint32_t(a&0x1000?mmc1_chr1:mmc1_chr0)*4096u+(a&0x0fff);
+        else offset+=uint32_t(mmc1_chr0&0x1e)*4096u;
+    }
+    return offset & ((info.chr_bytes?info.chr_bytes:info.chr_ram)-1);
+}
+uint8_t Cartridge::ppu_read(uint16_t a) const {
+    return (info.chr_bytes?chr:chr_ram)[chr_offset(a)];
 }
 void Cartridge::ppu_write(uint16_t a,uint8_t value) {
-    if (!info.chr_bytes) chr_ram[a&0x1fff]=value;
+    if (!info.chr_bytes) chr_ram[chr_offset(a)]=value;
+}
+uint16_t Cartridge::nametable_index(uint16_t a) const {
+    uint16_t table=(a>>10)&3;
+    const unsigned mode=info.mapper==1?(mmc1_control&3):info.mapper==7?(bank>>4)&1:info.mapper==4?(mmc3_mirror?3:2):(info.vertical?2:3);
+    if(mode<2)table=mode;
+    else if(mode==2)table&=1;
+    else table>>=1;
+    return uint16_t((a&1023)|(table<<10));
+}
+__attribute__((noinline,optimize("Os"))) void Cartridge::observe_ppu_address(uint16_t a,uint64_t cycle) {
+    if(info.mapper!=4)return;
+    const bool high=a&0x1000;
+    if(high==mmc3_a12_high)return;
+    mmc3_a12_high=high;
+    if(!high){mmc3_low_since=cycle;return;}
+    // Fixed CPU/PPU phase: three M2 falling edges while A12 stays low.
+    // Express the filter in CPU edges rather than counting render scanlines.
+    if((cycle+2)/3-(mmc3_low_since+2)/3<3)return;
+    ++mmc3_irq_clocks;
+    if(!mmc3_irq_counter || mmc3_irq_reload)mmc3_irq_counter=mmc3_irq_latch;
+    else --mmc3_irq_counter;
+    mmc3_irq_reload=false;
+    if(!mmc3_irq_counter && mmc3_irq_enabled)mmc3_irq_pending=true;
+}
+void Cartridge::ppu_render_tick(uint16_t line,uint16_t dot,uint8_t ctrl,uint8_t mask,const uint8_t* oam,uint64_t cycle) {
+    if(!(mask&0x18) || (line>=240 && line!=261))return;
+    if(dot==257) {
+        mmc3_sprite_a12=(ctrl&8)?0xff:0;
+        if(ctrl&0x20) {
+            // Empty 8x16 slots fetch tile FF from $1000. Select the same first
+            // eight sprites as the existing functional scanline renderer.
+            mmc3_sprite_a12=0xff;unsigned selected=0;
+            const unsigned target=line==261?0:line+1;
+            for(unsigned sprite=0;sprite<64 && selected<8;++sprite) {
+                const int row=int(target)-int(oam[sprite*4])-1;
+                if(row<0 || row>=16)continue;
+                if(!(oam[sprite*4+1]&1))mmc3_sprite_a12&=~(1u<<selected);
+                ++selected;
+            }
+        }
+    }
+    if(dot>=1 && dot<=336) {
+        const unsigned phase=(dot-1)&7;
+        if(phase==0 || phase==2)observe_ppu_address(0x2000,cycle);
+        else if(phase==4 || phase==6) {
+            const bool high=dot>=257 && dot<=320?(mmc3_sprite_a12&(1u<<((dot-257)/8))):bool(ctrl&0x10);
+            observe_ppu_address(high?0x1000:0,cycle);
+        }
+    }else if(dot==338 || dot==340)observe_ppu_address(0x2000,cycle);
 }
 uint16_t Ppu::nt_index(uint16_t a,bool vertical) const {
     const uint16_t off=(a-0x2000)&0x0fff;
@@ -38,16 +173,16 @@ static uint8_t palette_index(uint16_t a) {
 uint8_t Ppu::read(uint16_t a,const Cartridge& c) const {
     a &= 0x3fff;
     if (a<0x2000) return c.ppu_read(a);
-    if (a<0x3f00) return nametable[nt_index(a,c.info.vertical)];
+    if (a<0x3f00) return nametable[c.nametable_index(a)];
     return palette[palette_index(a)] & ((mask&1)?0x30:0x3f);
 }
 void Ppu::write(uint16_t a,uint8_t value,Cartridge& c) {
     a &= 0x3fff;
     if (a<0x2000) c.ppu_write(a,value);
-    else if (a<0x3f00) nametable[nt_index(a,c.info.vertical)]=value;
+    else if (a<0x3f00) nametable[c.nametable_index(a)]=value;
     else palette[palette_index(a)]=value&0x3f;
 }
-uint8_t Ppu::cpu_read(uint8_t reg,const Cartridge& c) {
+uint8_t Ppu::cpu_read(uint8_t reg,Cartridge& c) {
     uint8_t result=open_bus;
     switch(reg&7) {
     case 2:
@@ -58,6 +193,7 @@ uint8_t Ppu::cpu_read(uint8_t reg,const Cartridge& c) {
     case 4: result=oam[oam_addr]; break;
     case 7: {
         const uint16_t address=v&0x3fff;
+        c.observe_ppu_address(address,ticks);
         const uint8_t value=read(address,c);
         if (address>=0x3f00) {
             result=(open_bus&0xc0)|value;
@@ -65,6 +201,7 @@ uint8_t Ppu::cpu_read(uint8_t reg,const Cartridge& c) {
         } else { result=read_buffer; read_buffer=value; }
         if ((mask&0x18) && (line<240 || line==261)) { increment_x(); increment_y(); }
         else v=(v+((ctrl&4)?32:1))&0x7fff;
+        c.observe_ppu_address(v&0x3fff,ticks);
         break;
     }
     default: break;
@@ -88,13 +225,15 @@ void Ppu::cpu_write(uint8_t reg,uint8_t value,Cartridge& c) {
         break;
     case 6:
         if (!write_second) t=uint16_t((t&0x00ff)|((value&0x3f)<<8));
-        else { t=uint16_t((t&0x7f00)|value); v=t; }
+        else { t=uint16_t((t&0x7f00)|value); v=t;c.observe_ppu_address(v&0x3fff,ticks); }
         write_second=!write_second;
         break;
     case 7:
+        c.observe_ppu_address(v&0x3fff,ticks);
         write(v,value,c);
         if ((mask&0x18) && (line<240 || line==261)) { increment_x(); increment_y(); }
         else v=(v+((ctrl&4)?32:1))&0x7fff;
+        c.observe_ppu_address(v&0x3fff,ticks);
         break;
     default: break;
     }
@@ -142,6 +281,7 @@ void Ppu::tick(Cartridge& c,const RasterSink& sink) {
     ++ticks;
     if (startup_dots) --startup_dots;
     const bool rendering=mask&0x18;
+    if(c.info.mapper==4)c.ppu_render_tick(line,dot,ctrl,mask,oam,ticks);
     if (line==261 && dot==1) status &= 0x1f;
     if (line==241 && dot==1) {
         status|=0x80;
@@ -268,10 +408,16 @@ void Apu::write(uint16_t a,uint8_t value,uint64_t cycle) {
         if(ch!=2)envelope_start[ch]=true;
     } else if(a==0x4001||a==0x4005){
         sweep_reload[(a-0x4000)/4]=true;
+    } else if(a==0x4010) {
+        if(!(value&0x80))dmc_irq=false;
+    } else if(a==0x4011) {
+        dmc_dac=value&0x7f;
     } else if (a==0x4015) {
         enabled=value&31;
         for (uint8_t i=0;i<4;++i) if (!(enabled&(1<<i))) length[i]=0;
-        if (enabled&16) dmc_requested=true;
+        dmc_irq=false;
+        if(!(enabled&16))dmc_remaining=0;
+        else if(!dmc_remaining)dmc_restart();
     } else if (a==0x4017) {
         five_step=value&0x80; inhibit=value&0x40;
         if (inhibit) irq=false;
@@ -279,12 +425,39 @@ void Apu::write(uint16_t a,uint8_t value,uint64_t cycle) {
     }
 }
 uint8_t Apu::status() {
-    uint8_t value=irq?0x40:0;
+    uint8_t value=(irq?0x40:0)|(dmc_irq?0x80:0)|(dmc_remaining?0x10:0);
     for (uint8_t i=0;i<4;++i) if (length[i]) value|=uint8_t(1<<i);
     irq=false;
     return value;
 }
+__attribute__((noinline,optimize("Os"))) void Apu::dmc_restart() {
+    dmc_address=0xc000+uint16_t(regs[0x12])*64;
+    dmc_remaining=uint16_t(regs[0x13])*16+1;
+}
+__attribute__((noinline,optimize("Os"))) void Apu::dmc_accept(uint8_t value) {
+    if(!dmc_remaining)return;
+    dmc_buffer=value;dmc_empty=false;++dmc_fetches;
+    dmc_address=uint16_t(dmc_address+1)|0x8000;
+    if(!--dmc_remaining) {
+        if(regs[0x10]&0x40)dmc_restart();
+        else if(regs[0x10]&0x80)dmc_irq=true;
+    }
+}
+__attribute__((noinline,optimize("Os"))) void Apu::dmc_output_tick() {
+    static const uint16_t periods[16]={428,380,340,320,286,254,226,214,190,160,142,128,106,84,72,54};
+    dmc_timer=periods[regs[0x10]&15]-1;
+    if(!dmc_silence) {
+        if(dmc_shift&1) {if(dmc_dac<=125)dmc_dac+=2;}
+        else if(dmc_dac>=2)dmc_dac-=2;
+    }
+    dmc_shift>>=1;
+    if(!--dmc_bits) {
+        dmc_bits=8;dmc_silence=dmc_empty;
+        if(!dmc_empty){dmc_shift=dmc_buffer;dmc_empty=true;}
+    }
+}
 void Apu::tick() {
+    if(dmc_timer)--dmc_timer;else dmc_output_tick();
     if (reset_delay && !--reset_delay) { phase=0; if(five_step){quarter_frame();half_frame();} return; }
     ++phase;
     if (phase==7457 || phase==22371) quarter_frame();
@@ -306,8 +479,11 @@ bool Machine::init(const Cartridge& input_cartridge,const RasterSink& input_sink
     std::memset(guest,0,4384);
 #endif
     if (!cartridge.prg || (cartridge.info.chr_bytes?!cartridge.chr:!cartridge.chr_ram) ||
-        supported(cartridge.info)!=RomError::None) { error=MachineError::InvalidCartridge; return false; }
-    cart=cartridge; cart.bank=0; cart.bank_writes=cart.bus_conflicts=0;
+        supported(cartridge.info)!=RomError::None ||
+        ((cartridge.info.prg_ram || cartridge.info.prg_nvram) && !cartridge.prg_ram)) {
+        error=MachineError::InvalidCartridge; return false;
+    }
+    cart=cartridge;cart.reset_mapper();
     raster=sink;
     std::memset(ppu.oam,0xff,256);
     if (cart.chr_ram) std::memset(cart.chr_ram,0,cart.info.chr_ram);
@@ -324,7 +500,7 @@ uint8_t Machine::read(uint16_t a) {
     // Unconnected NES port 2 reads zero on D0 (the hardware input is inverted).
     // Do not return an endless stream of pressed player-2 buttons.
     else if(a==0x4017) { value=open_bus&0xe0; ++controller2_reads; }
-    else if(a>=0x8000) value=cart.cpu_read(a);
+    else if(a>=0x8000 || (a>=0x6000 && cart.prg_ram_enabled())) value=cart.cpu_read(a);
     open_bus=value;
     return value;
 }
@@ -336,8 +512,7 @@ void Machine::write(uint16_t a,uint8_t value) {
     else if(a==0x4016) controller.write(value);
     else if(a<=0x4017) {
         apu.write(a,value,cycles);
-        if (apu.dmc_requested) error=MachineError::DmcNotImplemented;
-    } else if(a>=0x8000) cart.cpu_write(a,value);
+    } else if(a>=0x6000) cart.cpu_write(a,value,cycles);
 }
 static bool jam_opcode(uint8_t op) {
     return (op&15)==2 && op!=0xa2 && op!=0xc2 && op!=0xe2 && op!=0x82;
@@ -346,8 +521,19 @@ bool Machine::step() {
     if(error!=MachineError::None) return false;
     pins &= ~(M6502_NMI|M6502_IRQ|M6502_RDY);
     if(ppu.nmi()) pins|=M6502_NMI;
-    if(apu.irq) pins|=M6502_IRQ;
-    if(dma_active) {
+    if(apu.interrupt() || cart.mmc3_irq_pending) pins|=M6502_IRQ;
+    // DMC DMA waits for a CPU read before holding RDY. Four cycles model the
+    // reader halt/dummy/alignment/fetch; OAM DMA is paused if it shares the bus.
+    // Sub-cycle DMA collisions and duplicate joypad reads are not modeled.
+    if(!dmc_stall && apu.dmc_needs_byte() && (pins&M6502_RW))dmc_stall=4;
+    if(dmc_stall) {
+        pins=m6502_tick(&cpu,pins|M6502_RDY);++dmc_dma_cycles;
+        if(!--dmc_stall) {
+            const uint16_t a=apu.dmc_address;
+            const uint8_t value=read(a);apu.dmc_accept(value);
+            if(trace)trace(trace_context,{cycles,a,value,false,false,true});
+        }
+    } else if(dma_active) {
         pins=m6502_tick(&cpu,pins|M6502_RDY);
         ++dma_cycles;
         if(dma_align) { dma_align=false; read(M6502_GET_ADDR(pins)); }
@@ -394,7 +580,6 @@ const char* describe(MachineError e) {
     case MachineError::None:return "running";
     case MachineError::InvalidCartridge:return "invalid/unsupported cartridge";
     case MachineError::CpuJammed:return "CPU JAM instruction reached";
-    case MachineError::DmcNotImplemented:return "DMC enabled: R1 stops rather than fake DMA/audio";
     }
     return "unknown machine error";
 }

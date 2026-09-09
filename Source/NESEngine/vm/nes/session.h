@@ -15,6 +15,13 @@
 #include "../video/mpe_video_live.h"
 #undef M6502_CODE
 
+// Keep the ROM menu, file handling and packet scheduler compact. The CPU,
+// PPU and audio core included above retain their speed-oriented build flags.
+#if defined(__GNUC__)
+#pragma GCC push_options
+#pragma GCC optimize ("Os")
+#endif
+
 static constexpr uint8_t MPE6Protocol = 1;
 static constexpr uint16_t MPE6DescriptorBytes = 128;
 static constexpr uint16_t MPE6MaximumRoms = 128;
@@ -77,6 +84,36 @@ static uint32_t MPE6StatsStart,MPE6StatsRunUs;
 static uint64_t MPE6StatsCycles;
 static unsigned MPE6SpeedPercent,MPE6RunPercent;
 static bool MPE6StatsValid;
+static NesSaveStore MPE6Saves;
+static bool MPE6SaveBlocked;
+static uint32_t MPE6LastSaveUs;
+static uint8_t MPE6RequestedMode,MPE6ConfiguredMode;
+static bool MPE6NuflixVideo;
+static void *MPE6VideoStorage;
+static uint8_t MPE6NuflixPalette[48],MPE6NuflixMap[64];
+
+static FLASHMEM bool MPE6ConfigureMode(uint8_t mode){
+   if(mode==2){
+      VmCenterVideoSetup setup{{sizeof(VmCenterVideoSetup),MPE6VideoStorage,VM_NUFLIX_VIDEO_WORKSPACE_BYTES,2,4,
+         VM_INDEXED_NUFLIX_F5|VM_INDEXED_SEPARATE_SELECTORS},0,25,0};
+      if(!ModuleHost->video_configure(&setup.setup))return false;
+   }else{
+      VmIndexedVideoSetup setup{sizeof(VmIndexedVideoSetup),MPE6VideoStorage,mpe_video::DeltaWorkspaceBytes,mode,11,
+         VM_INDEXED_SPRITE_F5|VM_INDEXED_SPRITE_TAGS|VM_INDEXED_CROP_F3};
+      if(!ModuleHost->video_configure(&setup))return false;
+   }
+   MPE6ConfiguredMode=mode;MPE6NuflixVideo=mode==2;return true;
+}
+static uint8_t MPE6NuflixPixel(void *context,uint16_t x,uint16_t y){
+   const unsigned nx=(unsigned(x)*2+1)*256/640,ny=(unsigned(y)*2+1)*240/400;
+   return MPE6NuflixMap[static_cast<const uint8_t *>(context)[ny*256+nx]&63];
+}
+
+static FLASHMEM bool MPE6FlushSave(){
+   if(!MPE6Machine)return true;
+   if(!MPE6Saves.flush(MPE6Machine->cart.prg_ram_dirty))return false;
+   MPE6Machine->cart.prg_ram_dirty=false;MPE6LastSaveUs=micros();return true;
+}
 
 static void MPE6SampleSpeed(uint32_t end,uint32_t runUs){
    MPE6StatsRunUs+=runUs;const uint32_t elapsed=end-MPE6StatsStart;
@@ -295,18 +332,24 @@ static FLASHMEM const char *MPE6RomMessage(nes::RomError error)
 {
    switch(error){case nes::RomError::Mapper:return "UNSUPPORTED MAPPER";case nes::RomError::PrgSize:return "UNSUPPORTED PRG SIZE";
    case nes::RomError::ChrSize:return "UNSUPPORTED CHR SIZE";case nes::RomError::UnsupportedRegion:return "ONLY NTSC ROMS ARE SUPPORTED";
-   case nes::RomError::Battery:return "BATTERY SAVES ARE NOT READY";case nes::RomError::None:return "";default:return "INVALID OR UNSUPPORTED NES FILE";}
+   case nes::RomError::Battery:return "UNSUPPORTED CARTRIDGE SAVE TYPE";case nes::RomError::None:return "";default:return "INVALID OR UNSUPPORTED NES FILE";}
 }
 
 static FLASHMEM bool MPE6LoadSelected()
 {
+   // A failed save keeps the original RAM alive until an explicit retry works.
+   if(MPE6SaveBlocked){
+      MPE6SaveBlocked=!MPE6FlushSave();
+      MPE6SetMessage(MPE6SaveBlocked?"SAVE FAILED - FIRE RETRIES; KEEP POWER ON":"SAVE RECOVERED - FIRE TO RUN ROM");return false;
+   }
    if(!MPE6MenuState->count)return false;const MPE6RomEntry &entry=MPE6MenuState->roms[MPE6MenuState->selected];
    char path[384];snprintf(path,sizeof(path),"%s/%s",NesRomDirectory,entry.name);
    FsFile file=SD.sdfs.open(path,O_RDONLY);if(!file||file.isDirectory()||file.fileSize()!=entry.bytes){file.close();MPE6SetMessage("ROM CHANGED SINCE LISTING");return false;}
    uint8_t header[16];if(file.read(header,sizeof(header))!=sizeof(header)){file.close();MPE6SetMessage("ROM HEADER READ FAILED");return false;}
    nes::RomInfo info;nes::RomError error=nes::inspect(header,sizeof(header),entry.bytes,info);if(error==nes::RomError::None)error=nes::supported(info);
    if(error!=nes::RomError::None){file.close();MPE6SetMessage(MPE6RomMessage(error));return false;}
-   const uint32_t extra=info.chr_bytes?0:info.chr_ram;if(entry.bytes>MPE6RomCapacity||extra>MPE6RomCapacity-entry.bytes){file.close();MPE6SetMessage("ROM DOES NOT FIT NESVM MEMORY");return false;}
+   const uint32_t chrRam=info.chr_bytes?0:info.chr_ram,prgRam=info.prg_ram+info.prg_nvram;
+   const uint32_t extra=chrRam+prgRam;if(entry.bytes>MPE6RomCapacity||extra>MPE6RomCapacity-entry.bytes){file.close();MPE6SetMessage("ROM DOES NOT FIT NESVM MEMORY");return false;}
    if(!file.seekSet(0)){file.close();MPE6SetMessage("ROM SEEK FAILED");return false;}uint32_t cursor=0;
    while(cursor<entry.bytes){const uint16_t n=entry.bytes-cursor>4096u?4096u:(uint16_t)(entry.bytes-cursor);
       if(file.read(MPE6RomBytes+cursor,n)!=n){file.close();MPE6SetMessage("ROM DATA READ FAILED");return false;}cursor+=n;}
@@ -317,6 +360,9 @@ static FLASHMEM bool MPE6LoadSelected()
    memcpy(MPE6MenuState->lastHash,digest,sizeof(digest));MPE6MenuState->lastHashValid=true;
    nes::Cartridge cartridge;cartridge.info=info;cartridge.prg=MPE6RomBytes+info.prg_offset;
    cartridge.chr=info.chr_bytes?MPE6RomBytes+info.chr_offset:nullptr;cartridge.chr_ram=info.chr_bytes?nullptr:MPE6RomBytes+entry.bytes;
+   cartridge.prg_ram=prgRam?MPE6RomBytes+entry.bytes+chrRam:nullptr;
+   if(prgRam)memset(cartridge.prg_ram,0,prgRam);
+   if(!MPE6Saves.load(ModuleHost,cartridge.prg_ram,prgRam,digest)){MPE6SetMessage("SAVE READ FAILED - RESTORE SAVE BACKUP");return false;}
    *MPE6Renderer=nes::SquishRenderer(MPE6DisplayState&1);*MPE6Sid=nes::SidAdapter{};MPE6LatestSid={};MPE6Raster={MPE6Renderer,true};
    if(!MPE6Machine->init(cartridge,{&MPE6Raster,MPE6Pixel,MPE6Frame})){MPE6SetMessage("NES MACHINE START FAILED");return false;}
    MPE6Machine->spriteTags=MPE6SpriteVideo;
@@ -324,13 +370,15 @@ static FLASHMEM bool MPE6LoadSelected()
    MPE6PreviousButtons=0;MPE6FrameReady=false;MPE6ForceReplace=true;MPE6FrameEndPending=false;MPE6TransferCursor=0;
    MPE6CycleDebt=MPE6CycleRemainder=0;MPE6VideoSubmitted=false;MPE6LastMicros=micros();MPE6AudioRevision=MPE6PendingAudioRevision=0;++MPE6LaunchToken;if(!MPE6LaunchToken)++MPE6LaunchToken;
    MPE6StatsStart=MPE6LastMicros;MPE6StatsRunUs=0;MPE6StatsCycles=0;MPE6StatsValid=false;
+   MPE6LastSaveUs=MPE6LastMicros;MPE6SaveBlocked=false;
    MPE6SetMessage("START+SELECT RETURNS TO ROM LIST");return true;
 }
 
 static FLASHMEM void MPE6ReturnToMenu()
 {
+   MPE6SaveBlocked=!MPE6FlushSave();
    MPE6ModeState=MPE6Mode::Menu;MPE6Machine->controller.set(0);MPE6Sid->silence(MPE6LatestSid);++MPE6AudioRevision;
-   MPE6SetMessage("RETURNED - FIRE OR RETURN RUNS ROM");MPE6MenuDirty=true;MPE6FrameReady=false;MPE6ForceReplace=true;MPE6PreviousButtons=0;
+   MPE6SetMessage(MPE6SaveBlocked?"SAVE FAILED - FIRE RETRIES; KEEP POWER ON":"RETURNED - FIRE OR RETURN RUNS ROM");MPE6MenuDirty=true;MPE6FrameReady=false;MPE6ForceReplace=true;MPE6PreviousButtons=0;
 }
 
 static FLASHMEM bool MPE6AcceptInput()
@@ -363,6 +411,9 @@ static FLASHMEM void MPE6Pump()
    // Never change a menu/game scene while any part of its frozen frame awaits ACK.
    if(!MPE6FrameReady && !ModulePacketPending) MPE6AcceptInput();
    if(!MPE6Active||MPE6ModeState!=MPE6Mode::Game||MPE6Machine->error!=nes::MachineError::None)return;
+   if(!MPE6FrameReady&&!ModulePacketPending&&uint32_t(micros()-MPE6LastSaveUs)>=5000000u){
+      if(!MPE6FlushSave()){MPE6ReturnToMenu();return;}
+   }
    const uint32_t now=micros(),elapsed=now-MPE6LastMicros;MPE6LastMicros=now;
    const uint64_t scaled=(uint64_t)elapsed*MPE6CpuHz+MPE6CycleRemainder;MPE6CycleDebt+=scaled/1000000u;MPE6CycleRemainder=(uint32_t)(scaled%1000000u);
    // Preserve CPU/PPU/APU time across slow display transfers. The old 50 ms
@@ -380,7 +431,7 @@ static FLASHMEM void MPE6Pump()
       MPE6CycleDebt-=completed;localBudget-=completed;if(completed!=run)break;
    }
    const uint32_t end=micros();MPE6SampleSpeed(end,end-now);
-   if(MPE6Machine->error!=nes::MachineError::None && !MPE6FrameReady && !ModulePacketPending){MPE6ReturnToMenu();MPE6SetMessage(nes::describe(MPE6Machine->error));MPE6MenuDirty=true;}
+   if(MPE6Machine->error!=nes::MachineError::None && !MPE6FrameReady && !ModulePacketPending){MPE6ReturnToMenu();if(!MPE6SaveBlocked)MPE6SetMessage(nes::describe(MPE6Machine->error));MPE6MenuDirty=true;}
 }
 
 static FLASHMEM void MPE6Reset()
@@ -391,6 +442,8 @@ static FLASHMEM void MPE6Reset()
    MPE6LastMicros=MPE6CycleDebt=MPE6CycleRemainder=MPE6AudioRevision=MPE6PendingAudioRevision=0;MPE6VideoSubmitted=false;MPE6WorkspaceCursor=MPE6WorkspaceLimit=nullptr;MPE6LatestSid={};
    MPE6StatsStart=MPE6StatsRunUs=0;MPE6StatsCycles=0;MPE6StatsValid=false;
    MPE6SpriteVideo=MPE6CropVideo=false;
+   MPE6Saves={};MPE6SaveBlocked=false;MPE6LastSaveUs=0;
+   MPE6RequestedMode=MPE6ConfiguredMode=0;MPE6NuflixVideo=false;MPE6VideoStorage=nullptr;
 }
 
 static FLASHMEM bool MPE6Start(uint32_t root)
@@ -419,7 +472,9 @@ static FLASHMEM bool MPE6Start(uint32_t root)
    void *videoStorage=MPE6Take(mpe_video::DeltaWorkspaceBytes,4);
    if(!MPE6Pixels||!MPE6Palette||!videoStorage)return false;
    for(unsigned i=0;i<64;i++){auto c=nes::diagnostic_nes_rgb(i);MPE6Palette[i*3]=c.r;MPE6Palette[i*3+1]=c.g;MPE6Palette[i*3+2]=c.b;}
-   VmIndexedVideoSetup videoSetup{sizeof(VmIndexedVideoSetup),videoStorage,mpe_video::DeltaWorkspaceBytes,0,15,VM_INDEXED_SPRITE_F5|VM_INDEXED_SPRITE_TAGS|VM_INDEXED_CROP_F3};
+   MPE6VideoStorage=videoStorage;nes::make_lut(MPE6NuflixMap);
+   for(unsigned i=0;i<16;i++){auto c=nes::c64_rgb(i);MPE6NuflixPalette[i*3]=c.r;MPE6NuflixPalette[i*3+1]=c.g;MPE6NuflixPalette[i*3+2]=c.b;}
+   VmIndexedVideoSetup videoSetup{sizeof(VmIndexedVideoSetup),videoStorage,mpe_video::DeltaWorkspaceBytes,0,11,VM_INDEXED_SPRITE_F5|VM_INDEXED_SPRITE_TAGS|VM_INDEXED_CROP_F3};
    MPE6CropVideo=MPE6SpriteVideo=ModuleHost->video_configure(&videoSetup);
    if(!MPE6SpriteVideo){videoSetup.reserved=VM_INDEXED_SPRITE_F5|VM_INDEXED_SPRITE_TAGS;MPE6SpriteVideo=ModuleHost->video_configure(&videoSetup);}
    if(!MPE6SpriteVideo){videoSetup.reserved=0;if(!ModuleHost->video_configure(&videoSetup))return false;}
@@ -472,15 +527,25 @@ static FLASHMEM void MPE6NextPacket()
    if(MPE6FrameReady)
    {
       if(MPE6ModeState==MPE6Mode::Game){
-         VmIndexedFrame source{sizeof(VmIndexedFrame),MPE6VideoGeneration,MPE6Pixels,MPE6Palette,256u*240u,64u*3u,256,240,256,64,0};
+         // Mode requests arrive on NES protocol 91h. Change the workspace loan
+         // only before a fresh frame, after the previous video and SID ACKs.
+         if(!MPE6VideoSubmitted&&MPE6RequestedMode!=MPE6ConfiguredMode&&!MPE6ConfigureMode(MPE6RequestedMode)){
+            if(ModuleHost->fail)ModuleHost->fail(0x18,MPE6RequestedMode);return;
+         }
+         VmIndexedFrame native{sizeof(VmIndexedFrame),MPE6VideoGeneration,MPE6Pixels,MPE6Palette,256u*240u,64u*3u,256,240,256,64,0};
+         VmIndexedDirtyRasterFrame nuflix{};
+         nuflix.raster.frame={sizeof nuflix,MPE6VideoGeneration,nullptr,MPE6NuflixPalette,0,48,320,200,320,16,2};
+         nuflix.raster.read_pixel=MPE6NuflixPixel;
+         nuflix.raster.context=MPE6Pixels;
+         VmIndexedFrame *source=MPE6NuflixVideo?&nuflix.raster.frame:&native;
          MPE6VideoSubmitted=true;
-         const auto result=ModuleHost->video_indexed(&source);
+         const auto result=ModuleHost->video_indexed(source);
          if(result==VmVideoResult::Busy)return;
          if(result!=VmVideoResult::Transferred){ModuleHost->fail(0x18,(uint32_t)result);return;}
          // SID/frame-end packets also publish the VIC display format. Logical
          // F3 is multicolor only when the crop profile was accepted; older
          // hosts still use the hires FLI F3 path after setup fallback.
-         MPE6VideoSubmitted=false;MPE6Frozen->hires=source.resolved_mode!=0&&!(MPE6CropVideo&&source.resolved_mode==1);
+         MPE6VideoSubmitted=false;MPE6Frozen->hires=source->resolved_mode!=0&&!(MPE6CropVideo&&source->resolved_mode==1);
          MPE6TransferCursor=1000;MPE6PendingCells=0;MPE6PublishSid(true);return;
       }
       const bool formatChanged=MPE6Frozen->hires!=MPE6Presented->hires||
@@ -522,3 +587,6 @@ static FLASHMEM void MPE6ResumeAfterACK()
 }
 
 static FLASHMEM void MPE6PumpPending(){MPE6Pump();}
+#if defined(__GNUC__)
+#pragma GCC pop_options
+#endif

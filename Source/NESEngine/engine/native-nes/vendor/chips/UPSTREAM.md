@@ -9,4 +9,6 @@
 The locally applied placement patch is preserved alongside this header.
 The chips reference CPU is a compile-time dependency of shared NES types.
 The released engine uses Nofrendo for CPU/PPU execution; unused reference-core
-code is removed by the linker.
+code is removed by the linker. The portable test core calls `m6502_tick`
+once per CPU cycle with `bcd_disabled=true` for the RP2A03. PPU, APU, DMA
+and mapper behavior are separate NESVM components with their own tests.

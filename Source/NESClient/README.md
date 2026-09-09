@@ -2,9 +2,9 @@
 
 This source snapshot rebuilds the C64 client in the public NESVM runtime
 download. Its SHA-256 is
-`0ec19bce9215f9ddbfd34076325c916a687e14693f0f52cbb17150927fc54365`.
+`c664db0e05c7840aab80f4845c025068b50f111cef3fd3d2457c855ebc7423bd`.
 The source files are exported unchanged from commit
-`5d5e75f22d57eb63e76c24c51e064de0b07abe3c`.
+`21b744514ee42d3f7738e47d6e3b53d3a4683249`.
 
 ## Build
 
@@ -32,5 +32,8 @@ other VM engine is included in this snapshot.
 
 ## License and provenance
 
-See [LICENSE.md](LICENSE.md) for the MIT license.
+See [LICENSE.md](LICENSE.md) for the MHS MIT license. The NUFLIX display
+template by Patai Gergely has its retained MIT license in
+[nes/client/nuflix/LICENSE](nes/client/nuflix/LICENSE); see the adjacent README
+for pinned upstream provenance. Both licenses accompany generated clients.
 `CLIENT-SOURCE.json` records each original source path, size, and SHA-256.

@@ -14,7 +14,7 @@ export function emitVideoSelectors(e,matrix,value,held) {
   e.label('mpe_selector_done');
 }
 
-export function emitVideoClient(e,state,stage,captureInput='nes_capture_input',cropState=null){
+export function emitVideoClient(e,state,stage,captureInput='nes_capture_input',cropState=null,{guardedFli=false}={}){
   const get=a=>e.abs(0xad,a,'read'),put=a=>e.abs(0x8d,a,'write');
   const set=(a,v)=>{e.emit(0xa9,v);put(a);};
   const vector=label=>{e.immediateAddress(0xa9,label,0);put(0xfffe);e.immediateAddress(0xa9,label,8);put(0xffff);};
@@ -22,6 +22,7 @@ export function emitVideoClient(e,state,stage,captureInput='nes_capture_input',c
   const sprites=0x02ea;
   const streaming=0x02e4,nextBank=0x02e5,nextMode=0x02e6,nextEnabled=0x02e7,activeBank=0x02e8,flipPending=0x02e9;
   const kernelJump=0x02eb;
+  const firstIrq=guardedFli?47:48;
   e.label('mpe_video_packet');get(stage+6);e.emit(0xc9,4);e.branch(0xf0,'mpe_video_length_ok');e.emit(0xc9,3);e.jumpUnless(0xf0,'error_type');e.label('mpe_video_length_ok');
   get(stage+8);e.emit(0xc9,3);e.jumpUnless(0xd0,'mpe_video_stream');e.emit(0xc9,4);e.jumpUnless(0xd0,'mpe_video_flip');
   get(stage+8);e.emit(0xc9,1);e.branch(0xd0,'mpe_video_resume');
@@ -57,7 +58,7 @@ export function emitVideoClient(e,state,stage,captureInput='nes_capture_input',c
   get(state.videoTiming);e.branch(0xf0,'mpe_video_ntsc');
   e.immediateAddress(0xa9,'mpe_video_stable_pal',0);put('mpe_video_irq_target_low');e.immediateAddress(0xa9,'mpe_video_stable_pal',8);put('mpe_video_irq_target_high');e.abs(0x4c,'mpe_video_variant_ready');
   e.label('mpe_video_ntsc');e.immediateAddress(0xa9,'mpe_video_stable_ntsc',0);put('mpe_video_irq_target_low');e.immediateAddress(0xa9,'mpe_video_stable_ntsc',8);put('mpe_video_irq_target_high');
-  e.label('mpe_video_variant_ready');get(enabled);e.branch(0xf0,'mpe_resume_plain');vector('mpe_video_irq');set(0xd012,48);e.abs(0x4c,'mpe_resume_enable');
+  e.label('mpe_video_variant_ready');get(enabled);e.branch(0xf0,'mpe_resume_plain');vector('mpe_video_irq');set(0xd012,firstIrq);e.abs(0x4c,'mpe_resume_enable');
   e.label('mpe_resume_plain');vector('raster_irq');set(0xd012,250);
   e.label('mpe_resume_enable');get(sprites);e.branch(0xf0,'mpe_resume_no_sprites');e.abs(0x20,'mpe_video_sprites');
   e.label('mpe_resume_no_sprites');set(0xd019,1);set(0xd011,0x3b);set(0xd01a,1);e.emit(0x58);e.abs(0x4c,'ack_packet');
@@ -92,13 +93,24 @@ export function emitVideoClient(e,state,stage,captureInput='nes_capture_input',c
   get('mpe_bank_bits');e.emit(0x09,1);put(0xdd00);set(kernelJump+2,0xc0);set(0xd018,0x38);e.abs(0x4c,'mpe_flip_bank_ready');
   e.label('mpe_flip_bank_zero');get('mpe_bank_bits');e.emit(0x09,2);put(0xdd00);set(kernelJump+2,0x30);set(0xd018,0x78);
   e.label('mpe_flip_bank_ready');set(0xd011,0x3b);set(state.frameMode,8);set(0xd016,8);
-  get(nextEnabled);put(enabled);e.branch(0xf0,'mpe_flip_plain');vector('mpe_video_irq');set(0xd012,48);e.abs(0x4c,'mpe_flip_done');
+  get(nextEnabled);put(enabled);e.branch(0xf0,'mpe_flip_plain');vector('mpe_video_irq');set(0xd012,firstIrq);e.abs(0x4c,'mpe_flip_done');
   e.label('mpe_flip_plain');vector('raster_irq');set(0xd012,250);
   e.label('mpe_flip_done');set(flipPending,0);
   e.label('mpe_border_grant');get(streaming);e.branch(0xf0,'mpe_border_done');set(0xdff4,5);
   e.label('mpe_border_done');e.emit(0x60);e.label('mpe_bank_bits');e.emit(0);
 
   e.label('mpe_video_irq');e.emit(0x48,0x8a,0x48,0x98,0x48);
+  if(guardedFli){
+    // Leave a full border line for the admission check. The nested IRQ stays
+    // two lines before the generated kernel's cycle-2 entry. Accepting
+    // a late first IRQ can otherwise arm line 49 after its compare point,
+    // then run the nested IRQ a whole frame later with the wrong phase.
+    get(0xd011);e.branch(0x30,'mpe_video_irq_late');
+    get(0xd012);e.emit(0xc9,firstIrq);e.branch(0xf0,'mpe_video_irq_admitted');
+    e.label('mpe_video_irq_late');e.abs(0xee,'mpe_video_missed_irqs','write');
+    set(0xd012,firstIrq);set(0xd019,1);e.emit(0x68,0xa8,0x68,0xaa,0x68,0x40);
+    e.label('mpe_video_irq_admitted');
+  }
   e.emit(0xa9);e.label('mpe_video_irq_target_low');e.emit(0);put(0xfffe);
   e.emit(0xa9);e.label('mpe_video_irq_target_high');e.emit(0);put(0xffff);
   set(0xd012,49);set(0xd019,1);e.emit(0xba,0x58);
@@ -114,6 +126,14 @@ export function emitVideoClient(e,state,stage,captureInput='nes_capture_input',c
     // The extra indirect jump is three cycles, removed from the delay.
     for(let i=0;i<(ntsc?29:28);i++)e.emit(0xea);e.abs(0x4c,kernelJump);
   }
-  e.label('mpe_video_irq_finish');set(0xd011,0x3b);set(0xd018,0x78);set(0xd019,1);vector('mpe_video_irq');set(0xd012,48);
+  e.label('mpe_video_irq_finish');set(0xd011,0x3b);
+  if(guardedFli){
+    // The second VIC bank has its top screen at $8c00, not $9c00 (ROM).
+    // Retain the active bank's ordinary screen while the kernel is idle.
+    get(activeBank);e.branch(0xf0,'mpe_video_finish_bank_zero');e.emit(0xa9,0x38);e.branch(0xd0,'mpe_video_finish_screen');
+    e.label('mpe_video_finish_bank_zero');e.emit(0xa9,0x78);e.label('mpe_video_finish_screen');put(0xd018);
+  }else set(0xd018,0x78);
+  set(0xd019,1);vector('mpe_video_irq');set(0xd012,firstIrq);
   e.abs(0xee,state.rasterTicks,'write');e.abs(0x20,'mpe_video_border_tick');e.abs(0x20,captureInput);e.emit(0x68,0xa8,0x68,0xaa,0x68,0x40);
+  if(guardedFli){e.label('mpe_video_missed_irqs');e.emit(0);}
 }
