@@ -36,6 +36,9 @@ Use the joystick in port 2.
 
 ## Display
 
+**MHS Prism is not compatible with DOOMVM.** DoomVM uses the separate display
+modes listed below.
+
 Hold Commodore + Control and press an unshifted function key:
 
 | Key | Display |

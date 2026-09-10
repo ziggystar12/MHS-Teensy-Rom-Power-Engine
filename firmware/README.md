@@ -2,7 +2,7 @@
 
 Download [MPE_Firmware-V1.2.6.hex](MPE_Firmware-V1.2.6.hex) for TeensyROM+
 v0.4 / Teensy 4.1. This combines the latest desktop, graphical Clock,
-Appearance/Input fixes, NUFLIX host and MHS Doom F1 colour converter.
+Appearance/Input fixes, MHS Prism host and MHS Doom F1 colour converter.
 It also includes Travis's latest TeensyROM changes and Final Cartridge III support.
 
 Copy the HEX to the SD root, select it in the firmware updater, confirm the

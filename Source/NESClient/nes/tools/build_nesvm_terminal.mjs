@@ -21,7 +21,7 @@ const terminalSource=path.join(agiRoot,'host/mpe3-title-terminal.mjs');
 const bootSource=path.join(agiRoot,'host/install-boot-bank.mjs');
 for(const f of [terminalSource,bootSource])if(!fs.statSync(f,{throwIfNoEntry:false})?.isFile())throw new Error(`Missing shared source ${f}`);
 const {buildCartridgeBootBank}=await import(pathToFileURL(bootSource).href);
-const text={title:'NESVM - STANDARD / PAN / NUFLIX',footer:'FIRE:A POTX:B SPC:B RET:START SH:SEL',loading:'NESVM STANDARD PAN NUFLIX'};
+const text={title:'NESVM - STANDARD / PAN / PRISM',footer:'FIRE:A POTX:B SPC:B RET:START SH:SEL',loading:'NESVM STANDARD PAN PRISM'};
 const terminal=await buildNesNuflixClient({diagnosticTitle:text.title,diagnosticFooter:text.footer});
 const boot=buildCartridgeBootBank(terminal.prg,{loadingText:text.loading,cartridgeFormat:'easyflash-1m'});
 if(boot.length!==0x4000)throw new Error('NESVM boot bank must be exactly 16 KiB');
@@ -34,7 +34,7 @@ const manifest={format:'M3TP-NESVM-terminal',diagnosticTitle:text.title,diagnost
   codeEnd:terminal.codeEnd,stageAddress:terminal.stageAddress,labels:terminal.labels,inputProtocol:'MPE-HELD-VIDEO-V1',
   chunks:terminal.chunks.map(c=>({address:c.address,bytes:c.bytes.length,sha256:digest(c.bytes)})),
   inputFields:{...NES_INPUT,active:nesNuflixState(NES_INPUT.active),pending:nesNuflixState(NES_INPUT.pending),protocol:0x91,cameraProtocol:0x83},
-  sharpDefault:false,videoModes:['Standard','Pan and scan','NUFLIX','Sharp'],videoDefault:0,nuflixF5:true,minimumFirmwareVersion:'1.2.6',
+  sharpDefault:false,videoModes:['Standard','Pan and scan','MHS Prism','Sharp'],videoDefault:0,nuflixF5:true,minimumFirmwareVersion:'1.2.6',
   videoSelector:'Commodore+Control+unshifted F1/F3/F5/F7',romDirectory:'/NESVM/ROMS',saveDirectory:'/NESVM/SAVES',
   audioProtocol:'NES-SID-V1',audioPacketBytes:26,audioScope:'basic NTSC SID register mapping',
   nesOverlaySha256:digest(fs.readFileSync(path.join(here,'nes_terminal.mjs'))),sharedTerminalSha256:digest(fs.readFileSync(terminalSource)),

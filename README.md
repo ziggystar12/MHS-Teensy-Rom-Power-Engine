@@ -46,11 +46,28 @@ testing; it uses the same DoomVM package and MPE contract.
 
 **DoomVM and NESVM are available publicly.** Other VMs remain in development.
 
+## MHS Prism: designed for games
+
+**MHS Prism is our live 320x200, 4-bit color graphics system for MPE.**
+It uses the C64's 16 colors and brings together automatic real-time conversion,
+fast color selection, caching, detection of unchanged regions and reuse of
+conversion work, double buffering, transfer management and coordinated
+input/audio delivery.
+
+Prism offers superior overall color richness to standard 320x200 RGB CGA and
+puts resolution and color count in the same ballpark as Tandy 1000 and EGA:
+a significant upgrade to the usual C64 experience. The C64's palette and local
+color-placement rules still apply. [Meet MHS Prism](docs/MHS-PRISM.md).
+
+NESVM includes Prism on F5. DOSVM is in development, with its public launch
+planned for later in 2026. **MHS Prism is not compatible with DOOMVM**;
+DoomVM retains its own separate display modes.
+
 ## Downloads
 
 - [GUI firmware 1.2.6](firmware/MPE_Firmware-V1.2.6.hex)
 - [DoomVM 1.2](vms/DOOMVM.zip)
-- [NESVM 1.1.1](vms/NESVM.zip) — centered NUFLIX F5, improved greens, mappers 0/1/2/3/4/7/11 and cartridge saves
+- [NESVM 1.1.2](vms/NESVM.zip) — MHS Prism F5, improved greens, mappers 0/1/2/3/4/7/11 and cartridge saves
   ([setup and controls](docs/NESVM.md))
 
 VMs and firmware have separate version numbers: DoomVM 1.2 pairs with
@@ -59,7 +76,7 @@ runtime files, with firmware downloaded separately.
 
 Firmware 1.2.6 includes Travis's latest TeensyROM updates and Final Cartridge
 III support. It retains the graphical Clock, repaired Appearance/Input pages,
-NUFLIX display support and MHS colour fitting for Doom F1. The status bar uses
+MHS Prism display support and MHS colour fitting for Doom F1. The status bar uses
 solid colours. The two-button startup flasher has been removed; the normal
 firmware updater remains. Install both downloads for the new Doom picture.
 F7 Sharp, controls, sound and game data are unchanged. Keep existing music.
@@ -81,8 +98,8 @@ effects work without music files. See [controls and optional music](docs/DOOM.md
 For NESVM, extract `NESVM.zip` to the SD card root and launch `NESVM.crt`,
 or select a `.nes` file in the GUI. Keep your existing ROMs and saves.
 The ZIP includes the authorized Crossbow demo; add compatible NTSC mapper
-0/1/2/3/4/7/11 ROMs to `/VMS/NESVM/ROMS/`. NESVM 1.1.1 requires firmware 1.2.6 or later.
-F5 now centers the native 256-pixel width, fits the visible 224 rows into 200,
+0/1/2/3/4/7/11 ROMs to `/VMS/NESVM/ROMS/`. NESVM 1.1.2 requires firmware 1.2.6 or later.
+MHS Prism F5 centers the native 256-pixel width, fits the visible 224 rows into 200,
 and tracks changed cells to reduce conversion work. F5 green tones are improved
 across games. Mapper 1/4 saves remain in `/VMS/NESVM/SAVES/`.
 SID sound is approximate. [Controls, display modes and compatibility](docs/NESVM.md).
@@ -110,15 +127,19 @@ is in [Source/DoomEngine](Source/DoomEngine/). NESVM engine source is in
 
 ## Credits
 
-The MPE system, MPE Cartridge VM format, custom GUI and TeensyROM+ integration
-are developed by MHS. TeensyROM hardware and the original firmware were created
+The MPE system, MHS Prism graphics system, MPE Cartridge VM format, custom GUI
+and TeensyROM+ integration are developed by MHS. Our Prism work includes live
+conversion, fast color selection, caching, change detection and conversion
+reuse, double buffering, transfer management and coordinated input/audio delivery.
+TeensyROM hardware and the original firmware were created
 by Travis Smith / Sensorium Embedded; this project builds on his
 [TeensyROM](https://github.com/SensoriumEmbedded/TeensyROM) work.
 Our DoomVM integration uses the [GBADoom](https://github.com/doomhack/GBADoom)
 engine, building on the work of its authors and the original Doom creators.
-The F1 colour converter is developed by MHS. Advanced display support uses
-[NUFLIX Studio](https://github.com/cobbpg/nuflix-studio) by Patai Gergely;
-its MIT notice is included with the display source.
+The Doom F1 colour converter is developed by MHS.
+Prism's display technique was inspired by NUFLI. It also incorporates MIT-licensed
+display components from [NUFLIX Studio](https://github.com/cobbpg/nuflix-studio)
+by Patai Gergely; their original notices remain with the source and packages.
 Original copyright notices and licences are included with the source.
 NESVM uses Matthew Conte's Nofrendo, ported through Jean-Marc Harvengt's
 MCUME; its GNU Library GPL v2 licence and notices accompany the download

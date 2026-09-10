@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// NES-only receiver: existing indexed F1/F3/F7 and the shared NUFLIX F5 service.
+// NES-only receiver: existing indexed F1/F3/F7 and the shared MHS Prism F5 service.
 import fs from 'node:fs';
 import path from 'node:path';
 import assert from 'node:assert/strict';
@@ -43,7 +43,7 @@ export function emitNesNuflixVideo(e,state,stage,template) {
   e.label('nes_disable_done');e.emit(0x60);
   e.label('mpe_video_border_tick');get(enabled);e.branch(0xf0,'nes_border_done');e.abs(0x4c,'nes_nuflix_border_tick');e.label('nes_border_done');e.emit(0x60);
   e.label('nes_nuflix_frame_ready');e.emit(0x60);
-  // Keep the established NUFLIX raster and double-buffer handshake intact.
+  // Keep the established MHS Prism raster and double-buffer handshake intact.
   const aliases={mpe_video_packet:'nes_nuflix_packet',mpe_video_disable:'nes_nuflix_disable',mpe_video_border_tick:'nes_nuflix_border_tick',dos_fli_frame_ready:'nes_nuflix_frame_ready'};
   const rename=a=>aliases[a]??a;
   const proxy=new Proxy(e,{get(target,key){
@@ -57,7 +57,7 @@ export function emitNesNuflixVideo(e,state,stage,template) {
 
 function transformNesNuflix(source,template) {
   source=source.replaceAll('\r\n','\n');
-  const replace=(before,after)=>{assert.equal(source.split(before).length,2,'NES NUFLIX hook changed: '+before);source=source.replace(before,after);};
+  const replace=(before,after)=>{assert.equal(source.split(before).length,2,'NES MHS Prism hook changed: '+before);source=source.replace(before,after);};
   source=`import {emitNesNuflixVideo,nesNuflixState,scatterNesReceiver} from '${import.meta.url}';\n`+source;
   replace('runtimeAddress: 0x0810','runtimeAddress: 0x8000');
   replace('gameplay ? 0x2800 : MPE3_TITLE_PULL.stageAddress','gameplay ? 0x0400 : MPE3_TITLE_PULL.stageAddress');
@@ -77,7 +77,7 @@ function transformNesNuflix(source,template) {
   replace('for (const page of [4, 5, 6, 7])','for (const page of [0x80, 0x81, 0x82, 0x83])');
   replace('  storeImmediate(e, 0xd018, 0x14);','  storeImmediate(e, 0xd018, 0x04);');
   replace('  e.emit(0x09, 3);\n  e.abs(0x8d, 0xdd00, "write");','  e.emit(0x29,0xfc,0x09,1);\n  e.abs(0x8d,0xdd00,"write");');
-  // SID updates must not overwrite the NUFLIX picture's VIC/sprite policy.
+  // SID updates must not overwrite the MHS Prism picture's VIC/sprite policy.
   replace('    e.abs(0x20, "publish_display_policy");\n    e.abs(0x20, \'game_ego_commit\');',
     '    e.abs(0xad,0x02e3,"read");e.branch(0xd0,"nes_nuflix_policy_ready");\n    e.abs(0x20,"publish_display_policy");\n    e.abs(0x20,\'game_ego_commit\');\n    e.label("nes_nuflix_policy_ready");');
   return source;
@@ -86,7 +86,7 @@ function transformNesNuflix(source,template) {
 export async function buildNesNuflixClient(options={}) {
   const template=fs.readFileSync(path.join(root,'nes/client/nuflix/nufli-template.bin'));
   const module=await loadNesTerminal(path.join(root,'vm/client'),{transformSource:source=>transformNesNuflix(source,template)});
-  const program=module.buildMpe3TitleTerminal({gameplay:true,enable1351Mouse:false,diagnosticTitle:'NESVM - STANDARD / PAN / NUFLIX',diagnosticFooter:'FIRE:A POTX:B SPC:B RET:START SH:SEL',...options});
+  const program=module.buildMpe3TitleTerminal({gameplay:true,enable1351Mouse:false,diagnosticTitle:'NESVM - STANDARD / PAN / PRISM',diagnosticFooter:'FIRE:A POTX:B SPC:B RET:START SH:SEL',...options});
   assert.equal(program.labels.nuflix_irq_dispatch,0x0f00);
   const installer=new Emitter(0x0200);installer.emit(0x78,0xa9,0x35,0x85,1);let packed=0xa000;
   for(const [index,chunk] of program.chunks.entries()) {

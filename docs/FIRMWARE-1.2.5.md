@@ -2,7 +2,7 @@
 
 The desktop gains a graphical Clock page and fixes for Appearance, Input,
 Control Panel navigation, Popcorn and saved music pause/play. The shared
-NUFLIX host is included.
+MHS Prism host is included.
 
 Doom F1 uses MHS colour fitting with cached palette mixtures and a solid-colour
 status bar. F7 Sharp, the launcher, sound and game data are unchanged.

@@ -1,8 +1,9 @@
-# NESVM 1.1.1 for TeensyROM+
+# NESVM 1.1.2 for TeensyROM+
 
-NESVM 1.1.1 centers the NUFLIX F5 picture, skips conversion work for unchanged
-areas, and preserves green NES shades when matching the C64 palette. It retains
-the mapper 1, 2, 3, 4 and 7 support and cartridge saves added in NESVM 1.1.
+NESVM 1.1.2 introduces the MHS Prism name for our game-focused F5 graphics.
+It retains the centered picture, unchanged-region conversion reuse and green
+NES color matching from 1.1.1, plus the mapper support and cartridge saves
+added in NESVM 1.1. [Meet MHS Prism](MHS-PRISM.md).
 Use **MPE firmware 1.2.6 or later**, TeensyROM+ v0.4 and a Teensy 4.1.
 Download [NESVM.zip](https://github.com/ziggystar12/MHS-Teensy-Rom-Power-Engine/raw/refs/heads/main/vms/NESVM.zip)
 and extract it to the SD card root, replacing the supplied runtime files while
@@ -23,12 +24,13 @@ Hold **Commodore + Control** and press an unshifted function key:
 
 - **F1 Standard:** full-frame multicolor view.
 - **F3 Pan and scan:** a 160x200 native-pixel crop; hold WASD to pan.
-- **F5 NUFLIX:** native 256-pixel width centered between 32-pixel black side
+- **F5 MHS Prism:** native 256-pixel width centered between 32-pixel black side
   borders. Eight source lines are trimmed from the top and bottom, then the
   remaining 224 lines are squeezed into 200.
 - **F7 Sharp:** centered hires view.
 
-F5 tracks changed picture cells and skips conversion for unchanged images.
+MHS Prism automatically converts the live game picture with fast C64 color
+selection. F5 detects unchanged regions and reuses cached conversion work.
 This reduces conversion work; the amount of picture data sent can still limit
 smoothness. The C64 palette approximates NES colors. Green shades remain green
 across games; very dark green is brighter because the C64 has no darker green.
@@ -87,8 +89,8 @@ licenses. Corresponding source and rebuild instructions are provided
 separately in [Source/NESEngine](https://github.com/ziggystar12/MHS-Teensy-Rom-Power-Engine/tree/main/Source/NESEngine)
 and [Source/NESClient](https://github.com/ziggystar12/MHS-Teensy-Rom-Power-Engine/tree/main/Source/NESClient).
 
-MHS developed the MPE platform and NESVM integration. TeensyROM hardware
+MHS developed the MPE platform, MHS Prism graphics system and NESVM integration. TeensyROM hardware
 and original firmware are by Travis Smith / Sensorium Embedded. NESVM uses
-Matthew Conte's Nofrendo, ported through Jean-Marc Harvengt's MCUME, and
-the NUFLIX display template by Patai Gergely. See the included notices
-and licenses for attribution and terms.
+Matthew Conte's Nofrendo, ported through Jean-Marc Harvengt's MCUME. See the
+[project credits](../README.md#credits) and included notices and licenses
+for attribution and terms.

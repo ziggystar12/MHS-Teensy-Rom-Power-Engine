@@ -21,6 +21,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 The MIT notice above remains applicable to the original TeensyROM code.
-The MHS colour converter is MIT-licensed. NUFLIX display support retains
+The MHS colour converter is MIT-licensed. MHS Prism display support retains
 Patai Gergely's MIT notice. VM engines and other components retain their
 own licences and copyright notices.

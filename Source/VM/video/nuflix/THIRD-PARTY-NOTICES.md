@@ -1,4 +1,4 @@
-# NUFLIX display support
+# MHS Prism display support: third-party notices
 
 Scheduler, packer and display-template adaptations from NUFLIX Studio by
 Patai Gergely: https://github.com/cobbpg/nuflix-studio

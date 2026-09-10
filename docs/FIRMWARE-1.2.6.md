@@ -4,11 +4,11 @@ This update brings in Travis's latest TeensyROM 0.8.0.5 changes, including
 Final Cartridge III support by Paul Harker, the Alternate-button default
 correction and a firmware-update space check.
 
-A shared video fix lets NUFLIX-capable clients switch back to F1/F3/F7
+A shared video fix lets MHS Prism-capable clients switch back to F1/F3/F7
 without restarting. Invalid timing values remain rejected.
 
 The graphical desktop and Clock, Appearance/Input fixes, Popcorn improvements,
-NUFLIX display support and MHS Doom F1 colour fitting remain included.
+MHS Prism display support and MHS Doom F1 colour fitting remain included.
 F7 Sharp is unchanged. There is no two-button startup firmware-recovery
 option; the normal firmware updater and PJRC hardware loader remain available.
 

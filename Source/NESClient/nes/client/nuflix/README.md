@@ -1,6 +1,6 @@
-# NESVM NUFLIX receiver support
+# NESVM MHS Prism receiver support
 
-The F5 receiver uses the existing MHS double-buffer NUFLIX handshake. NESVM
+The F5 receiver uses the existing MHS Prism double-buffer handshake. NESVM
 keeps Standard F1, the native-pixel F3 crop, and F7 hires. Its scatter layout
 excludes `$7a00-$7fff`, preserving the ordinary bitmap at `$6000-$7f3f`.
 

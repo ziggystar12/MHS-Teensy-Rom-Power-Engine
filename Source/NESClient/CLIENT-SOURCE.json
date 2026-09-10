@@ -1,6 +1,6 @@
 {
-  "sourceCommit": "145f4b7646a4666d9ee841e05627df89bcdab72b",
-  "expectedClientSha256": "c664db0e05c7840aab80f4845c025068b50f111cef3fd3d2457c855ebc7423bd",
+  "sourceCommit": "356f39c03d56359a63692d9068fdc824d10ab687",
+  "expectedClientSha256": "80ebb5c83312a2f2b7ba1abe0f4ecf898fd2d5bfb8e582a1208b275583bceb84",
   "files": [
     {
       "path": ".gitignore",
@@ -10,17 +10,17 @@
     },
     {
       "path": "LICENSE.md",
-      "bytes": 1324,
-      "sha256": "a11da5ceab0898e4e4ea615ff0cce52787b8fca5d68aef1373f6430c98028dba",
-      "sourceCommit": "145f4b7646a4666d9ee841e05627df89bcdab72b",
-      "originalSha256": "a11da5ceab0898e4e4ea615ff0cce52787b8fca5d68aef1373f6430c98028dba",
+      "bytes": 1327,
+      "sha256": "4c0cb041def0cdd41e9ee857d19462c125646f983308328f24a0e80a34337864",
+      "sourceCommit": "356f39c03d56359a63692d9068fdc824d10ab687",
+      "originalSha256": "4c0cb041def0cdd41e9ee857d19462c125646f983308328f24a0e80a34337864",
       "unchanged": true
     },
     {
       "path": "nes/client/nuflix/double-video.mjs",
       "bytes": 6304,
       "sha256": "7fec46f5d1dfce084ba9860836573bad882e31ce354771c6910d045675c759c6",
-      "sourceCommit": "145f4b7646a4666d9ee841e05627df89bcdab72b",
+      "sourceCommit": "356f39c03d56359a63692d9068fdc824d10ab687",
       "originalSha256": "7fec46f5d1dfce084ba9860836573bad882e31ce354771c6910d045675c759c6",
       "unchanged": true
     },
@@ -28,7 +28,7 @@
       "path": "nes/client/nuflix/emitter.mjs",
       "bytes": 1166,
       "sha256": "d62367a8e8ccc380c2d112894659a663130759b812987237bc87af73cc9c5b0b",
-      "sourceCommit": "145f4b7646a4666d9ee841e05627df89bcdab72b",
+      "sourceCommit": "356f39c03d56359a63692d9068fdc824d10ab687",
       "originalSha256": "d62367a8e8ccc380c2d112894659a663130759b812987237bc87af73cc9c5b0b",
       "unchanged": true
     },
@@ -36,7 +36,7 @@
       "path": "nes/client/nuflix/LICENSE",
       "bytes": 1070,
       "sha256": "1a969dd98763da79faa7d888975880da8529f8eea768fe7cc8f43befe0c2750f",
-      "sourceCommit": "145f4b7646a4666d9ee841e05627df89bcdab72b",
+      "sourceCommit": "356f39c03d56359a63692d9068fdc824d10ab687",
       "originalSha256": "1a969dd98763da79faa7d888975880da8529f8eea768fe7cc8f43befe0c2750f",
       "unchanged": true
     },
@@ -44,23 +44,23 @@
       "path": "nes/client/nuflix/nufli-template.bin",
       "bytes": 23040,
       "sha256": "9d644d1012e22cf5e74de54d3ab689380ac9272b45d672bfd6769de8673b877c",
-      "sourceCommit": "145f4b7646a4666d9ee841e05627df89bcdab72b",
+      "sourceCommit": "356f39c03d56359a63692d9068fdc824d10ab687",
       "originalSha256": "9d644d1012e22cf5e74de54d3ab689380ac9272b45d672bfd6769de8673b877c",
       "unchanged": true
     },
     {
       "path": "nes/client/nuflix/README.md",
-      "bytes": 980,
-      "sha256": "417032b651dc427ddc1e6b7bdbbc9d1842bb89e6f149f4c348710cf42e8a8408",
-      "sourceCommit": "145f4b7646a4666d9ee841e05627df89bcdab72b",
-      "originalSha256": "417032b651dc427ddc1e6b7bdbbc9d1842bb89e6f149f4c348710cf42e8a8408",
+      "bytes": 982,
+      "sha256": "e57c1cc4cf36df198af943b6460b5218945d1f6c6170b50ccd2c25c54532d2f3",
+      "sourceCommit": "356f39c03d56359a63692d9068fdc824d10ab687",
+      "originalSha256": "e57c1cc4cf36df198af943b6460b5218945d1f6c6170b50ccd2c25c54532d2f3",
       "unchanged": true
     },
     {
       "path": "nes/client/nuflix/scatter-receiver.mjs",
       "bytes": 3508,
       "sha256": "339e200fcbe4f70a0b3bf43dad628b330d43f71da05b59ec1984ef1b311dd49f",
-      "sourceCommit": "145f4b7646a4666d9ee841e05627df89bcdab72b",
+      "sourceCommit": "356f39c03d56359a63692d9068fdc824d10ab687",
       "originalSha256": "339e200fcbe4f70a0b3bf43dad628b330d43f71da05b59ec1984ef1b311dd49f",
       "unchanged": true
     },
@@ -68,45 +68,45 @@
       "path": "nes/tools/build_nesvm_cartridge.mjs",
       "bytes": 3215,
       "sha256": "5dd3182a41266c30d6864545e61c59140a0c4da5fbd27a4fb4d20f653530c1a8",
-      "sourceCommit": "145f4b7646a4666d9ee841e05627df89bcdab72b",
+      "sourceCommit": "356f39c03d56359a63692d9068fdc824d10ab687",
       "originalSha256": "5dd3182a41266c30d6864545e61c59140a0c4da5fbd27a4fb4d20f653530c1a8",
       "unchanged": true
     },
     {
       "path": "nes/tools/build_nesvm_terminal.mjs",
-      "bytes": 3372,
-      "sha256": "38f948b44ee2a039fb16057cf219f4a3ec957571867a26eb2d5adc015bc25da6",
-      "sourceCommit": "145f4b7646a4666d9ee841e05627df89bcdab72b",
-      "originalSha256": "38f948b44ee2a039fb16057cf219f4a3ec957571867a26eb2d5adc015bc25da6",
+      "bytes": 3373,
+      "sha256": "9caed99a60ce93684d9d162305598eb6c3f4f27295f599979a01f9c491d5ad1f",
+      "sourceCommit": "356f39c03d56359a63692d9068fdc824d10ab687",
+      "originalSha256": "9caed99a60ce93684d9d162305598eb6c3f4f27295f599979a01f9c491d5ad1f",
       "unchanged": true
     },
     {
       "path": "nes/tools/nes_nuflix.mjs",
-      "bytes": 10281,
-      "sha256": "51d82507bca7c4369a750a8c940428b313f513fb29e22e13f2a400216dd3564f",
-      "sourceCommit": "145f4b7646a4666d9ee841e05627df89bcdab72b",
-      "originalSha256": "51d82507bca7c4369a750a8c940428b313f513fb29e22e13f2a400216dd3564f",
+      "bytes": 10292,
+      "sha256": "92c8bd9034d4fce4c889f48e158779f0e46a32d3040da86684d91f57a193ba31",
+      "sourceCommit": "356f39c03d56359a63692d9068fdc824d10ab687",
+      "originalSha256": "92c8bd9034d4fce4c889f48e158779f0e46a32d3040da86684d91f57a193ba31",
       "unchanged": true
     },
     {
       "path": "nes/tools/nes_terminal.mjs",
       "bytes": 13234,
       "sha256": "aa77b6a24e4b1c431664ed5123fbbdb8febc66e81b92a78c7565d304bf7309b4",
-      "sourceCommit": "145f4b7646a4666d9ee841e05627df89bcdab72b",
+      "sourceCommit": "356f39c03d56359a63692d9068fdc824d10ab687",
       "originalSha256": "aa77b6a24e4b1c431664ed5123fbbdb8febc66e81b92a78c7565d304bf7309b4",
       "unchanged": true
     },
     {
       "path": "README.md",
-      "bytes": 1842,
-      "sha256": "308a1af8677d7b054cd64b56f2bcbb0563dec56802d5a0cd23c2749f9edd93e2",
+      "bytes": 1822,
+      "sha256": "9165334b5b4abcc1bf88e593c592762e8766265e3f43ec2b9deaebbd529e7a81",
       "generated": true
     },
     {
       "path": "vm/client/host/install-boot-bank.mjs",
       "bytes": 6665,
       "sha256": "ce5ce586ff90d23b1bb6a84b4d0ee61653e797fb15adcfe5c4c3135f78e5a7b1",
-      "sourceCommit": "145f4b7646a4666d9ee841e05627df89bcdab72b",
+      "sourceCommit": "356f39c03d56359a63692d9068fdc824d10ab687",
       "originalSha256": "ce5ce586ff90d23b1bb6a84b4d0ee61653e797fb15adcfe5c4c3135f78e5a7b1",
       "unchanged": true
     },
@@ -114,7 +114,7 @@
       "path": "vm/client/host/loading-text.mjs",
       "bytes": 1736,
       "sha256": "f89339af01873565277a62e24adcadd4e71fafeaa6c88474dabb1250f6ff5b17",
-      "sourceCommit": "145f4b7646a4666d9ee841e05627df89bcdab72b",
+      "sourceCommit": "356f39c03d56359a63692d9068fdc824d10ab687",
       "originalSha256": "f89339af01873565277a62e24adcadd4e71fafeaa6c88474dabb1250f6ff5b17",
       "unchanged": true
     },
@@ -122,7 +122,7 @@
       "path": "vm/client/host/mpe-video-client.mjs",
       "bytes": 11139,
       "sha256": "d1d26a6d79eada80fc07f30e6492e6bf9c2350fc8c61d0bec04e344ce7eed08f",
-      "sourceCommit": "145f4b7646a4666d9ee841e05627df89bcdab72b",
+      "sourceCommit": "356f39c03d56359a63692d9068fdc824d10ab687",
       "originalSha256": "d1d26a6d79eada80fc07f30e6492e6bf9c2350fc8c61d0bec04e344ce7eed08f",
       "unchanged": true
     },
@@ -130,7 +130,7 @@
       "path": "vm/client/host/mpe3-title-terminal.mjs",
       "bytes": 48873,
       "sha256": "34009bb5d6aa885e72530bfc4dac8ddbd8ba2ab34c5012238be72be8f1cc5bc3",
-      "sourceCommit": "145f4b7646a4666d9ee841e05627df89bcdab72b",
+      "sourceCommit": "356f39c03d56359a63692d9068fdc824d10ab687",
       "originalSha256": "34009bb5d6aa885e72530bfc4dac8ddbd8ba2ab34c5012238be72be8f1cc5bc3",
       "unchanged": true
     },
@@ -138,7 +138,7 @@
       "path": "vm/client/host/mpe4-ego-sprites.mjs",
       "bytes": 4272,
       "sha256": "57b92ab218973f10b7d0c2f978efc8d25975e86c9f45d543b1a25fb26efb77df",
-      "sourceCommit": "145f4b7646a4666d9ee841e05627df89bcdab72b",
+      "sourceCommit": "356f39c03d56359a63692d9068fdc824d10ab687",
       "originalSha256": "57b92ab218973f10b7d0c2f978efc8d25975e86c9f45d543b1a25fb26efb77df",
       "unchanged": true
     },
@@ -146,7 +146,7 @@
       "path": "vm/client/host/mpe4-keyboard.mjs",
       "bytes": 8688,
       "sha256": "3bd3e1f5d77951a215fded152f7b15cb984ab8dc73b74499aa9ef321ea82b8a4",
-      "sourceCommit": "145f4b7646a4666d9ee841e05627df89bcdab72b",
+      "sourceCommit": "356f39c03d56359a63692d9068fdc824d10ab687",
       "originalSha256": "3bd3e1f5d77951a215fded152f7b15cb984ab8dc73b74499aa9ef321ea82b8a4",
       "unchanged": true
     },
@@ -154,7 +154,7 @@
       "path": "vm/client/host/mpe4-mouse.mjs",
       "bytes": 7555,
       "sha256": "ff716a072ab673aac19b8ca968f7688264764902c238c4e6887ee4a852826ca3",
-      "sourceCommit": "145f4b7646a4666d9ee841e05627df89bcdab72b",
+      "sourceCommit": "356f39c03d56359a63692d9068fdc824d10ab687",
       "originalSha256": "ff716a072ab673aac19b8ca968f7688264764902c238c4e6887ee4a852826ca3",
       "unchanged": true
     }
