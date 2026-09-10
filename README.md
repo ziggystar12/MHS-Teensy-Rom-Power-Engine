@@ -25,7 +25,7 @@ bus-mastering DMA to transfer display data directly into C64 memory. Original
 TeensyROM v0.2/v0.3 is not supported by this VM implementation; the proposed
 stock-interface firmware also requires TR+ hardware for VMs.
 
-## The platform we created
+## The platform
 
 MHS developed the MPE system and MPE Cartridge VM package format: the firmware
 host, module loader, shared services and C64 communication that let our VM
