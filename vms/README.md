@@ -1,63 +1,60 @@
 # VM downloads
 
-## NESVM 1.1.2
+Use **MPE GUI firmware 1.2.23 or later** with these releases on TeensyROM+
+v0.4 and a Teensy 4.1. [Download the firmware separately](../firmware/).
+Extract each ZIP to the SD card root, replacing its matching engine and
+launcher together. Keep your existing ROMs, game data and saves.
 
-[Download NESVM 1.1.2](NESVM.zip)
+## NESVM 1.2.0
 
-NESVM runs compatible NTSC mapper 0/1/2/3/4/7/11 NES games through MPE on TeensyROM+
-v0.4 with a Teensy 4.1. **MHS Prism F5** centers the native 256-pixel image with black
-side margins, trims eight overscan rows at each end, and fits the remaining
-224 rows into 200. Automatic live conversion, fast color selection and cached
-conversion reuse concentrate work on changed regions. Green tones are improved
-across games. Standard F1, pan and scan F3, Sharp F7, supported
-mappers and cartridge saves are retained. Use **firmware 1.2.6 or later**,
-downloaded separately.
+[Download NESVM 1.2.0](NESVM.zip)
 
-Extract to the SD root and launch `NESVM.crt`. The authorized Crossbow demo
-is included; put compatible ROMs in `/VMS/NESVM/ROMS/`. Keep existing saves
-in `/VMS/NESVM/SAVES/`. Install the matching engine and launcher together.
+NESVM runs compatible NTSC mapper 0/1/2/3/4/7/11 NES games. This release adds
+the current core timing improvements, MHS Prism+ F5 graphics and continuing
+SID updates during picture transfers. Prism+ keeps a complete picture visible
+while preparing the next display bank and reuses unchanged conversion work.
+F5 shows all 256 NES columns between black side margins. C64 palette and
+display constraints still apply; no particular hardware frame rate is promised.
 
-Port-2 Fire is A; a C64GS-compatible second button or Space is B. Return is
-Start and Shift is Select. Sound is approximated through the SID; DMC sample
-playback is emulated for game operation but is not mixed into SID sound.
-MMC3 timing remains approximate, and Battletoads still stalls after its intro.
-Host and VICE checks do not establish physical gameplay speed.
-[Setup, controls, display modes and exact compatibility limits](../docs/NESVM.md).
+Hold Control + Commodore and press unshifted F1 for Standard, F3 for pan and
+scan, or F5 for Prism+. F7 is ignored. Port-2 Fire is A, a C64GS-compatible
+second button or Space is B, Return is Start, and standalone Shift is Select.
 
-Licenses and notices are included. Corresponding source and build instructions
-are separate: [NES engine](../Source/NESEngine/) and [C64 launcher](../Source/NESClient/).
+Launch NESVM.crt or select a compatible .nes file in the GUI or classic text
+SD browser. The ZIP contains only the authorized Crossbow demo. Put other
+compatible ROMs in /VMS/NESVM/ROMS/ for the picker and keep /VMS/NESVM/SAVES/.
+Sound uses the SID; DMC sample timing is emulated but samples are not mixed
+into SID sound. MMC3 timing remains approximate, and Battletoads stalls
+after its intro. [Setup, controls and compatibility limits](../docs/NESVM.md).
 
-[MHS Prism](../docs/MHS-PRISM.md) is our 320x200, 4-bit color graphics system,
-designed for games. DOSVM remains in development for a planned public launch
-later in 2026.
+## DoomVM 1.2.1
 
-## DoomVM
+[Download DoomVM 1.2.1](DOOMVM.zip)
 
-[Download DoomVM 1.2](DOOMVM.zip)
+Launch DOOMVM.crt after extracting the complete ZIP. It includes the engine,
+universal PAL/NTSC C64 launcher, notices, and ready-to-use doom1.gbd game data
+from Doom shareware 1.9. Keep the shareware license with that data.
+The package retains status-read recovery and its separate display modes,
+including F1 multicolor and F7 Sharp. **DOOMVM does not use Prism+.**
 
-DoomVM is versioned separately from the firmware. This is DoomVM **1.2**,
-paired with current firmware **1.2.6**. The download keeps the name `DOOMVM.zip`;
-its README and `VMS/DOOMVM/version.json` identify the installed VM version.
+Music is optional; gameplay and sound effects work without music files.
+The normal route is E1M1 → E1M4 → E1M5 → E1M8; oversized maps are skipped.
+Host checks and VICE captures do not establish physical gameplay performance.
+[Setup, controls and optional music](../docs/DOOM.md).
 
-**MHS Prism is not compatible with DOOMVM.** DoomVM uses its own separate
-display modes.
+## Source and licenses
 
-Extract the ZIP to the root of your SD card and launch `DOOMVM.crt`.
-It includes the engine, launcher and ready-to-use `doom1.gbd` game data from
-Doom shareware 1.9 (the free demo). The same launcher works on PAL and NTSC
-C64s with TeensyROM+.
+Each download retains its component licenses and notices. Complete
+corresponding engine source and rebuild instructions are available for
+[NESVM](../Source/NESEngine/) and [DoomVM](../Source/DoomEngine/). Nofrendo
+and the NES engine adapter retain GNU Library GPL version 2 rights.
 
-Install the [current GUI firmware](../firmware/) and this full ZIP for improved
-F1 multicolor shading. F7 Sharp is unchanged. The package retains the
-status-read recovery launcher and existing shareware game data.
-Music is optional: gameplay and sound effects work with no music files
-installed. [Optional music instructions](../docs/DOOM.md#music).
+The new MHS Prism+ C64 receiving and relocation implementation is supplied as
+compiled code with its implementation source private. Its restricted license
+applies only to the identified new MHS contributions and preserves earlier
+MIT grants and third-party rights. [Source/NESClient](../Source/NESClient/)
+is the historical NESVM 1.1.2 client source, not this Prism+ client's source.
 
-Only the engine's video-profile negotiation changes; gameplay is unchanged.
-Complete corresponding source and build tools are available separately in
-[Source/DoomEngine](../Source/DoomEngine/).
-
-The normal route is E1M1 → E1M4 → E1M5 → E1M8. Oversized maps are skipped.
-The added levels pass host tests; physical gameplay testing is still needed.
-
-[Setup and controls](../docs/DOOM.md)
+The current firmware has separate [relinking materials and build instructions](../docs/BUILDING.md)
+for its LGPL libraries. Rebuilding a VM engine does not require relinking the
+firmware. [License and component boundaries](../docs/PRISM-PLUS-LICENSE.md).

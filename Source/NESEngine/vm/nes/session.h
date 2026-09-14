@@ -103,13 +103,24 @@ static void MPE6NuflixForceDirty(){
 }
 
 static FLASHMEM bool MPE6ConfigureMode(uint8_t mode){
+   // NESVM exposes Standard, Pan and scan, and Prism+ only. Reject stale
+   // Sharp requests before releasing the current working video workspace.
+   if(mode>2)return false;
+   // No pending frame reaches this boundary. Release the prior arena owner
+   // before choosing another presenter, including a return from Prism+.
+   if(!ModuleHost->video_configure(nullptr))return false;
    if(mode==2){
       VmCenterVideoSetup setup{{sizeof(VmCenterVideoSetup),MPE6VideoStorage,VM_NUFLIX_VIDEO_WORKSPACE_BYTES,2,4,
-         VM_INDEXED_NUFLIX_F5|VM_INDEXED_SEPARATE_SELECTORS},0,25,0};
-      if(!ModuleHost->video_configure(&setup.setup))return false;
+         0x9000|VM_INDEXED_SEPARATE_SELECTORS},0,25,32};
+      // New Prism+ hosts can fill the fixed side margins without calling back
+      // into NESVM. Older hosts reject this hint; retain their original setup.
+      if(!ModuleHost->video_configure(&setup.setup)){
+         setup.reserved=0;
+         if(!ModuleHost->video_configure(&setup.setup))return false;
+      }
       MPE6NuflixForceDirty();
    }else{
-      VmIndexedVideoSetup setup{sizeof(VmIndexedVideoSetup),MPE6VideoStorage,mpe_video::DeltaWorkspaceBytes,mode,11,
+      VmIndexedVideoSetup setup{sizeof(VmIndexedVideoSetup),MPE6VideoStorage,mpe_video::DeltaWorkspaceBytes,mode,3,
          VM_INDEXED_SPRITE_F5|VM_INDEXED_SPRITE_TAGS|VM_INDEXED_CROP_F3};
       if(!ModuleHost->video_configure(&setup))return false;
    }
@@ -508,7 +519,7 @@ static FLASHMEM bool MPE6Start(uint32_t root)
       MPE6NuflixSourceRows[y]=uint8_t(sourceY);MPE6NuflixRows[sourceY]=uint8_t((y>>3)*5);
    }
    for(unsigned i=0;i<16;i++){auto c=nes::c64_rgb(i);MPE6NuflixPalette[i*3]=c.r;MPE6NuflixPalette[i*3+1]=c.g;MPE6NuflixPalette[i*3+2]=c.b;}
-   VmIndexedVideoSetup videoSetup{sizeof(VmIndexedVideoSetup),videoStorage,mpe_video::DeltaWorkspaceBytes,0,11,VM_INDEXED_SPRITE_F5|VM_INDEXED_SPRITE_TAGS|VM_INDEXED_CROP_F3};
+   VmIndexedVideoSetup videoSetup{sizeof(VmIndexedVideoSetup),videoStorage,mpe_video::DeltaWorkspaceBytes,0,3,VM_INDEXED_SPRITE_F5|VM_INDEXED_SPRITE_TAGS|VM_INDEXED_CROP_F3};
    MPE6CropVideo=MPE6SpriteVideo=ModuleHost->video_configure(&videoSetup);
    if(!MPE6SpriteVideo){videoSetup.reserved=VM_INDEXED_SPRITE_F5|VM_INDEXED_SPRITE_TAGS;MPE6SpriteVideo=ModuleHost->video_configure(&videoSetup);}
    if(!MPE6SpriteVideo){videoSetup.reserved=0;if(!ModuleHost->video_configure(&videoSetup))return false;}
@@ -575,7 +586,13 @@ static FLASHMEM void MPE6NextPacket()
          VmIndexedFrame *source=MPE6NuflixVideo?&nuflix.raster.frame:&native;
          MPE6VideoSubmitted=true;
          const auto result=ModuleHost->video_indexed(source);
-         if(result==VmVideoResult::Busy)return;
+         if(result==VmVideoResult::Busy){
+            // Prism+ uploads span several display frames. Publish changed
+            // sound between host video packets without ending the frozen
+            // frame loan; the first base image must still arrive before SID.
+            if(!MPE6ForceReplace&&MPE6AudioRevision!=MPE6PendingAudioRevision)MPE6PublishSid(false);
+            return;
+         }
          if(result!=VmVideoResult::Transferred){ModuleHost->fail(0x18,(uint32_t)result);return;}
          // SID/frame-end packets also publish the VIC display format. Logical
          // F3 is multicolor only when the crop profile was accepted; older

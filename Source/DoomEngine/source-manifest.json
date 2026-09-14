@@ -1,8 +1,8 @@
 {
   "upstream": "https://github.com/doomhack/GBADoom",
   "upstreamCommit": "89097b3ff31ac1e1b2cdce9854e49726cfa462bf",
-  "modifications": "MHS DoomVM with bounded shareware progression, streamed SID music and shared colour-profile negotiation",
-  "moduleSha256": "6ccfae8a598726addce10b6d4a55dd073145e4090f0c521a04806fa4fcb4a69d",
+  "modifications": "MHS DoomVM with bounded shareware progression, streamed SID music and shared colour-profile negotiation; optional cartridge-root SID music and equivalent CRC lookup",
+  "moduleSha256": "1893f2ceb541200a9e278c3bf5d7e2a55b47925e7e7da4b039b8f7131338d16b",
   "compiler": "11.3.1",
   "sourceDateEpoch": 1788609600,
   "sources": [
@@ -63,5 +63,6 @@
     "Source/VM/doom/gba/status.c",
     "Source/VM/doom/gba/platform.cpp",
     "Source/VM/doom/gba/doomvm.cpp"
-  ]
+  ],
+  "releaseVersion": "1.2.1"
 }

@@ -1,5 +1,9 @@
 # NESVM C64 client source
 
+This is the historical **NESVM 1.1.2** client source. Its existing MIT license
+continues to apply. It does not build the current NESVM 1.2.0 Prism+ client,
+which is distributed as a binary. See [current source availability](../../docs/PRISM-PLUS-LICENSE.md).
+
 This source snapshot rebuilds the C64 client in the public NESVM runtime
 download. Its SHA-256 is
 `80ebb5c83312a2f2b7ba1abe0f4ecf898fd2d5bfb8e582a1208b275583bceb84`.

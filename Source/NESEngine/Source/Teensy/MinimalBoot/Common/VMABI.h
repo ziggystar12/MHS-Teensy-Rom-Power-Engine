@@ -100,6 +100,8 @@ struct VmIndexedVideoSetup {
 struct VmCenterVideoSetup {
     VmIndexedVideoSetup setup; // bytes = sizeof(VmCenterVideoSetup)
     uint8_t first_row,row_count; // center: first 1..14/count 1..9; full: 0/25
+    // Prism+ only: 32 promises palette-index-zero margins at x<32/x>=288
+    // in a 320x200 source. Negotiate with configure; zero keeps prior behavior.
     uint16_t reserved;
 };
 struct VmIndexedFrame {

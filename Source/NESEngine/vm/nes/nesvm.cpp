@@ -48,7 +48,7 @@ static uint8_t InputHead,InputTail;
 static void module_input(const VmInput *input){
     VmInput normalized=*input;
     if(input->protocol==0x91){
-        if(input->display>3)return;
+        if(input->display>2)return;
         MPE6RequestedMode=input->display;
         normalized.protocol=0x81;normalized.display=input->display>=2?1:0;input=&normalized;
     }

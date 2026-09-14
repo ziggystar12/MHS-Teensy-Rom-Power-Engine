@@ -21,9 +21,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 The MIT notice above remains applicable to the original TeensyROM code.
-The MHS colour converter is MIT-licensed. MHS Prism's upstream display
+The previously published MHS colour converter remains MIT-licensed. MHS Prism's upstream display
 components retain Patai Gergely's MIT notice. VM engines and other components retain their
 own licences and copyright notices.
+
+The new MHS-owned Prism+ contributions explicitly identified in the release's
+component manifest are distributed under LICENSE-PRISM-PLUS.txt. This separate
+policy does not replace the MIT license on earlier source or restrict GPL,
+LGPL or other third-party rights. The current Prism+ implementation source is
+private; required engine source and firmware relinking materials are supplied
+separately. See docs/PRISM-PLUS-LICENSE.md.
 
 NESVM uses modified Nofrendo and its MPE adapter under the GNU Library General
 Public License version 2. The full licence and corresponding source are

@@ -1,15 +1,23 @@
-# DoomVM 1.2
+# DoomVM 1.2.1
 
-DoomVM and firmware are versioned separately. This download is DoomVM 1.2;
-use the current firmware for its improved F1 display mode.
+DoomVM and firmware are versioned separately. This download is DoomVM 1.2.1;
+use MPE GUI firmware 1.2.23.
 
 TeensyROM hardware and Travis's original firmware:
 [SensoriumEmbedded/TeensyROM](https://github.com/SensoriumEmbedded/TeensyROM/tree/main).
 This Doom package needs TeensyROM+ and MPE-enabled firmware, not stock upstream firmware.
 
+## Changes in 1.2.1
+
+The engine can now read optional music packaged inside a self-contained .MPE
+cartridge. A CRC lookup uses read-only tables to fit the extra lookup within the existing
+executable-memory budget, while preserving the same checksum result. The modular SD-folder setup, controls, four-level route
+and display modes are unchanged. The complete ZIP retains the status-recovery
+launcher; extract it to update both launcher files together.
+
 ## Setup
 
-Extract [DoomVM 1.2](../vms/DOOMVM.zip) to the root of your SD card, then
+Extract [DoomVM 1.2.1](../vms/DOOMVM.zip) to the root of your SD card, then
 launch `DOOMVM.crt`. The download includes the engine, launcher and
 ready-to-use `doom1.gbd` game data from Doom shareware 1.9 (the free demo).
 
@@ -36,7 +44,7 @@ Use the joystick in port 2.
 
 ## Display
 
-**MHS Prism is not compatible with DOOMVM.** DoomVM uses the separate display
+**MHS Prism and Prism+ do not apply to DoomVM.** DoomVM uses the separate display
 modes listed below.
 
 Hold Commodore + Control and press an unshifted function key:
@@ -83,9 +91,15 @@ maps retain the original cache. The tradeoff is more SD reads, so smoothness
 and stability on real hardware still need testing. Rendering, combat,
 transitions and all four video modes pass the host tests.
 
-The Doom engine is unchanged from the four-level release. The package includes
-the converted shareware game data. Optional music continues with the same tune
+The four-level gameplay and rendering remain unchanged. The 1.2.1 engine
+updates optional music lookup and CRC implementation. The package includes
+the same converted shareware game data. Optional music continues with the same tune
 across levels.
 Saving is not supported. Display and sound are adapted to the C64's capabilities.
+
+The engine rebuilt with GCC 11.3.1 and passed its link limits. Native tests
+cover both music roots, CRC compatibility, video negotiation and audio scheduling;
+the actual launcher passed PAL and NTSC startup in VICE. These are software
+checks. Physical gameplay and custom-bus timing remain unverified for this release.
 
 [Credits and licenses](../README.md#credits)

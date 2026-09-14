@@ -1,82 +1,59 @@
-# MHS Prism
+# MHS Prism+
 
-**320x200. 4-bit color. Designed for games.**
+Prism+ is Mean Hamster Software's live C64 graphics system for MPE games.
+It presents a 320×200 canvas with the C64's 16-color palette, combining an
+independent color fitter, raster generator, picture layout and transfer system.
+The C64's palette and local color-placement rules still shape the result.
 
-MHS Prism is the live graphics system developed by Mean Hamster Software for
-MHS Power Engine. It brings a 320x200 display using the C64's 16 colors to our
-game engines, combining automatic real-time conversion with the delivery
-system needed to keep a changing game screen, controls and sound working
-together.
+## What improves
 
-MHS developed the live converter, fast color selection, caching, change
-detection, double buffering, transfer management and coordinated input/audio
-delivery. These are the foundations of Prism's game-focused design.
+**Movement and detail receive different treatment.** Prism+ updates moving
+regions promptly and refines their color fit when the source picture settles.
+It keeps a bounded refinement deadline so continuous activity does not postpone
+all quality work indefinitely.
 
-## Built for changing game screens
+**Unchanged pixels avoid repeated work.** Cached conversion and changed-region
+tracking concentrate work on new content. Both display banks retain histories,
+so updating the inactive picture includes the changes needed to catch it up.
+Unchanged packed data does not need to be transferred again.
 
-- **Automatic real-time conversion:** MPE converts the running game's picture
-  for the C64 as it changes. Game screens do not need individually prepared
-  display files.
-- **Fast color selection:** bounded color searches select suitable C64 colors
-  quickly enough for repeated live updates.
-- **Caching and change detection:** Prism detects unchanged regions and reuses
-  conversion work, concentrating processing on the parts that changed.
-- **Double buffering:** a complete picture remains visible while the next
-  picture is prepared and transferred to the inactive buffer, ready to swap.
-- **Transfer management:** picture uploads are divided into controlled chunks
-  and coordinated with the C64 receiver.
-- **Coordinated input/audio delivery:** controls and sound are serviced around
-  picture transfers, allowing the game to keep handling input and delivering
-  audio while an image update is in progress.
+**Complete pictures remain visible.** A warm update is prepared in the inactive
+display bank and becomes visible at a coordinated border switch. The previous
+complete picture remains on screen during preparation and upload.
 
-Prism's 320x200 canvas retains its width during movement. Each VM controls how
-its game picture is fitted to that canvas and integrates the appropriate
-presentation features. Update speed depends on the game, conversion workload
-and amount of picture data transferred.
+**Picture transfers leave room for sound and controls.** Transfers use bounded
+windows. Current NESVM also delivers changing sound state while video is busy,
+so music does not have to wait for a whole picture upload. Its emulation-core
+improvements are separate from Prism+ rendering.
 
-## A significant upgrade to the usual C64 experience
+These changes reduce repeated processing and transferred data. They are not
+a guarantee of a particular FPS or identical speed in every game. Current
+NES-specific fitting tests also preserve exact output while
+skipping its known black side margins.
 
-Prism combines full-width detail with the C64's complete 16-color palette.
-Its overall color richness is superior to standard RGB CGA at 320x200, which
-uses four simultaneous colors. At 320x200 with 16 colors, Prism is in the same
-ballpark as Tandy 1000 and EGA in resolution and on-screen color count.
-The reference modes are documented in the
-[IBM CGA manual](https://www.manualslib.com/manual/819833/Ibm-5150.html?page=70),
-[Tandy 1000 service manual](https://ftp.oldskool.org/pub/drivers/Tandy/1000/Tandy_1000_Service_Manual.pdf)
-and [IBM EGA technical reference](https://bitsavers.org/pdf/ibm/pc/cards/Technical_Reference_Options_and_Adapters_Volume_2_Apr84.pdf).
+## Available now in NESVM 1.2.0
 
-The C64's own palette and local bitmap/sprite color restrictions still apply.
-Prism automatically fits source artwork to those rules, preserving the C64's
-distinctive colors while opening up much richer game presentation.
+Use [firmware 1.2.23](../firmware/) and the [current NESVM package](NESVM.md).
+Hold **Ctrl + Commodore + F5** to select Prism+. All 256 NES columns remain
+centered between 32-pixel margins; the retained 224 source rows fit into 200.
+Standard (Ctrl + Commodore + F1) and Pan and scan (Ctrl + Commodore + F3) remain.
+F7 Sharp has been removed following a hardware crash report.
 
-The specification **320x200, 4-bit color** means a 16-color palette; it is also
-written **320x200x16 colors**. It describes the display canvas and palette,
-with the C64 color-placement rules above.
+Prism+ can improve color richness compared with simpler multicolor modes, but
+retains the C64 palette and raster constraints. SID sound is an approximation
+of NES audio. Original Prism and Prism+ are distinct renderer implementations.
 
-## Available now and coming next
+**DoomVM does not use Prism or Prism+.** Its F1/F3/F5/F7 options are its own
+display modes. Other Prism+ VM integrations remain in development and are not
+part of the public downloads on this page.
 
-**NESVM 1.1.2 includes MHS Prism on F5.** Hold Commodore + Control and press F5.
-The native 256-pixel NES picture sits between 32-pixel black side borders;
-eight source lines are trimmed from each end and the remaining 224 lines fit
-into 200. It retains changed-region conversion reuse and the improved green
-color matching. See [NESVM setup, controls and compatibility](NESVM.md).
+## Licensing and credits
 
-**DOSVM is in development, with its public launch planned for later in 2026.**
-Its Prism presentation brings together the full-width live converter,
-caching, double buffering, transfer management and coordinated input/audio
-delivery. DOSVM is not available as a public download yet.
+The new MHS-owned Prism+ implementation is distributed as compiled code with
+its source kept private. Use and complete unmodified redistribution are allowed;
+the [license](../LICENSE-PRISM-PLUS.txt) preserves earlier MIT grants and required
+third-party/LGPL rights. [Source availability](PRISM-PLUS-LICENSE.md).
 
-**MHS Prism is not compatible with DOOMVM.** DoomVM retains its own separate
-display modes. See [DoomVM's display controls](DOOM.md#display).
-
-## Launch copy
-
-MHS Prism brings 320x200, 4-bit color game graphics to the Commodore 64 through
-MHS Power Engine. Designed for games, our graphics system combines automatic
-real-time conversion and fast color selection with caching, unchanged-region
-detection, reused conversion work, double buffering, managed transfers and
-coordinated input/audio delivery. With 16 C64 colors, Prism offers superior
-overall color richness to standard 320x200 RGB CGA and puts resolution and
-color count in the same ballpark as Tandy 1000 and EGA: a significant upgrade
-to the usual C64 experience. MHS Prism is available in NESVM and is part of
-the DOSVM launch planned for later in 2026. It is not compatible with DOOMVM.
+Original Prism's display approach was inspired by NUFLI and incorporates
+MIT-licensed NUFLIX Studio display components by Patai Gergely. Those original
+notices remain with their components; the new Prism+ terms do not replace them.

@@ -465,6 +465,33 @@ void Apu::tick() {
     if (!five_step && phase>=29828 && phase<=29830 && !inhibit) irq=true;
     if (phase==(five_step?37282u:29830u)) phase=0;
 }
+uint32_t Apu::advance(uint32_t ticks) {
+    const uint32_t requested=ticks;
+    while(ticks) {
+        uint32_t quiet=0;
+        if(!dmc_needs_byte()) {
+            // Only timer/phase counters change before the next event. Use
+            // tick() at that event to retain DMC, delayed reset and frame order.
+            uint32_t next;
+            if(phase<7457)next=7457;
+            else if(phase<14913)next=14913;
+            else if(phase<22371)next=22371;
+            else if(five_step)next=phase<37281?37281:37282;
+            else next=phase<29828?29828:phase<29829?29829:29830;
+            quiet=next-phase-1;
+            if(quiet>dmc_timer)quiet=dmc_timer;
+            if(reset_delay && quiet>=reset_delay)quiet=reset_delay-1;
+            if(quiet>ticks)quiet=ticks;
+        }
+        phase+=quiet;dmc_timer-=quiet;
+        if(reset_delay)reset_delay-=quiet;
+        ticks-=quiet;
+        if(!ticks)break;
+        tick();--ticks;
+        if(dmc_needs_byte())break;
+    }
+    return requested-ticks;
+}
 bool Machine::init(const Cartridge& input_cartridge,const RasterSink& input_sink) {
     // Allow a caller to relaunch using this machine's existing borrowed views.
     const Cartridge cartridge=input_cartridge;

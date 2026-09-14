@@ -96,8 +96,10 @@ void NofrendoMachine::sync_apu() {
     if(cart.info.mapper==4)sync_mapper();
     const uint32_t now=nf::nes6502_getcycles(false);
     uint32_t ticks=now-apu_cycles;
-    while(ticks--) {
-        apu.tick();
+    while(ticks) {
+        // Skip inert timer decrements, stopping at each sample-reader request.
+        // The original mapped fetch and stolen-cycle ordering stays below.
+        ticks-=apu.advance(ticks);
         if(apu.dmc_needs_byte()) {
             apu.dmc_accept(cart.cpu_read(apu.dmc_address));
             // Nofrendo schedules work at instruction boundaries. Account for
@@ -114,9 +116,25 @@ void NofrendoMachine::sync_mapper() {
     // Nofrendo draws whole scanlines. Run a separate modeled fetch-address
     // timeline for MMC3; never substitute a fixed once-per-line IRQ pulse.
     // CPU register changes synchronize first, retaining their ordering.
-    while(ticks--)for(unsigned phase=0;phase<3;++phase) {
-        cart.ppu_render_tick(mapper_line,mapper_dot,nf::ppu.ctrl0,nf::ppu.ctrl1,nf::ppu.oam,++mapper_ppu_ticks);
-        if(++mapper_dot==341){mapper_dot=0;if(++mapper_line==262)mapper_line=0;}
+    uint64_t remaining=uint64_t(ticks)*3;
+    while(remaining) {
+        const unsigned span=remaining<341-mapper_dot?unsigned(remaining):341-mapper_dot;
+        const unsigned end=mapper_dot+span;
+        if((nf::ppu.ctrl1&0x18) && (mapper_line<240 || mapper_line==261)) {
+            // The first fetch after a CPU synchronization must be retained:
+            // $2006/$2007 can have changed A12 between otherwise equal fetches.
+            unsigned dot=mapper_dot<336?(mapper_dot|1u):mapper_dot<=338?338:340;
+            while(dot<end) {
+                cart.ppu_render_tick(mapper_line,dot,nf::ppu.ctrl0,nf::ppu.ctrl1,nf::ppu.oam,
+                                     mapper_ppu_ticks+(dot-mapper_dot)+1);
+                // Within this uninterrupted span, phases 2/6 repeat phases
+                // 0/4. Keep their transition candidates, including the sprite
+                // bank snapshot at dot 257; the last low fetch repeats 338.
+                dot=dot<333?((dot-1)&~3u)+5:dot<338?338:341;
+            }
+        }
+        mapper_ppu_ticks+=span;remaining-=span;mapper_dot+=span;
+        if(mapper_dot==341){mapper_dot=0;if(++mapper_line==262)mapper_line=0;}
     }
     nf::cpu.int_pending=(apu.interrupt()||cart.mmc3_irq_pending)?1:0;
 }

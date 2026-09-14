@@ -1,0 +1,51 @@
+{
+  "passed": true,
+  "version": "1.2.23",
+  "firmware": "firmware/MPE_Firmware-V1.2.23.hex",
+  "sha256": "3009715813faec679688fc939be20f6ed2271ebc9309744567520541819d4606",
+  "hexFileBytes": 6421060,
+  "loadedBytes": 2334716,
+  "minBytes": 316416,
+  "guiBytes": 2018300,
+  "minimal": {
+    "itcmUsed": 96296,
+    "itcmLimit": 98304,
+    "heapBytes": 16384,
+    "moduleDataBytes": 196608,
+    "stackBytes": 49152
+  },
+  "gui": {
+    "itcmUsed": 228392,
+    "alignedStackBytes": 20736
+  },
+  "sourceFilesVerified": 459,
+  "native": {
+    "passed": true,
+    "geometry": 32768,
+    "legacyGeometry": 8192,
+    "prismPlusGeometry": 36864,
+    "selectors": [
+      32772,
+      36868,
+      8196
+    ],
+    "prismPlusSliceDispatchVerified": true,
+    "executableSymbols": 42,
+    "allExecutableInFlash": true,
+    "sourceAndStageHashesVerified": 18,
+    "buildHooksVerified": 3
+  },
+  "physicalAcceptance": false,
+  "sourceInputManifestSha256": "286e25c076e8215d3a8eec1fa1544b19f86c084e441e484466f2301896314172",
+  "tests": {
+    "firmware": 24,
+    "c64": 343,
+    "buttonScenarios": 10
+  },
+  "sourceCommit": "704d82f9ddf4aa3199988acc07a898102dff3c20",
+  "libraryRelinkVerification": {
+    "direct": true,
+    "rebuildAllLibraries": true,
+    "sha256": "3009715813faec679688fc939be20f6ed2271ebc9309744567520541819d4606"
+  }
+}

@@ -94,6 +94,9 @@ struct Apu {
     NES_CODE void write(uint16_t address,uint8_t value,uint64_t cpu_cycle);
     NES_CODE uint8_t status();
     NES_CODE void tick();
+    // Advance at most ticks, stopping after a tick that needs a DMC fetch.
+    // The caller must service that fetch before advancing the remaining time.
+    NES_CODE uint32_t advance(uint32_t ticks);
     NES_CODE void half_frame();
     NES_CODE void quarter_frame();
     NES_CODE uint16_t sweep_target(uint8_t channel) const;

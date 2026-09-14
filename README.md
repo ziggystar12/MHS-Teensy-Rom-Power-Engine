@@ -1,146 +1,108 @@
 # MHS TeensyROM Power Engine
 
-Visit [MeanHamster.com](https://MeanHamster.com) for more of our projects and developments.
+**MHS Power Engine (MPE) runs downloadable virtual machines on the TeensyROM+
+cartridge, with the Commodore 64 providing the display, SID sound and controls.**
+Our firmware combines the MPE platform with a C64 desktop GUI.
 
-Support MPE development: [Buy me a coffee](https://buymeacoffee.com/ziggystar12).
+Visit [MeanHamster.com](https://MeanHamster.com) for our other projects.
+Support development: [Buy me a coffee](https://buymeacoffee.com/ziggystar12).
 
-**MHS Power Engine (MPE) is the system we created for the TeensyROM+ cartridge
-to run our MPE Cartridge VM format directly on the Teensy processor.** Our
-firmware includes that platform alongside our custom C64 desktop GUI.
-
-MPE turns the cartridge into a programmable computing platform for the C64.
-Downloadable VM engines use the Teensy's ARM processing power, while the
-Commodore 64 provides the display, SID sound, keyboard and joystick. DoomVM
-is our first public example of what this approach makes possible.
-
-Requires TeensyROM+ v0.4 with a Teensy 4.1. No extra PSRAM is needed.
-The same Doom download works on PAL and NTSC machines.
-
-TeensyROM hardware and Travis's original firmware:
-[SensoriumEmbedded/TeensyROM](https://github.com/SensoriumEmbedded/TeensyROM/tree/main).
-For Doom, use our MPE-enabled firmware below; stock upstream firmware is separate.
-
-**TR+ is required for our current MPE VMs, including DoomVM.** MPE uses its full
-bus-mastering DMA to transfer display data directly into C64 memory. Original
-TeensyROM v0.2/v0.3 is not supported by this VM implementation; the proposed
-stock-interface firmware also requires TR+ hardware for VMs.
-
-## The platform
-
-MHS developed the MPE system and MPE Cartridge VM package format: the firmware
-host, module loader, shared services and C64 communication that let our VM
-engines run from SD on the cartridge. A package brings together a familiar
-`.crt` launcher, a C64 client, an `engine.mvm` module and a manifest describing
-the module's requirements.
-
-Open the launcher on your C64 and MPE loads the engine onto the Teensy. The
-engine runs there and exchanges graphics, sound and input with its C64 client.
-Compatible engines can be delivered as new SD packages using the same host;
-new platform capabilities can still require a firmware update.
-
-This shared execution platform is our contribution, and it works independently
-of the desktop interface. We are also contributing [MPE support for Travis's
-original TeensyROM interface](https://github.com/SensoriumEmbedded/TeensyROM/pull/20).
-That firmware integration is a draft under review and still needs physical
-testing; it uses the same DoomVM package and MPE contract.
-
-**DoomVM and NESVM are available publicly.** Other VMs remain in development.
-
-## MHS Prism: designed for games
-
-**MHS Prism is our live 320x200, 4-bit color graphics system for MPE.**
-It uses the C64's 16 colors and brings together automatic real-time conversion,
-fast color selection, caching, detection of unchanged regions and reuse of
-conversion work, double buffering, transfer management and coordinated
-input/audio delivery.
-
-Prism offers superior overall color richness to standard 320x200 RGB CGA and
-puts resolution and color count in the same ballpark as Tandy 1000 and EGA:
-a significant upgrade to the usual C64 experience. The C64's palette and local
-color-placement rules still apply. [Meet MHS Prism](docs/MHS-PRISM.md).
-
-NESVM includes Prism on F5. DOSVM is in development, with its public launch
-planned for later in 2026. **MHS Prism is not compatible with DOOMVM**;
-DoomVM retains its own separate display modes.
+Requires **TeensyROM+ v0.4 with a Teensy 4.1**. No extra PSRAM is required.
+Original TeensyROM v0.2/v0.3 hardware does not provide the DMA needed by these VMs.
+Hardware and original firmware: [SensoriumEmbedded/TeensyROM](https://github.com/SensoriumEmbedded/TeensyROM).
 
 ## Downloads
 
-- [GUI firmware 1.2.6](firmware/MPE_Firmware-V1.2.6.hex)
-- [DoomVM 1.2](vms/DOOMVM.zip)
-- [NESVM 1.1.2](vms/NESVM.zip) — MHS Prism F5, improved greens, mappers 0/1/2/3/4/7/11 and cartridge saves
-  ([setup and controls](docs/NESVM.md))
+| Download | What's new | Guide |
+| --- | --- | --- |
+| [GUI firmware 1.2.23](firmware/MPE_Firmware-V1.2.23.hex) | Remembered drives, desktop shortcuts, direct NES ROM launch, .MPE games and the current Prism+ host | [Firmware notes](docs/FIRMWARE-1.2.23.md) |
+| [NESVM 1.2.0](vms/NESVM.zip) | Prism+, shared emulation improvements and sound updates during picture uploads | [Setup and controls](docs/NESVM.md) |
+| [DoomVM 1.2.1](vms/DOOMVM.zip) | Updated adapter and matching runtime/source package | [Setup and controls](docs/DOOM.md) |
 
-VMs and firmware have separate version numbers: DoomVM 1.2 pairs with
-firmware 1.2.6. Use the same current firmware for NESVM. VM ZIPs contain
-runtime files, with firmware downloaded separately.
+Use firmware **1.2.23** with these current VM packages. Firmware and VMs have
+separate version numbers. Each VM has one complete runtime ZIP; firmware is a
+separate download. Existing ROMs, game files, music and saves should be preserved.
 
-Firmware 1.2.6 includes Travis's latest TeensyROM updates and Final Cartridge
-III support. It retains the graphical Clock, repaired Appearance/Input pages,
-MHS Prism display support and MHS colour fitting for Doom F1. The status bar uses
-solid colours. The two-button startup flasher has been removed; the normal
-firmware updater remains. Install both downloads for the new Doom picture.
-F7 Sharp, controls, sound and game data are unchanged. Keep existing music.
+[Release asset checksums](SHA256SUMS.txt) · [Release manifest](docs/RELEASE-1.2.23.json)
 
-See the [release notes](docs/FIRMWARE-1.2.6.md), or use the
-[1.2.6 downloads](https://github.com/ziggystar12/MHS-Teensy-Rom-Power-Engine/releases/tag/v1.2.6).
+## MHS Prism+
 
-## Install
+**Prism+ is our next-generation C64 graphics system for MPE games.** It presents
+320×200 pictures using the C64's 16-color palette, with a fast update path for
+movement and additional fitting when the picture settles. Two display banks
+keep the previous complete picture visible while the next is prepared.
 
-1. Copy the firmware file to your SD card. Install it through the GUI's
-   firmware updater, then restart.
-2. Extract `DOOMVM.zip` to the root of the SD card.
-3. Open `DOOMVM.crt` from the desktop.
+Prism+ reuses unchanged regions and sends changed picture data in bounded
+transfers. This reduces repeated conversion and upload work. NESVM also sends
+sound updates while a picture is uploading, keeping music from waiting for the
+entire transfer. The result is richer game graphics with less work spent on
+parts of the screen that have not changed.
 
-The download includes the engine, launcher and ready-to-use `doom1.gbd` from
-**Doom shareware 1.9 (the free demo)**. Music is optional; gameplay and sound
-effects work without music files. See [controls and optional music](docs/DOOM.md).
+NESVM selects Prism+ with **Ctrl + Commodore + F5**. Its native 256-pixel width
+is centered in the 320-pixel canvas. Standard and Pan and scan remain available.
+Performance varies with the game and scene; the C64's palette and raster rules
+still apply. [How Prism+ works and what it improves](docs/MHS-PRISM.md).
 
-For NESVM, extract `NESVM.zip` to the SD card root and launch `NESVM.crt`,
-or select a `.nes` file in the GUI. Keep your existing ROMs and saves.
-The ZIP includes the authorized Crossbow demo; add compatible NTSC mapper
-0/1/2/3/4/7/11 ROMs to `/VMS/NESVM/ROMS/`. NESVM 1.1.2 requires firmware 1.2.6 or later.
-MHS Prism F5 centers the native 256-pixel width, fits the visible 224 rows into 200,
-and tracks changed cells to reduce conversion work. F5 green tones are improved
-across games. Mapper 1/4 saves remain in `/VMS/NESVM/SAVES/`.
-SID sound is approximate. [Controls, display modes and compatibility](docs/NESVM.md).
+**DoomVM uses its own four display modes and does not use Prism or Prism+.**
+Other MPE VMs remain in development and are not included in these downloads.
 
-## What's included
+## Install and play
 
-The GUI provides the desktop, file browser, settings and firmware updater.
-Doom now follows a four-level route: **E1M1 → E1M4 → E1M5 → E1M8**, with
-keyboard or joystick controls, SID sound effects and optional SID music.
-Oversized maps are skipped automatically. Saving is not supported.
-The added levels pass host tests; physical gameplay testing is still needed.
+1. Copy the firmware HEX to the SD root, install it through the GUI updater,
+   restart, and confirm **1.2.23** in About.
+2. Extract the chosen VM ZIP to the SD root, retaining the existing ROM and save folders.
+3. Open `NESVM.crt` or `DOOMVM.crt`. With NESVM installed, you can also open a
+   supported `.nes` file directly from the SD browser, including nested folders.
 
-Hold Commodore + Control and press F1, F3, F5 or F7 to change Doom's display.
-F1 uses multicolor, F7 is sharp, and F3/F5 offer additional colour detail.
-Reset returns to the desktop.
+NESVM includes the authorized Crossbow demo. Supply your other compatible NTSC
+NES games; supported mappers are 0, 1, 2, 3, 4, 7 and 11. Mapper 1/4 cartridge
+saves remain in `/VMS/NESVM/SAVES/`. Its current display choices are Standard
+(Ctrl + Commodore + F1), Pan and scan (F3 with the same modifiers), and Prism+
+(F5 with the same modifiers). F7 Sharp was removed following a hardware crash.
 
-## Source
+DoomVM includes converted Doom shareware 1.9 data and follows
+**E1M1 → E1M4 → E1M5 → E1M8**. Music is optional. Its own F1/F3/F5/F7 display
+modes remain, selected with Ctrl + Commodore. Saving is not supported.
 
-GUI and firmware source is in `Source/`. Shared VM services, the C64 client
-and Doom adapters are in `Source/VM/`. Complete corresponding Doom engine source
-is in [Source/DoomEngine](Source/DoomEngine/). NESVM engine source is in
-[Source/NESEngine](Source/NESEngine/) and its launcher source in
-[Source/NESClient](Source/NESClient/). Source stays separate from runtime ZIPs.
-[Build instructions](docs/BUILDING.md).
+The GUI now remembers Main, SD or USB across reboots. Select an SD/USB item and
+choose **File > Add Desktop** or **Shift+S** to add a shortcut. Up to seven links
+fit beside the built-in icons; deleting a desktop shortcut preserves its target.
+[Desktop guide](docs/DESKTOP-SHORTCUTS.md).
 
-## Credits
+## Source and licensing
 
-The MPE system, MHS Prism graphics system, MPE Cartridge VM format, custom GUI
-and TeensyROM+ integration are developed by MHS. Our Prism work includes live
-conversion, fast color selection, caching, change detection and conversion
-reuse, double buffering, transfer management and coordinated input/audio delivery.
-TeensyROM hardware and the original firmware were created
-by Travis Smith / Sensorium Embedded; this project builds on his
-[TeensyROM](https://github.com/SensoriumEmbedded/TeensyROM) work.
-Our DoomVM integration uses the [GBADoom](https://github.com/doomhack/GBADoom)
-engine, building on the work of its authors and the original Doom creators.
-The Doom F1 colour converter is developed by MHS.
-Prism's display technique was inspired by NUFLI. It also incorporates MIT-licensed
-display components from [NUFLIX Studio](https://github.com/cobbpg/nuflix-studio)
-by Patai Gergely; their original notices remain with the source and packages.
-Original copyright notices and licences are included with the source.
-NESVM uses Matthew Conte's Nofrendo, ported through Jean-Marc Harvengt's
-MCUME; its GNU Library GPL v2 licence and notices accompany the download
-and [corresponding source](Source/NESEngine/).
+The new MHS-owned Prism+ implementation is distributed as compiled code;
+its source stays private. Its [license](LICENSE-PRISM-PLUS.txt) permits use and
+unmodified redistribution, with prior-license and LGPL exceptions preserved.
+[Component boundaries and source availability](docs/PRISM-PLUS-LICENSE.md).
+
+Complete corresponding [NES engine source](Source/NESEngine/) and
+[Doom engine source](Source/DoomEngine/) remain available under their existing
+licenses. The firmware [relinking SDK](firmware/MPE-Firmware-1.2.23-Relink-SDK.zip)
+contains application objects and library sources for replacing/rebuilding the
+libraries without publishing the private Prism+ implementation.
+[Build and relink instructions](docs/BUILDING.md).
+
+The older public GUI and NES client source snapshots remain available under
+their original terms. They do not build the new Prism+ release. Earlier MIT
+grants are unchanged.
+
+## Credits and validation
+
+MHS developed the MPE host, VM package format, desktop integration and Prism+
+renderer. TeensyROM hardware and original firmware are by Travis Smith /
+Sensorium Embedded. [MPE integration in Travis's text firmware](https://github.com/SensoriumEmbedded/TeensyROM/pull/20)
+has been merged upstream; that firmware has its own feature and release choices.
+The current GUI/Prism+ download here is a separate build.
+
+Original Prism's display approach was inspired by NUFLI and includes
+MIT-licensed [NUFLIX Studio](https://github.com/cobbpg/nuflix-studio) components
+by Patai Gergely. Their notices remain. NESVM uses Matthew Conte's Nofrendo,
+ported through Jean-Marc Harvengt's MCUME, under the GNU Library GPL v2.
+DoomVM uses [GBADoom](https://github.com/doomhack/GBADoom) and its Doom ancestry;
+engine and shareware notices accompany the package.
+
+Source rebuilds, automated tests and package hashes are recorded with each
+release. The accepted NES test build has user gameplay feedback; that does not
+establish universal compatibility or a hardware FPS multiplier. Firmware 1.2.23
+desktop/media and button behavior still require physical acceptance testing.

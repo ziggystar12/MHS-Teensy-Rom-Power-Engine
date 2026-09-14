@@ -1,6 +1,19 @@
 # Building from source
 
-## GUI firmware
+## Current firmware 1.2.23 and Prism+
+
+The current GUI firmware contains the private MHS Prism+ implementation.
+Use the [firmware relinking SDK](../firmware/MPE-Firmware-1.2.23-Relink-SDK.zip)
+to rebuild its supplied libraries and relink the compiled application objects.
+The SDK includes its own instructions, pinned compiler details, notices and
+verification hashes. It does not contain private Prism+ implementation source.
+[License and component boundaries](PRISM-PLUS-LICENSE.md).
+
+The public `Source/Teensy`, `Source/C64`, firmware version configuration and
+GUI build scripts below remain the **1.2.6 source snapshot**. They do not rebuild
+the current 1.2.23 binary. Earlier source licenses remain unchanged.
+
+## Legacy GUI firmware 1.2.6
 
 On Windows, the combined firmware build uses Node.js, Arduino CLI 1.4.1,
 Teensy core 1.61.0 (GCC 11.3.1), CRC32 2.0.0 and ACME 0.97.
@@ -61,6 +74,11 @@ These tests do not require game data and do not replace hardware testing.
 
 The released NES engine has its own complete corresponding source and
 rebuild instructions in [Source/NESEngine](../Source/NESEngine/).
-The C64 launcher source and instructions are in
-[Source/NESClient](../Source/NESClient/). Both can be rebuilt without game ROMs.
-See the [NESVM build record](NESVM-build.json) for the released hashes.
+The latest NESVM 1.2.0 engine source rebuilds the released engine without game
+ROMs. Replace `VMS/NESVM/engine.mvm` with your rebuilt engine and keep the matching
+client from the runtime package; the engine does not require firmware relinking.
+
+[Source/NESClient](../Source/NESClient/) is the **historical NESVM 1.1.2 MIT client
+snapshot**, not the current Prism+ client. The new C64 client is distributed as
+a binary with its license and component manifest. It runs separately from the
+LGPL NES engine. See the [NESVM build record](NESVM-build.json).

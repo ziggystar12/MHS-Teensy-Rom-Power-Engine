@@ -85,3 +85,14 @@ No signing key, firmware relink, ROM or hardware flashing is required to
 rebuild. Modification and reverse engineering for debugging modifications
 to this library are permitted under its license. Full repository tests:
 `vm/tests/nofrendo_test.cpp`, `module_test.cpp`, `nes_timing_test.cpp`.
+
+## GB / GBC extension boundary
+
+Nofrendo is only an NES implementation inside NESVM. It must not enter the
+firmware or become a GB API. A later GB/GBC core (for example gnuboy, after
+its own license/fit review) can be a separate VM using the same generic MPE
+clock, yielding, borrowed memory, files, held input, indexed video and sound
+services. Each core adapter owns its native timing, palette, controller
+mapping and sound translation. Firmware continues to own presentation-mode
+selection, C64 transport and physical I/O. GB battery saves and sound fidelity
+remain future work; no GB/GBC support is claimed by this release.

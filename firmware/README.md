@@ -1,18 +1,21 @@
-# MPE firmware 1.2.6
+# GUI firmware 1.2.23
 
-Download [MPE_Firmware-V1.2.6.hex](MPE_Firmware-V1.2.6.hex) for TeensyROM+
-v0.4 / Teensy 4.1. This combines the latest desktop, graphical Clock,
-Appearance/Input fixes, MHS Prism host and MHS Doom F1 colour converter.
-It also includes Travis's latest TeensyROM changes and Final Cartridge III support.
+[Download MPE_Firmware-V1.2.23.hex](MPE_Firmware-V1.2.23.hex) for TeensyROM+
+v0.4 / Teensy 4.1. This combines the desktop, current MPE host and Prism+.
+Use it with NESVM 1.2.0 and DoomVM 1.2.1.
 
-Copy the HEX to the SD root, select it in the firmware updater, confirm the
-installation and leave power connected until restart. About should show 1.2.6.
-Reinstall manually if you used an earlier test with the same version label.
-Automatic discovery only offers strictly newer versions.
+It remembers the selected drive, adds persistent desktop shortcuts, opens NES
+ROMs directly through their installed package, and supports .MPE game files.
+The hardened updater and September 13 upstream DMA/MIDI fixes remain.
+[Changes, installation and validation](../docs/FIRMWARE-1.2.23.md).
 
-The two-button startup flasher is removed. Normal manual updates remain;
-if the firmware cannot start, use the PJRC hardware loader over USB.
+Copy the HEX to the SD root, select it in the updater, leave power connected
+until restart, and confirm 1.2.23 in About. Copying the file does not flash it.
+Automatic discovery offers strictly newer versions; manual selection supports
+reinstallation. Preserve existing VM packages, ROMs, music and saves.
 
-Install the full DoomVM 1.2 package for the new F1 picture and solid status
-bar. Keep existing music. F7 Sharp and the other display profiles are unchanged.
-The source builds and software checks pass; physical testing is still needed.
+SHA-256: `3009715813faec679688fc939be20f6ed2271ebc9309744567520541819d4606`.
+
+[Firmware relinking SDK](MPE-Firmware-1.2.23-Relink-SDK.zip) ·
+[Prism+ licensing](../docs/PRISM-PLUS-LICENSE.md) ·
+[Older 1.2.6 firmware](MPE_Firmware-V1.2.6.hex)

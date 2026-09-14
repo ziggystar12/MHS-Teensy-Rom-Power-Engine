@@ -1,0 +1,983 @@
+{
+  "schemaVersion": 1,
+  "release": "DoomVM 1.2.1",
+  "firmwareVersion": "1.2.23",
+  "engineSourceCommit": "2cbde248ef6f67f8f487ca11bfa1bb1d0ee15561",
+  "firmwarePairingNote": "Firmware1.2.23 is the recommended separately built host; Doom engine and client provenance are unchanged.",
+  "publicBaseCommit": "95a7ef9fd261e5ac3b225d27957bba7284892e16",
+  "baseline": {
+    "zipSha256": "aa3d72494d83128df46b5f6716fa809db8da719a564c80abf7df1e47d566ca30",
+    "engineSha256": "6ccfae8a598726addce10b6d4a55dd073145e4090f0c521a04806fa4fcb4a69d",
+    "zipClientSha256": "56fc8b95135cb3956023d802f79c74ed26fc1e2eb7d4e97e70c781be74dafd0a",
+    "publicLooseClientSha256": "3f1de49341ff00875fdd859f37e47e72a7b8e0d301094c16e343030afe4637ed"
+  },
+  "download": {
+    "file": "DOOMVM.zip",
+    "path": "DOOMVM.zip",
+    "bytes": 1604888,
+    "sha256": "0208da320030d0bddd853977185e89ae2ff10131df6f813322d050ebbce89104",
+    "members": 11
+  },
+  "moduleSha256": "1893f2ceb541200a9e278c3bf5d7e2a55b47925e7e7da4b039b8f7131338d16b",
+  "clientSha256": "56fc8b95135cb3956023d802f79c74ed26fc1e2eb7d4e97e70c781be74dafd0a",
+  "firmwareSha256": "3009715813faec679688fc939be20f6ed2271ebc9309744567520541819d4606",
+  "memory": {
+    "codeBytes": 98296,
+    "codeLimit": 98304,
+    "codeHeadroom": 8,
+    "dataBytes": 57504,
+    "bssBytes": 71680,
+    "readOnlyBytes": 96832,
+    "readOnlyLimit": 98304,
+    "workspaceReserve": 65536
+  },
+  "engineRebuild": {
+    "compiler": "11.3.1",
+    "sourceDateEpoch": 1788609600,
+    "identicalIndependentRebuild": true,
+    "rebuildSha256": "1893f2ceb541200a9e278c3bf5d7e2a55b47925e7e7da4b039b8f7131338d16b",
+    "gameDataRequired": false
+  },
+  "sourceChanges": [
+    "README.md",
+    "source-manifest.json",
+    "Source/VM/doom/gba/sid_stream.h",
+    "tests/doom_music_test.cpp"
+  ],
+  "sourceInventory": [
+    {
+      "path": "COPYING.GPL-2.0",
+      "bytes": 17989,
+      "sha256": "b8a2f73f743dc1a51aff23f1aacbca4b868564db52496fa3c0caba755bfd1eaf"
+    },
+    {
+      "path": "core/include/am_map.h",
+      "bytes": 2305,
+      "sha256": "3b71d5671d3e6fc7f4a19f7d53e4960f25d006ba8684ece7edc138eba2697620"
+    },
+    {
+      "path": "core/include/config.h",
+      "bytes": 5932,
+      "sha256": "896c45ad17dc08cb6987b507a7830de1366c0b39c912917222b7a37d22404487"
+    },
+    {
+      "path": "core/include/d_englsh.h",
+      "bytes": 23910,
+      "sha256": "73cba9c843b298dd359c9578d5aa08767a219444732258fade3fdee154fcade1"
+    },
+    {
+      "path": "core/include/d_event.h",
+      "bytes": 2439,
+      "sha256": "18a7c16aaee5897ac7e6807c861686dbcf77f3f2382bb985b844742e358c8366"
+    },
+    {
+      "path": "core/include/d_items.h",
+      "bytes": 1810,
+      "sha256": "9f3e7fbbd0d018bb742f330d447ea7b29bf95ec8f23225e22256b02c236de4f4"
+    },
+    {
+      "path": "core/include/d_main.h",
+      "bytes": 1946,
+      "sha256": "27b6bdaa7548aa956c4d30a54692298f6efcaba9b3e4269bcc89accd1f262606"
+    },
+    {
+      "path": "core/include/d_net.h",
+      "bytes": 1664,
+      "sha256": "7350717ed040035f99d2d2ed8616abcf8a4ace09c63af281a82e8e76f4ac31ad"
+    },
+    {
+      "path": "core/include/d_player.h",
+      "bytes": 5929,
+      "sha256": "e42ed58fd0df7bc6cd31cf0955964031683105d8e7618a733e2886694009a7f1"
+    },
+    {
+      "path": "core/include/d_think.h",
+      "bytes": 2491,
+      "sha256": "f71ad2201a0dc88181fe5c3307b94d0883a6342d5fbe75bfe2ce0d17ffc22b88"
+    },
+    {
+      "path": "core/include/d_ticcmd.h",
+      "bytes": 2087,
+      "sha256": "edfcf6faf54d792739cea621c0fd4a9ad15581c25234ec474a31399adcfbfe9f"
+    },
+    {
+      "path": "core/include/doom_iwad.h",
+      "bytes": 145,
+      "sha256": "e4238a2b1fff7035c7d0e2690a9e402ec07f8b6d17c17473e0262536788dcf09"
+    },
+    {
+      "path": "core/include/doomdata.h",
+      "bytes": 6103,
+      "sha256": "ecc01044e73ae5cdddea209de3d27d251ff53a8e6433008599613e9cd4dd55ef"
+    },
+    {
+      "path": "core/include/doomdef.h",
+      "bytes": 7053,
+      "sha256": "4161312fdb3b9e54ae59656f92fe9230e469fa0a617f7f4abc2e8dad277eba31"
+    },
+    {
+      "path": "core/include/doomstat.h",
+      "bytes": 2584,
+      "sha256": "852af25681271184318213df04daf1a2c98100faebd112209e00c237f578f700"
+    },
+    {
+      "path": "core/include/doomtype.h",
+      "bytes": 2970,
+      "sha256": "f44d1f0c28344fba9c43ad0b12f39fd8d2263718faa0b8956c3982c562581436"
+    },
+    {
+      "path": "core/include/dstrings.h",
+      "bytes": 2437,
+      "sha256": "9ff1acb4feef701f03072b1b528bed26f6da2b50e7d7987b5e85615e5cef321a"
+    },
+    {
+      "path": "core/include/f_finale.h",
+      "bytes": 1733,
+      "sha256": "72d61c274a021fd9eff874a1976d752cedd025a173458bfa2077d8488e0a66f8"
+    },
+    {
+      "path": "core/include/f_wipe.h",
+      "bytes": 1613,
+      "sha256": "06ffc0b882ba870e7d3ebae94fa994a64751d3f092d3a60e6ae6f25190f6cc85"
+    },
+    {
+      "path": "core/include/g_game.h",
+      "bytes": 5443,
+      "sha256": "40eb27f4b24caa357652bffd23e0f0155d54409b2e576a4ab679b457e1dbfc66"
+    },
+    {
+      "path": "core/include/gba_functions.h",
+      "bytes": 2021,
+      "sha256": "446a2f3102f660e3f01b564c68096ad916b16f31fb4fa9c6b4fdd8ec4174beb7"
+    },
+    {
+      "path": "core/include/global_data.h",
+      "bytes": 20841,
+      "sha256": "09a441ecf99d2eb52cfd29dcc76da85822287e037f6e4f883a8d71cbd4aa12f8"
+    },
+    {
+      "path": "core/include/global_init.h",
+      "bytes": 2284,
+      "sha256": "b9a12b1d54a9f2db4648819cd8a33e815e5f23129ecd2b182db471cd6290c9d5"
+    },
+    {
+      "path": "core/include/hu_lib.h",
+      "bytes": 5007,
+      "sha256": "b62681e58701a351c5e435cf1a048eb26ef6089d00b325cd3bce3bc2da6d6dbc"
+    },
+    {
+      "path": "core/include/hu_stuff.h",
+      "bytes": 2395,
+      "sha256": "9588453af8a0c2b0ac2d7b885168e26f3dc79904962f9d2cfba50e8297abeb88"
+    },
+    {
+      "path": "core/include/i_main.h",
+      "bytes": 1550,
+      "sha256": "39a5d669c3b60da491a09f0796d09fca1271d139628ccbc7a836f42405762d9c"
+    },
+    {
+      "path": "core/include/i_network.h",
+      "bytes": 2019,
+      "sha256": "956203319a03a04675ae8a48c4d9cd604c564709ac091cae2a727c7a4c5f4469"
+    },
+    {
+      "path": "core/include/i_sound.h",
+      "bytes": 2340,
+      "sha256": "ee1800156ec3c28a34b9850eab7ff9d7f8b3ab26aafbebfa7e0a28aa846023a9"
+    },
+    {
+      "path": "core/include/i_system_e32.h",
+      "bytes": 659,
+      "sha256": "34a7b551b4e63004eab7386f23b6c031285a8fab3df53a6d633952a0257825b6"
+    },
+    {
+      "path": "core/include/i_system_win.h",
+      "bytes": 3563,
+      "sha256": "657cf862ee42c1e1bca6a4cd9beac02efa8a4bda40d2aeba2a072aab5eedc95b"
+    },
+    {
+      "path": "core/include/i_system.h",
+      "bytes": 1731,
+      "sha256": "8ea1179a389bc6fd445284de61a0df484c4979f1b159879e653e443f383f24f0"
+    },
+    {
+      "path": "core/include/i_video.h",
+      "bytes": 2361,
+      "sha256": "0f41ec53f937f9aa7306e28ea1ecac253edaf25e3d259834c7ae5985f56e2ff6"
+    },
+    {
+      "path": "core/include/info.h",
+      "bytes": 25824,
+      "sha256": "567ce519db7a8544a494a25836250386dda9d11ed1beef1d0e582ff129b4c1ef"
+    },
+    {
+      "path": "core/include/lprintf.h",
+      "bytes": 2126,
+      "sha256": "cfe16e09f642c8fd66b559c81db8b8d2fc12b005111cda2e9ac68c08231664a0"
+    },
+    {
+      "path": "core/include/m_bbox.h",
+      "bytes": 1736,
+      "sha256": "040870674245e2401efa4f2bc2f36c3f3489acd17b30d1e08376cc8227e379ad"
+    },
+    {
+      "path": "core/include/m_cheat.h",
+      "bytes": 116,
+      "sha256": "e3c638ceeec3874b1a28d6df3957c112dc76c01b94e11d1dd3a8bbf15ce68bf2"
+    },
+    {
+      "path": "core/include/m_fixed.h",
+      "bytes": 3780,
+      "sha256": "a55b6e5b8b41e2e36fd14cd7d0d272aba5a677825c33a380645b5e8e18f97f7f"
+    },
+    {
+      "path": "core/include/m_menu.h",
+      "bytes": 4970,
+      "sha256": "827d3bc22f10cd280c05ee634bd03aeee448a4c7bd3e04d50f867e3159cc6dea"
+    },
+    {
+      "path": "core/include/m_misc.h",
+      "bytes": 1553,
+      "sha256": "28be20fee162e20a58be71c30da240aa73dead790ef6a3d092ad2b9035c14be0"
+    },
+    {
+      "path": "core/include/m_random.h",
+      "bytes": 1712,
+      "sha256": "d6a8e62f2529e9eeb8a2fa813202e3930cbde65aa06b45d05b3cdb9fdd9e707d"
+    },
+    {
+      "path": "core/include/m_recip.h",
+      "bytes": 97,
+      "sha256": "675c1b8730fc2731bf177414e135e47c9986e3df72b39ea7e85f964b2f185d3b"
+    },
+    {
+      "path": "core/include/m_swap.h",
+      "bytes": 3411,
+      "sha256": "3e82ed1a86854e181365643ea82b48abbc14c5de7ce9d261b8080201165ca62f"
+    },
+    {
+      "path": "core/include/p_enemy.h",
+      "bytes": 3640,
+      "sha256": "5dbf0313b5da448f59f1cfeb126d6abc3667888793d95dd6d942fe236442b61e"
+    },
+    {
+      "path": "core/include/p_inter.h",
+      "bytes": 2644,
+      "sha256": "87a5b21ebeedc76af429311cfaaccb54c4cb0c9f689eafdf83ff976e725cdb68"
+    },
+    {
+      "path": "core/include/p_map.h",
+      "bytes": 3017,
+      "sha256": "7617732733be7a43d50eb564aca955f6a08dfab1f97a0ebc4933f71f2765c51d"
+    },
+    {
+      "path": "core/include/p_maputl.h",
+      "bytes": 3212,
+      "sha256": "f064c119a00df06306d6f64ba67be1f9398035729e69bf302e4d0a9202dd2b79"
+    },
+    {
+      "path": "core/include/p_mobj.h",
+      "bytes": 13616,
+      "sha256": "cb04d8901a07e7fe11662dc0106c40c70443ca857f23083ae75a80067c3b7711"
+    },
+    {
+      "path": "core/include/p_pspr.h",
+      "bytes": 3265,
+      "sha256": "35a26c005b54319a1561b3ce7d9746b26d7d04e075893cf44444b46934c6b804"
+    },
+    {
+      "path": "core/include/p_setup.h",
+      "bytes": 1644,
+      "sha256": "c91c00871c5e40a5dcade78720ed6f9de60fe1d0a4927519a8976383083617ad"
+    },
+    {
+      "path": "core/include/p_spec.h",
+      "bytes": 21606,
+      "sha256": "39713dcaa7c99494d9b3acdd09868780ec232787b917d3f05cc3a9c3a58752a1"
+    },
+    {
+      "path": "core/include/p_tick.h",
+      "bytes": 2483,
+      "sha256": "16f17e23bdecdbf558cf0a21163647490e148827b25b98e4a4bf419f4c64a2d4"
+    },
+    {
+      "path": "core/include/p_user.h",
+      "bytes": 1680,
+      "sha256": "8267caebe0ffd435b09d5445974729b0fe82ed9e1dbacd50e6e1522f9a144e5f"
+    },
+    {
+      "path": "core/include/protocol.h",
+      "bytes": 3578,
+      "sha256": "e6a2e3f1d69ff380e29a150c714402b3ddaa45a57632feae15f7104b8991391b"
+    },
+    {
+      "path": "core/include/r_data.h",
+      "bytes": 3086,
+      "sha256": "6ab0b23de7153943e59a3df20a3627a21a9b1c1827dfd4534801e9f309277dad"
+    },
+    {
+      "path": "core/include/r_defs.h",
+      "bytes": 11655,
+      "sha256": "8b90766861c625b83f08fbbf8c4c10d0cd56653715398d03489dc1db26095ba7"
+    },
+    {
+      "path": "core/include/r_draw.h",
+      "bytes": 2326,
+      "sha256": "c31ae5f34cea903c72f7cd13d837c08f86d54a50d1b578c25ba5b5ddd8e50e16"
+    },
+    {
+      "path": "core/include/r_main.h",
+      "bytes": 3254,
+      "sha256": "03515db8f78defc2665d574fa6bfe3d74f9b2d53dc9e57aa0cb7450ffcea4bd4"
+    },
+    {
+      "path": "core/include/r_patch.h",
+      "bytes": 1616,
+      "sha256": "73003d898b1a5c324cf06ad9c9bb83cfdf479833eef6eb2d0cf635ee6e901edf"
+    },
+    {
+      "path": "core/include/r_plane.h",
+      "bytes": 1843,
+      "sha256": "d3f399eb25dea92a1f855bdb6bcd02cc0d570963c3785eac08b4d8509dce80aa"
+    },
+    {
+      "path": "core/include/r_segs.h",
+      "bytes": 1503,
+      "sha256": "73912205720694cfe9b9284140b1f48305806bb6c958ba308edb7b4216aa2a95"
+    },
+    {
+      "path": "core/include/r_sky.h",
+      "bytes": 1636,
+      "sha256": "b04a7d81a7179ecb04b79129a70881a9d04c9ecedf0cb56b9ae7919a0045cef6"
+    },
+    {
+      "path": "core/include/r_state.h",
+      "bytes": 1592,
+      "sha256": "edff4cf2df74541d54303482ba95ccd41f9b819bb369e487795bbaf6b247cbb1"
+    },
+    {
+      "path": "core/include/r_things.h",
+      "bytes": 1820,
+      "sha256": "c5c38ed0b86ce67d085ca0e97e3dc1969ace5bb52e341cffbd5735c95b19ab49"
+    },
+    {
+      "path": "core/include/s_sound.h",
+      "bytes": 3088,
+      "sha256": "c1d99aeea2d2b9d649fbbedcc6db019f110ba4af363f4ea5bbd6499ec5cceb77"
+    },
+    {
+      "path": "core/include/sounds.h",
+      "bytes": 4529,
+      "sha256": "53f531719beb2fc344cb9cb379caa94412f9df18cc324eb61489623277e1830b"
+    },
+    {
+      "path": "core/include/st_gfx.h",
+      "bytes": 136,
+      "sha256": "c5e73f2a3d1a1a36ffefcb599f7073fe1c68879badd94843002f84c426de1bc1"
+    },
+    {
+      "path": "core/include/st_lib.h",
+      "bytes": 4123,
+      "sha256": "3f270a39b650803490fa9a383ef0a9b179ec0ce6cdebd43abc8448c458c577e6"
+    },
+    {
+      "path": "core/include/st_stuff.h",
+      "bytes": 7774,
+      "sha256": "3b7c115139ac0390edea0976d5c7d061218b77fae17c6ac0c6915e57d81b753d"
+    },
+    {
+      "path": "core/include/tables.h",
+      "bytes": 3215,
+      "sha256": "3c5ff50df6d6a0ce146ceddf4ff4a8418870767ca235922823865c69ce9012fd"
+    },
+    {
+      "path": "core/include/v_video.h",
+      "bytes": 3847,
+      "sha256": "2f8a2c432a65440a37c76fff5ec3cf96db9efc0e1ca9fdaf7f9b0a244d4b152c"
+    },
+    {
+      "path": "core/include/version.h",
+      "bytes": 1484,
+      "sha256": "3ab46c9a5a43a651cd40659b51c5ea7f6fb96ec3f45c80d1cdbb24353a4b5b09"
+    },
+    {
+      "path": "core/include/w_wad.h",
+      "bytes": 2296,
+      "sha256": "f194c68beb57172791c0fe95c19c72a7606f9073501a8981ac6dd12ff5881b3b"
+    },
+    {
+      "path": "core/include/wi_stuff.h",
+      "bytes": 1918,
+      "sha256": "1e00ba1ef11403b85b858e1176650b533568a0512dbbd9f74e5116dd8fa9d186"
+    },
+    {
+      "path": "core/include/z_bmalloc.h",
+      "bytes": 2128,
+      "sha256": "ea7264e491d36321437d83d5f901d277e2919d8b48794afb4a61c6b045b01609"
+    },
+    {
+      "path": "core/include/z_zone.h",
+      "bytes": 1875,
+      "sha256": "9650b06c3c2c04cc0ffc87c381aef9822b02b77b3b6c6d5c20b25de1225c0402"
+    },
+    {
+      "path": "core/source/am_map.c",
+      "bytes": 30443,
+      "sha256": "81ad103c6ba553318680b3838b8b2b4cfa18494bba1ce55bb4ca2a4f6cc09ddf"
+    },
+    {
+      "path": "core/source/d_client.c",
+      "bytes": 3028,
+      "sha256": "a1932a5614475dc6ab61427da77bafc984891db9d33a88288a7cd6d13f0da68f"
+    },
+    {
+      "path": "core/source/d_items.c",
+      "bytes": 3140,
+      "sha256": "eab985cb3ee8ec510ddc2a5bba92f1e4fdea4cff276accce5e51187219139e5e"
+    },
+    {
+      "path": "core/source/d_main.c",
+      "bytes": 21312,
+      "sha256": "74312c78d0c4d326121f8be83580011c3cfd315dca12b41d60ad1939e44d6ca8"
+    },
+    {
+      "path": "core/source/f_finale.c",
+      "bytes": 19354,
+      "sha256": "0793895a29bd3779298a1bd7b06b484c6695ed9e4ed4c52c071a482e0b3cd0be"
+    },
+    {
+      "path": "core/source/g_game.c",
+      "bytes": 35091,
+      "sha256": "085ed862be67f3718570c97a585ea9e2452964df0d15272d4788530ba4ed5a02"
+    },
+    {
+      "path": "core/source/global_data.c",
+      "bytes": 238,
+      "sha256": "9e3133fd5eb95d9a8938708b51abc9147e5061ad1e9937cedab61f1ba9f6d602"
+    },
+    {
+      "path": "core/source/hu_lib.c",
+      "bytes": 7229,
+      "sha256": "849155d7a0debe69c8a4a5a3c667c783d5ecc9fbd6d44e051852a75c402f6536"
+    },
+    {
+      "path": "core/source/hu_stuff.c",
+      "bytes": 11994,
+      "sha256": "59d08bd9fd982393a38181115a0331903560b259f18f4d92eb6a009eea377ba5"
+    },
+    {
+      "path": "core/source/i_system.c",
+      "bytes": 1856,
+      "sha256": "d2e71db6f0a991cf80b4d4867436e238b86a011b42892054d90819228e0538fe"
+    },
+    {
+      "path": "core/source/i_video.c",
+      "bytes": 4285,
+      "sha256": "aebff1d3d47452fca57e46b1688cf5de64f7e554d87562f0ab43513945f8eea8"
+    },
+    {
+      "path": "core/source/info.c",
+      "bytes": 157283,
+      "sha256": "4998d27b0e4426846c402daa47740f844b302a17e51bdbd39b54cdd198793927"
+    },
+    {
+      "path": "core/source/lprintf.c",
+      "bytes": 94,
+      "sha256": "0fa594c1f9898a905ae6524c8b8e647b6f417c5251b5d9174ae5ee137c95361b"
+    },
+    {
+      "path": "core/source/m_bbox.c",
+      "bytes": 1944,
+      "sha256": "c967b131e0c474c10a959488592dc8fec1100b101611e344f89c614c4fbeb8a5"
+    },
+    {
+      "path": "core/source/m_cheat.c",
+      "bytes": 7573,
+      "sha256": "2022b9fc7a8c85577786fdd021f723d4dbfe77544328219569842d7b1976e321"
+    },
+    {
+      "path": "core/source/m_menu.c",
+      "bytes": 28458,
+      "sha256": "df9655e04954af6202b038adb9940c5d599c163b6423a84e6a679cf3883a44f4"
+    },
+    {
+      "path": "core/source/m_random.c",
+      "bytes": 3526,
+      "sha256": "e2e5d103027235b8f8bb291bbf6b53cfac3765bd5b661dd75da6c6a2fc525e9d"
+    },
+    {
+      "path": "core/source/p_ceilng.c",
+      "bytes": 12862,
+      "sha256": "48007cf755db127457aecca276f88fa23e73f44e57e95744ed8a08698a6d7dd5"
+    },
+    {
+      "path": "core/source/p_doors.c",
+      "bytes": 20264,
+      "sha256": "fb038b3d183655e073255cb4a70fda744404992adc273a0145c19a803449b6bf"
+    },
+    {
+      "path": "core/source/p_enemy.c",
+      "bytes": 56455,
+      "sha256": "5377cf84eefbecefd5bb1c0b37004673a112fc699ca6b29add5a54fa2e90c3d6"
+    },
+    {
+      "path": "core/source/p_floor.c",
+      "bytes": 30415,
+      "sha256": "5a354f9b0f39b3ad34da151f8cd8a327bcd2facf391841def78f78b7cab1fb27"
+    },
+    {
+      "path": "core/source/p_genlin.c",
+      "bytes": 32129,
+      "sha256": "f78c233092665412945eae59cc8eb3ad87bef94b22b5e83f67cca881c7daa838"
+    },
+    {
+      "path": "core/source/p_inter.c",
+      "bytes": 22865,
+      "sha256": "2118ec4f8ffdb95e1356c6d499d84c1e2572167634437a3a1b86266285b25355"
+    },
+    {
+      "path": "core/source/p_lights.c",
+      "bytes": 11155,
+      "sha256": "38e68b14ead66280c45cf24941af42be9dedd60e130a7d56831835e573897a08"
+    },
+    {
+      "path": "core/source/p_map.c",
+      "bytes": 49845,
+      "sha256": "b655001af8c09cee22454bf3df21e25d465911206bf0a79ac9b46ca0ca1bfc99"
+    },
+    {
+      "path": "core/source/p_maputl.c",
+      "bytes": 18624,
+      "sha256": "7d6feb5b77a8aa9105f8502f635a81d3a062c231f53639559c229e203e137c0b"
+    },
+    {
+      "path": "core/source/p_mobj.c",
+      "bytes": 27040,
+      "sha256": "25951aa2876d48b4217048be748ab8e0669ae59a310ecd590c107235995f4840"
+    },
+    {
+      "path": "core/source/p_plats.c",
+      "bytes": 12495,
+      "sha256": "dcb076e0fed50f5c3b8bd0476527738bf3621fb3058552546c97bac65dbd19d1"
+    },
+    {
+      "path": "core/source/p_pspr.c",
+      "bytes": 23066,
+      "sha256": "1d7a8b52c247c36aada11a16b9b7f5ea81b407e42a0a91a0ceae839072ef7ffa"
+    },
+    {
+      "path": "core/source/p_setup.c",
+      "bytes": 16105,
+      "sha256": "a95dce6317cdfd9bb33a2bd686f226aa975baa263a753d26f52b923d37688949"
+    },
+    {
+      "path": "core/source/p_sight.c",
+      "bytes": 3396,
+      "sha256": "90658b32ff606d1d47c05d0e2d39e4005b9baf0c029ac3d87b1f4ed932f02c3d"
+    },
+    {
+      "path": "core/source/p_spec.c",
+      "bytes": 68161,
+      "sha256": "fd3d9c53a7d1f5c2b30288159891ef1b422fbce577adeeda47834fbc9ed71e13"
+    },
+    {
+      "path": "core/source/p_switch.c",
+      "bytes": 34448,
+      "sha256": "1ea7696ae960adab908d0b485aed3df9b6b0c31f3a4865353d37dd15aa07c666"
+    },
+    {
+      "path": "core/source/p_telept.c",
+      "bytes": 11598,
+      "sha256": "0c264268f49c0f1bbe057fd69f619a9de3252636e89dea2e25a755d600e6436b"
+    },
+    {
+      "path": "core/source/p_tick.c",
+      "bytes": 5743,
+      "sha256": "48d40ae277015143f4bcbdcee81fbf10534aea173c04cf7396cc0cfa22a4fa49"
+    },
+    {
+      "path": "core/source/p_user.c",
+      "bytes": 10281,
+      "sha256": "059d81258edd822fe6220482b57da768cd71ed8439eac80b6155b0e907f94df7"
+    },
+    {
+      "path": "core/source/r_data.c",
+      "bytes": 11046,
+      "sha256": "074f9e5e0b49869040bfe49df3c39669d989284b622d0b14f88ee56588067683"
+    },
+    {
+      "path": "core/source/r_draw.c",
+      "bytes": 2807,
+      "sha256": "3564d6266c512675db0a8940b1ef88386a43c5a954b450ecad1fdbfd13eb37ab"
+    },
+    {
+      "path": "core/source/r_hotpath.iwram.c",
+      "bytes": 89065,
+      "sha256": "873e28351a0906af202b7c11a0240ba79ae17c8471c120bfbcbdcee1fbb20ee0"
+    },
+    {
+      "path": "core/source/r_main.c",
+      "bytes": 2859,
+      "sha256": "0d3d9770f501e87b25532593334ae376ae4bb4db99bed38ecb1ffc2d9fd22202"
+    },
+    {
+      "path": "core/source/r_patch.c",
+      "bytes": 1994,
+      "sha256": "95aa1c18bfb935bffb35d9c7864e87ea2ef387b7b96cf59cb35f88ddb2f3e3f9"
+    },
+    {
+      "path": "core/source/r_plane.c",
+      "bytes": 2679,
+      "sha256": "952c7eb9cae6d429e0a0148b7fb4ab7a45ac42d90df241cfcfd380b25bffc9b5"
+    },
+    {
+      "path": "core/source/r_things.c",
+      "bytes": 8181,
+      "sha256": "2e776500d2f1c48a0c648a02cea6dd45ac5e5fbde0575beb113d0cfe6084e478"
+    },
+    {
+      "path": "core/source/s_sound.c",
+      "bytes": 15206,
+      "sha256": "3f5b3e098c2ef8367fe7773c7adbd3a07efc265a3c98cdf5b65653253cf0bf2f"
+    },
+    {
+      "path": "core/source/sounds.c",
+      "bytes": 5796,
+      "sha256": "8716092ef0f5d909cac2fb25a942aeed6e64c53c743708961a199c1398e6e4ae"
+    },
+    {
+      "path": "core/source/tables.c",
+      "bytes": 147480,
+      "sha256": "158daf1a42445023223ca4902413a0087cb090a2cad98f3ad77478145f905041"
+    },
+    {
+      "path": "core/source/version.c",
+      "bytes": 1441,
+      "sha256": "e97ce9bce7ccb0bb507cbee88958827c075416021b5b1c09b032d697f2dd7b4b"
+    },
+    {
+      "path": "core/source/wi_stuff.c",
+      "bytes": 26512,
+      "sha256": "458b9549532b44b019235f387c4447061c832a7fcc6c2011cc3bf19af3d90ec2"
+    },
+    {
+      "path": "core/source/z_bmalloc.c",
+      "bytes": 3766,
+      "sha256": "af8ec16e69302d05712918100a663666dc67b1f1ab18a2c4a320bb8cd449294e"
+    },
+    {
+      "path": "core/source/z_zone.c",
+      "bytes": 8021,
+      "sha256": "d6be06765671d02dcfc700a90eaa86f4b8acf75b729149553376129619b2e44f"
+    },
+    {
+      "path": "LICENSE.md",
+      "bytes": 1069,
+      "sha256": "e9fdfceaaa41e4dc9f81745e70e77902f340c54888ef5a9c0c6795acb2e8bf2b"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1247,
+      "sha256": "4f52f5f0ca3affbbe9a4a77ba21e90f4e470bfdfa76242bfb4743c6d7a68f7fc"
+    },
+    {
+      "path": "scripts/rebuild-doomvm.mjs",
+      "bytes": 3299,
+      "sha256": "9de7346dac6ec6422c4dfa15b4f8fddfd074ae87021f7201435c8be1c74dc1a5"
+    },
+    {
+      "path": "scripts/vm-image.mjs",
+      "bytes": 1333,
+      "sha256": "464e865665bf76371b9b6fed407aec036710036b6ac12e63762543c9ea688354"
+    },
+    {
+      "path": "source-manifest.json",
+      "bytes": 2199,
+      "sha256": "012f90f3526208ad6bcd01b38de19500d1f54c9c5441967eb603e94d3207fa14"
+    },
+    {
+      "path": "Source/Teensy/MinimalBoot/Common/VMABI.h",
+      "bytes": 13188,
+      "sha256": "edd3469275632154bd1b0cddb837d0e409282c894cde319b07f0a640401c91ed"
+    },
+    {
+      "path": "Source/VM/abi/module.ld",
+      "bytes": 551,
+      "sha256": "81a363385126a086083b7d6ef7a7540d44232d9332f5379c7f62fd614e02a0f4"
+    },
+    {
+      "path": "Source/VM/abi/README.md",
+      "bytes": 5328,
+      "sha256": "762f98def39f0f11d75f2f08d22373fd77ef17f6103b0ffd5d1f22b95b4aa908"
+    },
+    {
+      "path": "Source/VM/abi/vm_abi.h",
+      "bytes": 71,
+      "sha256": "3775d7cf9eb47043989b43544372b360a960ada6f7fcc6b7bf6ad3bdd1cd4b23"
+    },
+    {
+      "path": "Source/VM/doom/gba/core_api.h",
+      "bytes": 2176,
+      "sha256": "6b962890b9727b2e402f0d17ad4f54e0f0821deda92b891d24963ee6f1d2bacd"
+    },
+    {
+      "path": "Source/VM/doom/gba/core.c",
+      "bytes": 1539,
+      "sha256": "4444ca9b2de429aa4a5f71d6e58283483a6ff6ac56df4840ff6b4265477ba4ea"
+    },
+    {
+      "path": "Source/VM/doom/gba/doomvm.cpp",
+      "bytes": 4774,
+      "sha256": "4bc9b6351732646da3acd1bdbb9d13e9332e1a6d0781e98774f0946ed526bc74"
+    },
+    {
+      "path": "Source/VM/doom/gba/episode.inc",
+      "bytes": 1657,
+      "sha256": "a11699fe58f417007f1f95f8fdc34605b06ed0555a6b868a9a69fe684800bba3"
+    },
+    {
+      "path": "Source/VM/doom/gba/module.ld",
+      "bytes": 892,
+      "sha256": "7f4237e07f92155b0b07376b5c49044f0286633e9da27ccd160fb5d8428ee674"
+    },
+    {
+      "path": "Source/VM/doom/gba/platform.cpp",
+      "bytes": 7743,
+      "sha256": "80603a38ba3b551c41314f67a942f317e5d7e6b205626e95be018f57d17f1091"
+    },
+    {
+      "path": "Source/VM/doom/gba/platform.h",
+      "bytes": 680,
+      "sha256": "a7a0d3257fe19026a66fdbd5d2e528fa063432cfc09fe375112b58ea60204315"
+    },
+    {
+      "path": "Source/VM/doom/gba/README.md",
+      "bytes": 879,
+      "sha256": "a439974f38352ff648ef1cde975e42feec0dbc32c65d00a0d9095b5457305c0d"
+    },
+    {
+      "path": "Source/VM/doom/gba/sid_stream.h",
+      "bytes": 5058,
+      "sha256": "19a4f64c81838067a7b050f3204a6338900f7490aec1e20e43e60c63dba5e847"
+    },
+    {
+      "path": "Source/VM/doom/gba/sound.c",
+      "bytes": 3987,
+      "sha256": "d281f9459a4df9a42798628dccfe39cc1beb69abbae70fc0f78baae52a84eeeb"
+    },
+    {
+      "path": "Source/VM/doom/gba/status_face.inc",
+      "bytes": 6564,
+      "sha256": "09d5c7d08eaf2411fe448535cc767e6e166d29330c6c7af95528be3c8f332416"
+    },
+    {
+      "path": "Source/VM/doom/gba/status.c",
+      "bytes": 12152,
+      "sha256": "89b620fb846f36ce3cde23c78acdfe985cd9315db96987007b0d8380d24d9678"
+    },
+    {
+      "path": "Source/VM/doom/gba/video.c",
+      "bytes": 2448,
+      "sha256": "75156cffe7a8d3814206eaab0411b4ae6947a5fdb7e0123065907ec94d599901"
+    },
+    {
+      "path": "Source/VM/doom/gba/w_wad.c",
+      "bytes": 5024,
+      "sha256": "2547004155f0d60d25e4f253ecf60e4139c0153f6c43be969a906a51c51cd433"
+    },
+    {
+      "path": "Source/VM/doom/heap.h",
+      "bytes": 2885,
+      "sha256": "752c0a9419595f3783ea62c3314f6d73272beeca7ef4a1cb60641fd290d0738e"
+    },
+    {
+      "path": "Source/VM/video/mpe_video_color_f1.h",
+      "bytes": 519,
+      "sha256": "d55c4138c02647ec3609cbbaa4c5f76d2423f613f860a84f167539030d3dcdfa"
+    },
+    {
+      "path": "Source/VM/video/mpe_video_live.h",
+      "bytes": 8648,
+      "sha256": "0a1af43b34dd951af16f635b4ab4f90c096d63e8cc21a466064ab6966cc1a90d"
+    },
+    {
+      "path": "tests/doom_music_test.cpp",
+      "bytes": 8332,
+      "sha256": "d7bbd05bef5be771b5e5446e19b9a44b26b5b5a1e28ce239e3af1118e1110c29"
+    }
+  ],
+  "tests": [
+    {
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "--test",
+        "Source/VM/tests/doom_status_recovery_test.mjs",
+        "Source/VM/tests/packet_replay_test.mjs"
+      ],
+      "cwd": "E:/MHS-Repository/MHS-Teensy-Rom-Power-Engine",
+      "passed": true
+    },
+    {
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "Source/VM/tests/doom_video_controls.mjs"
+      ],
+      "cwd": "E:/MHS-Repository/MHS-Teensy-Rom-Power-Engine",
+      "passed": true
+    },
+    {
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "Source/VM/tests/doom_music_client.mjs"
+      ],
+      "cwd": "E:/MHS-Repository/MHS-Teensy-Rom-Power-Engine",
+      "passed": true
+    },
+    {
+      "command": [
+        "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI\\build\\public-release-20260914\\doom\\doom-cart-music-test.exe"
+      ],
+      "cwd": "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI",
+      "passed": true
+    },
+    {
+      "command": [
+        "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI\\build\\public-release-20260914\\doom\\doom-registry-test.exe",
+        "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI\\build\\public-release-20260914\\doom\\SD",
+        "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI\\build\\public-release-20260914\\doom\\proof-registry-sandbox"
+      ],
+      "cwd": "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI",
+      "passed": true
+    },
+    {
+      "command": [
+        "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI\\build\\color-f1\\tests\\color_f1_test.exe"
+      ],
+      "cwd": "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI",
+      "passed": true
+    },
+    {
+      "command": [
+        "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI\\build\\color-f1\\tests\\color_f1_host_test.exe"
+      ],
+      "cwd": "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI",
+      "passed": true
+    },
+    {
+      "command": [
+        "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI\\build\\color-f1\\tests\\indexed_ram2_source_test.exe"
+      ],
+      "cwd": "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI",
+      "passed": true
+    },
+    {
+      "command": [
+        "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI\\build\\color-f1\\tests\\indexed_timing_test.exe"
+      ],
+      "cwd": "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI",
+      "passed": true
+    },
+    {
+      "command": [
+        "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI\\build\\color-f1\\tests\\mpe_video_live_test.exe"
+      ],
+      "cwd": "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI",
+      "passed": true
+    },
+    {
+      "command": [
+        "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI\\build\\color-f1\\tests\\mpe_video_crop_test.exe"
+      ],
+      "cwd": "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI",
+      "passed": true
+    },
+    {
+      "command": [
+        "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI\\build\\color-f1\\tests\\mpe_video_detail_test.exe"
+      ],
+      "cwd": "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI",
+      "passed": true
+    },
+    {
+      "command": [
+        "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI\\build\\color-f1\\tests\\mpe_video_sprite_test.exe"
+      ],
+      "cwd": "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI",
+      "passed": true
+    },
+    {
+      "command": [
+        "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI\\build\\color-f1\\tests\\indexed_host_test.exe"
+      ],
+      "cwd": "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI",
+      "passed": true
+    },
+    {
+      "command": [
+        "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI\\build\\color-f1\\tests\\full_video_converter_test.exe"
+      ],
+      "cwd": "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI",
+      "passed": true
+    },
+    {
+      "command": [
+        "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI\\build\\color-f1\\tests\\full_video_host_test.exe"
+      ],
+      "cwd": "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI",
+      "passed": true
+    }
+  ],
+  "vice": [
+    {
+      "passed": true,
+      "crt": "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI\\build\\public-release-20260914\\doom\\client\\SD\\DOOMVM.crt",
+      "sha256": "56fc8b95135cb3956023d802f79c74ed26fc1e2eb7d4e97e70c781be74dafd0a",
+      "standard": "pal",
+      "terminalBytes": 7860,
+      "startCommand": "M3TP",
+      "boundedNoServiceError": true,
+      "sidSilentWithoutPackets": true,
+      "sidPacketReplay": true,
+      "scope": "C64 CPU and memory-map proof in VICE; no Teensy service, audible SID output, custom-bus timing, or physical acceptance"
+    },
+    {
+      "passed": true,
+      "crt": "E:\\MHS-Repository\\Teensy-Rom-Custom-GUI\\build\\public-release-20260914\\doom\\client\\SD\\DOOMVM.crt",
+      "sha256": "56fc8b95135cb3956023d802f79c74ed26fc1e2eb7d4e97e70c781be74dafd0a",
+      "standard": "ntsc",
+      "terminalBytes": 7860,
+      "startCommand": "M3TP",
+      "boundedNoServiceError": true,
+      "sidSilentWithoutPackets": true,
+      "sidPacketReplay": true,
+      "scope": "C64 CPU and memory-map proof in VICE; no Teensy service, audible SID output, custom-bus timing, or physical acceptance"
+    }
+  ],
+  "package": {
+    "runtimeMembers": 11,
+    "zipRoundtripEqual": true,
+    "onlyExistingSharewareData": true,
+    "noOptionalMusic": true,
+    "noOwnerCommercialMedia": true,
+    "licenseFilesPreserved": true
+  },
+  "physicalAcceptance": false,
+  "limitations": [
+    "No physical C64/Teensy gameplay or custom-bus timing acceptance.",
+    "Prism and Prism+ do not apply to DoomVM.",
+    "Eight bytes remain in the existing module executable region."
+  ],
+  "gitSourceRebuild": {
+    "passed": true,
+    "source": "Exact staged Git index blobs",
+    "sourceRoot": "Source/DoomEngine",
+    "files": 152,
+    "compiler": "11.3.1",
+    "sourceDateEpoch": 1788609600,
+    "moduleBytes": 252696,
+    "moduleSha256": "1893f2ceb541200a9e278c3bf5d7e2a55b47925e7e7da4b039b8f7131338d16b",
+    "matchesReleasedEngine": true,
+    "gameDataRequired": false
+  },
+  "sourceLineEndingNote": "sourceInventory records the exact Git blob bytes published under Source/DoomEngine, including LF line endings required by the repository attributes. A clean export of all 152 Git source files reproduced the released engine."
+}

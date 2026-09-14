@@ -1,17 +1,21 @@
-# NESVM 1.1.2 for TeensyROM+
+# NESVM 1.2.0 for TeensyROM+
 
-NESVM 1.1.2 introduces the MHS Prism name for our game-focused F5 graphics.
-It retains the centered picture, unchanged-region conversion reuse and green
-NES color matching from 1.1.1, plus the mapper support and cartridge saves
-added in NESVM 1.1. [Meet MHS Prism](MHS-PRISM.md).
-Use **MPE firmware 1.2.6 or later**, TeensyROM+ v0.4 and a Teensy 4.1.
-Download [NESVM.zip](https://github.com/ziggystar12/MHS-Teensy-Rom-Power-Engine/raw/refs/heads/main/vms/NESVM.zip)
+This release brings the current NES core timing improvements, MHS Prism+
+graphics, and continuing SID updates while a picture is being transferred.
+Use **MPE GUI firmware 1.2.23 or later**, TeensyROM+ v0.4 and a Teensy 4.1.
+Download the [current GUI firmware](../firmware/) separately.
+See the [Prism+ overview](MHS-PRISM.md) and [release build record](NESVM-build.json).
+
+Download [NESVM.zip](../vms/NESVM.zip)
 and extract it to the SD card root, replacing the supplied runtime files while
 keeping your ROMs and saves. Exit and relaunch NESVM after installing.
-Firmware is downloaded separately from the public MHS Power Engine project.
+The engine and client must be installed together.
 
-Launch `NESVM.crt`, or select a `.nes` file in the GUI. Put compatible ROMs
-in `/VMS/NESVM/ROMS/`. Only the authorized Crossbow demo is included.
+Launch `NESVM.crt`, or select a compatible `.nes` file directly in the GUI or
+classic text SD browser. Direct launching retains the selected file's full
+path, including nested folders and spaces. The installed NESVM package must
+be present and valid. For the built-in picker, put compatible ROMs in
+`/VMS/NESVM/ROMS/`. Only the authorized Crossbow demo is included.
 
 ## Controls and display
 
@@ -24,17 +28,27 @@ Hold **Commodore + Control** and press an unshifted function key:
 
 - **F1 Standard:** full-frame multicolor view.
 - **F3 Pan and scan:** a 160x200 native-pixel crop; hold WASD to pan.
-- **F5 MHS Prism:** native 256-pixel width centered between 32-pixel black side
+- **F5 MHS Prism+:** all 256 NES columns, centered between 32-pixel black side
   borders. Eight source lines are trimmed from the top and bottom, then the
   remaining 224 lines are squeezed into 200.
-- **F7 Sharp:** centered hires view.
 
-MHS Prism automatically converts the live game picture with fast C64 color
-selection. F5 detects unchanged regions and reuses cached conversion work.
-This reduces conversion work; the amount of picture data sent can still limit
-smoothness. The C64 palette approximates NES colors. Green shades remain green
-across games; very dark green is brighter because the C64 has no darker green.
-The new engine and launcher must be installed together.
+F7 Sharp has been removed and is ignored. It is not an alternate mode.
+
+MHS Prism+ is an independent MHS renderer for the C64's 320x200 display and
+16-color palette. It keeps a complete picture visible while preparing the
+next picture in the inactive display bank, then flips at the border. Cached
+conversion and changed-area updates reduce repeated work; quiet pictures can
+receive additional refinement. NESVM requests a shortcut for its known black
+side margins. Actual pixel color choices still follow C64 display constraints.
+
+Once the initial picture is established, SID changes can continue while the
+next picture is being transferred. This avoids making audio updates wait for
+every new video frame. Picture data transfer can still limit motion smoothness;
+these changes do not promise a particular hardware frame rate.
+
+The C64 palette approximates NES colors. Green shades remain green across
+games; very dark green is brighter because the C64 has no darker green.
+**DOOMVM does not use Prism+.**
 
 ## Compatibility and saves
 
@@ -75,22 +89,32 @@ allowing games such as Dr. Mario to continue. DMC samples are not mixed into
 SID sound. Noise shares SID voice 3 with triangle; the NES triangle linear
 counter and cycle-exact DMA overlap/joypad quirks remain outside this build.
 
-Mapper, DMC, save recovery, module input/audio, and PAL/NTSC VICE display
-checks passed, including centered F5 geometry and frozen change maps through
-video/audio acknowledgements. Super Mario Bros., Zelda and Dr. Mario reached gameplay in
-the actual module under a host harness; display captures use the C64 client
-in VICE. These are software checks, not new physical hardware measurements
-or a claim that every game is compatible.
+## Validation
+
+The release engine passed 12 focused host suites covering CPU/PPU, APU/DMC
+timing, mapper behavior, input, saves, and video/audio acknowledgements. The
+compiled C64 receiver passed F1/F3/F5 controls, ignored-F7, memory-isolation
+and packet-ownership checks. All 16 PAL/NTSC VICE display checks passed.
+Seven generated-ROM cases passed direct-launch path and failure checks.
+The standalone engine source rebuilds byte-for-byte to the supplied engine.
+These are software checks, not new physical hardware measurements or a claim
+that every game is compatible.
 
 ## Source and credits
 
 The ZIP contains runtime files, the Crossbow demo, installation notes and
-licenses. Corresponding source and rebuild instructions are provided
-separately in [Source/NESEngine](https://github.com/ziggystar12/MHS-Teensy-Rom-Power-Engine/tree/main/Source/NESEngine)
-and [Source/NESClient](https://github.com/ziggystar12/MHS-Teensy-Rom-Power-Engine/tree/main/Source/NESClient).
+licenses. Complete corresponding NES engine source and rebuild instructions
+are provided in [Source/NESEngine](../Source/NESEngine/).
+Nofrendo and the MPE engine adapter retain GNU Library GPL version 2 rights.
 
-MHS developed the MPE platform, MHS Prism graphics system and NESVM integration. TeensyROM hardware
+The new MHS Prism+ C64 receiving and relocation implementation is distributed
+as compiled code under LICENSE-PRISM-PLUS.txt; its implementation source is
+private. Earlier MHS infrastructure retains its MIT rights. The older
+Source/NESClient directory is a historical source snapshot for NESVM 1.1.x,
+not corresponding source for this release's Prism+ client. The ZIP includes NOTICES.md and COMPONENTS.json with the component boundaries
+and existing rights. See the [license overview](PRISM-PLUS-LICENSE.md) for
+firmware relinking and separately licensed engine source.
+
+MHS developed the MPE platform and NESVM integration. TeensyROM hardware
 and original firmware are by Travis Smith / Sensorium Embedded. NESVM uses
-Matthew Conte's Nofrendo, ported through Jean-Marc Harvengt's MCUME. See the
-[project credits](../README.md#credits) and included notices and licenses
-for attribution and terms.
+Matthew Conte's Nofrendo, ported through Jean-Marc Harvengt's MCUME.

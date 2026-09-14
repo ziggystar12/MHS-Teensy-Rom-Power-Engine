@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "release": "v1.2.23",
+  "date": "2026-09-14",
+  "firmwareSourceCommit": "704d82f9ddf4aa3199988acc07a898102dff3c20",
+  "vmEngineSourceCommit": "2cbde248ef6f67f8f487ca11bfa1bb1d0ee15561",
+  "artifacts": [
+    {
+      "product": "firmware",
+      "version": "1.2.23",
+      "path": "firmware/MPE_Firmware-V1.2.23.hex",
+      "releaseAsset": "MPE_Firmware-V1.2.23.hex",
+      "bytes": 6421060,
+      "sha256": "3009715813faec679688fc939be20f6ed2271ebc9309744567520541819d4606"
+    },
+    {
+      "product": "NESVM",
+      "version": "1.2.0",
+      "path": "vms/NESVM.zip",
+      "releaseAsset": "NESVM.zip",
+      "bytes": 108609,
+      "sha256": "8ea143832499236ee0c747cd319b50a7d464c3158b58ad83cbf3818c79d01278"
+    },
+    {
+      "product": "DoomVM",
+      "version": "1.2.1",
+      "path": "vms/DOOMVM.zip",
+      "releaseAsset": "DOOMVM.zip",
+      "bytes": 1604888,
+      "sha256": "0208da320030d0bddd853977185e89ae2ff10131df6f813322d050ebbce89104"
+    },
+    {
+      "product": "firmwareRelinkSDK",
+      "version": "1.2.23",
+      "path": "firmware/MPE-Firmware-1.2.23-Relink-SDK.zip",
+      "releaseAsset": "MPE-Firmware-1.2.23-Relink-SDK.zip",
+      "bytes": 17912264,
+      "sha256": "1769131b940326b1ecc75b12a2f9c5a00c0164497a7ec037647e6f3a5fa7c1fe"
+    }
+  ],
+  "documentation": {
+    "firmware": "FIRMWARE-1.2.23.md",
+    "NESVM": "NESVM.md",
+    "DoomVM": "DOOM.md",
+    "prismPlus": "MHS-PRISM.md",
+    "licensing": "PRISM-PLUS-LICENSE.md",
+    "components": "PRISM-PLUS-COMPONENTS.json"
+  },
+  "checks": {
+    "firmwareTests": 24,
+    "c64Tests": 343,
+    "buttonScenarios": 10,
+    "firmwareSourceInputs": 459,
+    "firmwareRelink": true,
+    "firmwareLibraryRebuildAndRelink": true,
+    "matchedRelinkSha256": "3009715813faec679688fc939be20f6ed2271ebc9309744567520541819d4606",
+    "privatePrismImplementationSourceIncluded": false
+  },
+  "physicalAcceptance": false
+}
