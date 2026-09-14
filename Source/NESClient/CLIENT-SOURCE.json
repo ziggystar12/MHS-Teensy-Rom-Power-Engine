@@ -9,6 +9,16 @@
       "generated": true
     },
     {
+      "path": "LICENSE-DISPLAY-COMPONENTS.txt",
+      "bytes": 1070,
+      "sha256": "1a969dd98763da79faa7d888975880da8529f8eea768fe7cc8f43befe0c2750f",
+      "sourceCommit": "356f39c03d56359a63692d9068fdc824d10ab687",
+      "originalPath": "nes/client/nuflix/LICENSE",
+      "originalSha256": "1a969dd98763da79faa7d888975880da8529f8eea768fe7cc8f43befe0c2750f",
+      "unchanged": true,
+      "change": "Added a verbatim copy of the retained third-party MIT license at a neutral display-component filename."
+    },
+    {
       "path": "LICENSE.md",
       "bytes": 1327,
       "sha256": "4c0cb041def0cdd41e9ee857d19462c125646f983308328f24a0e80a34337864",
@@ -50,11 +60,12 @@
     },
     {
       "path": "nes/client/nuflix/README.md",
-      "bytes": 982,
-      "sha256": "e57c1cc4cf36df198af943b6460b5218945d1f6c6170b50ccd2c25c54532d2f3",
+      "bytes": 930,
+      "sha256": "823c027519fc233d9372a4760cb7fd5507aacd1b6ab16dfcfb0b7de4c256e517",
       "sourceCommit": "356f39c03d56359a63692d9068fdc824d10ab687",
       "originalSha256": "e57c1cc4cf36df198af943b6460b5218945d1f6c6170b50ccd2c25c54532d2f3",
-      "unchanged": true
+      "unchanged": false,
+      "change": "Documentation updated with a neutral display-component description; original MIT copyright, license, pinned component commit and source implementation retained."
     },
     {
       "path": "nes/client/nuflix/scatter-receiver.mjs",
@@ -98,9 +109,12 @@
     },
     {
       "path": "README.md",
-      "bytes": 1822,
-      "sha256": "9165334b5b4abcc1bf88e593c592762e8766265e3f43ec2b9deaebbd529e7a81",
-      "generated": true
+      "bytes": 2086,
+      "sha256": "2946aaa92f30cb312281392e9ac61bd7ac958000f4858f2786835c7d00382648",
+      "generated": true,
+      "originalSha256": "9165334b5b4abcc1bf88e593c592762e8766265e3f43ec2b9deaebbd529e7a81",
+      "unchanged": false,
+      "change": "Documentation updated to identify the historical NESVM 1.1.2 archive, current client source availability, and the retained display-component license."
     },
     {
       "path": "vm/client/host/install-boot-bank.mjs",

@@ -1,12 +1,3 @@
-# MHS Prism display support: third-party notices
-
-Scheduler, packer and display-template adaptations from third-party
-display components by Patai Gergely.
-
-Based on commit b33f4d93875a3fdbabaf52216811962847fdfcf1.
-MHS adaptations add bounded incremental fitting, inactive-bank uploads and
-shared-host scheduling. Generated display data is included as C++ headers.
-
 MIT License
 
 Copyright (c) 2024 Patai Gergely

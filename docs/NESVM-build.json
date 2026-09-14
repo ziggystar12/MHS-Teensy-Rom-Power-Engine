@@ -29,8 +29,8 @@
     },
     {
       "path": "VMS/NESVM/COMPONENTS.json",
-      "bytes": 1938,
-      "sha256": "4e3b1fc0c788d53f5d86b97105af8f1a15c6b5adf74d7e95ece9b321522243ee"
+      "bytes": 1907,
+      "sha256": "74f15c3b0fba74dd5016dc7b7f8d4fb250c99d582e205078e05e8b7ab5c7d416"
     },
     {
       "path": "VMS/NESVM/engine.mvm",
@@ -48,7 +48,7 @@
       "sha256": "cc535c21133c895b56b374c8a1dc1eb948d99003ed2b47372069456b62f42b24"
     },
     {
-      "path": "VMS/NESVM/LICENSE-NUFLIX.txt",
+      "path": "VMS/NESVM/LICENSE-DISPLAY-COMPONENTS.txt",
       "bytes": 1070,
       "sha256": "1a969dd98763da79faa7d888975880da8529f8eea768fe7cc8f43befe0c2750f"
     },
@@ -64,8 +64,8 @@
     },
     {
       "path": "VMS/NESVM/NOTICES.md",
-      "bytes": 2994,
-      "sha256": "8d46e43037265005da4ab27cc2c0c25b6aca67f3118d67ed255acc1fa4c305fe"
+      "bytes": 2885,
+      "sha256": "d44e1072bccb116bd60c77c16ea508d4743f107eceac330a685342a0f0cb6bab"
     },
     {
       "path": "VMS/NESVM/README.md",
@@ -88,8 +88,8 @@
   "downloads": [
     {
       "file": "NESVM.zip",
-      "bytes": 108609,
-      "sha256": "8ea143832499236ee0c747cd319b50a7d464c3158b58ad83cbf3818c79d01278",
+      "bytes": 108562,
+      "sha256": "94bccd62b9a11100b914f68efa4fc04b609946bcda7c23e2a0deb4f385b13c08",
       "members": 13
     }
   ],
@@ -104,7 +104,7 @@
     "sourceCommit": "2cbde248ef6f67f8f487ca11bfa1bb1d0ee15561",
     "privateSourceFiles": 14,
     "independentRebuildVerified": true,
-    "nuflixTemplateIncluded": false
+    "historicalDisplayTemplateIncluded": false
   },
   "validation": {
     "physicalHardware": false,

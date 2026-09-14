@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "release": "v1.2.23",
+  "release": "v1.2.23-r2",
   "date": "2026-09-14",
   "firmwareSourceCommit": "704d82f9ddf4aa3199988acc07a898102dff3c20",
   "vmEngineSourceCommit": "2cbde248ef6f67f8f487ca11bfa1bb1d0ee15561",
@@ -18,8 +18,8 @@
       "version": "1.2.0",
       "path": "vms/NESVM.zip",
       "releaseAsset": "NESVM.zip",
-      "bytes": 108609,
-      "sha256": "8ea143832499236ee0c747cd319b50a7d464c3158b58ad83cbf3818c79d01278"
+      "bytes": 108562,
+      "sha256": "94bccd62b9a11100b914f68efa4fc04b609946bcda7c23e2a0deb4f385b13c08"
     },
     {
       "product": "DoomVM",
@@ -34,8 +34,8 @@
       "version": "1.2.23",
       "path": "firmware/MPE-Firmware-1.2.23-Relink-SDK.zip",
       "releaseAsset": "MPE-Firmware-1.2.23-Relink-SDK.zip",
-      "bytes": 17912264,
-      "sha256": "1769131b940326b1ecc75b12a2f9c5a00c0164497a7ec037647e6f3a5fa7c1fe"
+      "bytes": 17911250,
+      "sha256": "4c88567ce7fbe9c51c505a75ea8b845b0a591044388c025d397dac73bb6380af"
     }
   ],
   "documentation": {
@@ -56,5 +56,7 @@
     "matchedRelinkSha256": "3009715813faec679688fc939be20f6ed2271ebc9309744567520541819d4606",
     "privatePrismImplementationSourceIncluded": false
   },
-  "physicalAcceptance": false
+  "physicalAcceptance": false,
+  "packageRevision": 2,
+  "revisionNote": "Documentation and package-notice refresh. Firmware, VM engines and C64 clients are unchanged; third-party copyright and license text are retained."
 }

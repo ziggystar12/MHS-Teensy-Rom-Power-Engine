@@ -53,7 +53,3 @@ The new MHS-owned Prism+ implementation is distributed as compiled code with
 its source kept private. Use and complete unmodified redistribution are allowed;
 the [license](../LICENSE-PRISM-PLUS.txt) preserves earlier MIT grants and required
 third-party/LGPL rights. [Source availability](PRISM-PLUS-LICENSE.md).
-
-Original Prism's display approach was inspired by NUFLI and incorporates
-MIT-licensed NUFLIX Studio display components by Patai Gergely. Those original
-notices remain with their components; the new Prism+ terms do not replace them.

@@ -4,11 +4,11 @@ This is the historical **NESVM 1.1.2** client source. Its existing MIT license
 continues to apply. It does not build the current NESVM 1.2.0 Prism+ client,
 which is distributed as a binary. See [current source availability](../../docs/PRISM-PLUS-LICENSE.md).
 
-This source snapshot rebuilds the C64 client in the public NESVM runtime
-download. Its SHA-256 is
+This historical source snapshot rebuilds the C64 client distributed with
+NESVM 1.1.2. Its SHA-256 is
 `80ebb5c83312a2f2b7ba1abe0f4ecf898fd2d5bfb8e582a1208b275583bceb84`.
-The source files are exported unchanged from commit
-`356f39c03d56359a63692d9068fdc824d10ab687`.
+The implementation source was exported from commit
+`356f39c03d56359a63692d9068fdc824d10ab687`; documentation has since been updated.
 
 ## Build
 
@@ -25,8 +25,8 @@ use `sha256sum build/client/client.crt`.
 
 Copy the rebuilt file to `VMS/NESVM/client.crt` on the SD card and also to
 the root as `NESVM.crt`. Retain the engine and other files from the runtime
-download. The matching engine source is distributed alongside this
-snapshot in `Source/NESEngine`. Use the firmware requirement in the runtime
+download for that historical version. Use the matching engine source from
+the `nesvm-v1.1.2` repository tag and the firmware requirement in that runtime
 download's README.
 
 The JavaScript sources include the assembler and the shared C64 client
@@ -38,6 +38,6 @@ other VM engine is included in this snapshot.
 
 See [LICENSE.md](LICENSE.md) for the MHS MIT license. The upstream display
 template retains its MIT license in
-[nes/client/nuflix/LICENSE](nes/client/nuflix/LICENSE); see the adjacent README
-for pinned upstream provenance. Both licenses accompany generated clients.
+[LICENSE-DISPLAY-COMPONENTS.txt](LICENSE-DISPLAY-COMPONENTS.txt).
+Both licenses accompany generated clients.
 `CLIENT-SOURCE.json` records each original source path, size, and SHA-256.

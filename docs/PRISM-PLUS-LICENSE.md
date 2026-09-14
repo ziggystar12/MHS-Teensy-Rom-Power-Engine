@@ -10,7 +10,7 @@ to the existing-license and LGPL exceptions in that license.
 This policy applies to the new MHS Prism+ components identified in the
 [release component manifest](PRISM-PLUS-COMPONENTS.json). It leaves previously granted MIT rights intact.
 Original TeensyROM, the previously published MHS color converter, original
-Prism/NUFLIX components and VM engines retain their respective licenses.
+Prism components and VM engines retain their respective licenses.
 
 NESVM's Nofrendo engine and MPE adapter remain under the GNU Library General
 Public License version 2. Exact engine source and standalone rebuild

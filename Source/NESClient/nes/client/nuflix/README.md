@@ -6,12 +6,11 @@ excludes `$7a00-$7fff`, preserving the ordinary bitmap at `$6000-$7f3f`.
 
 `double-video.mjs` and `scatter-receiver.mjs` retain the shared MHS receiver
 implementation. `emitter.mjs` contains only the small MHS bootstrap assembler.
-The NES overlay and mode-request protocol live in `nes/tools/nes_nuflix.mjs`.
+The NES overlay and mode-request protocol live in the adjacent build tools.
 These sources contain no DOS runtime or game media.
 
-`nufli-template.bin` is the unmodified display template from NUFLIX Studio by
-Patai Gergely, pinned at commit `b33f4d93875a3fdbabaf52216811962847fdfcf1`:
-<https://github.com/cobbpg/nuflix-studio>.
+The bundled display template is an unmodified third-party component by
+Patai Gergely, pinned at commit `b33f4d93875a3fdbabaf52216811962847fdfcf1`.
 Its MIT license is retained in `LICENSE` and must accompany generated clients.
 The firmware supplies the converted picture, raster program, mirrored display
 bank and scheduling adaptation. This directory supplies the receiving client.

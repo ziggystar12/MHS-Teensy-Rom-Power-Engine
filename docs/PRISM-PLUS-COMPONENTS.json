@@ -110,6 +110,6 @@
       ]
     }
   ],
-  "excluded": "Original TeensyROM; previously published generic MHS color conversion, transport and client infrastructure; original Prism and NUFLIX code/templates; Teensy/Arduino/other libraries; Nofrendo and its NESVM adapter; DOOMVM; game/demo media; and any rights already granted under another license.",
+  "excluded": "Original TeensyROM; previously published generic MHS color conversion, transport and client infrastructure; original Prism and third-party display code/templates; Teensy/Arduino/other libraries; Nofrendo and its NESVM adapter; DOOMVM; game/demo media; and any rights already granted under another license.",
   "thirdPartyExceptions": "LGPL-covered code retains modification, redistribution, reverse-engineering and relinking rights under its license. The new MHS license expressly permits combined-work modification for customer own use and debugging as LGPL requires. No additional conditions are imposed on GPL/LGPL-covered works."
 }

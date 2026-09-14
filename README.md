@@ -95,9 +95,7 @@ Sensorium Embedded. [MPE integration in Travis's text firmware](https://github.c
 has been merged upstream; that firmware has its own feature and release choices.
 The current GUI/Prism+ download here is a separate build.
 
-Original Prism's display approach was inspired by NUFLI and includes
-MIT-licensed [NUFLIX Studio](https://github.com/cobbpg/nuflix-studio) components
-by Patai Gergely. Their notices remain. NESVM uses Matthew Conte's Nofrendo,
+NESVM uses Matthew Conte's Nofrendo,
 ported through Jean-Marc Harvengt's MCUME, under the GNU Library GPL v2.
 DoomVM uses [GBADoom](https://github.com/doomhack/GBADoom) and its Doom ancestry;
 engine and shareware notices accompany the package.
