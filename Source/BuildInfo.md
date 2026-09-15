@@ -1,7 +1,7 @@
 # Firmware build tools
 
-Use the [combined firmware build](../docs/BUILDING.md) for MHS Power Engine.
-It assembles the C64 desktop and builds both Teensy firmware halves.
+See [source availability and rebuilding](README.md) for MHS Power Engine.
+The retained build scripts assemble the C64 desktop and both Teensy firmware halves.
 A GUI-only Arduino build does not include the VM host.
 
 The build uses Node.js, Arduino CLI 1.4.1, Teensy core 1.61.0 with GCC 11.3.1,

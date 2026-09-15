@@ -30,7 +30,3 @@ the desktop to show its links.
 If both devices contain more than seven links in total, SD links are shown
 first. Removing or renaming a target file does not change a link; opening a
 missing target reports an error.
-
-The [1.2.23 release report](FIRMWARE-1.2.23.md) records build and automated
-validation. Physical C64/TeensyROM testing of reboot, media removal and launch
-remains separate.

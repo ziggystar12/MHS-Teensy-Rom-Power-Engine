@@ -15,5 +15,5 @@ display. The normal route is E1M1 → E1M4 → E1M5 → E1M8, skipping maps that
 exceed memory. E1M4 uses a 96 KiB texture cache and E1M5 uses 80 KiB; other
 maps retain 128 KiB. The existing firmware 1.1.9 layout is unchanged.
 
-[Build instructions](../../../../docs/BUILDING.md) ·
+[Build instructions](../../../README.md) ·
 [Setup and controls](../../../../docs/DOOM.md)

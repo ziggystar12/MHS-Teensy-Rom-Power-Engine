@@ -1,0 +1,34 @@
+{
+  "recommendedFirmwareVersion": "1.2.23",
+  "release": "v1.2.23-r3",
+  "packages": [
+    {
+      "name": "NESVM",
+      "version": "1.2.1",
+      "file": "NESVM.zip",
+      "bytes": 108766,
+      "sha256": "8b2bcb64b1818fe64bc0991953e50306605d17fc2e9410f6ad1c870afca98848"
+    },
+    {
+      "name": "DoomVM",
+      "version": "1.2.1",
+      "file": "DOOMVM.zip",
+      "bytes": 1604888,
+      "sha256": "0208da320030d0bddd853977185e89ae2ff10131df6f813322d050ebbce89104"
+    },
+    {
+      "name": "GBVM",
+      "version": "1.2.24",
+      "file": "GBVM.zip",
+      "bytes": 69075,
+      "sha256": "174267fd57f1e80cdc52b850233362abd9cb5701b65087868ed2c5dd88304e84"
+    },
+    {
+      "name": "GGVM",
+      "version": "1.2.24",
+      "file": "GGVM.zip",
+      "bytes": 71855,
+      "sha256": "294dc39c0de83112a445e8db9b93efac15e07d951bc0ac80bc03daf2b714a16a"
+    }
+  ]
+}

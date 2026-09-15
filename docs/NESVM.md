@@ -1,24 +1,17 @@
 # NESVM 1.2.1 for TeensyROM+
 
-This release fixes **STAGE 03 ERROR 09: SID OR END BEFORE BASE IMAGE** when
-opening a `.nes` file directly. Startup now establishes the first picture
-before sound packets, including when the emulation needs to catch up. The
-picker, current core timing improvements, MHS Prism+ graphics and continuing
-SID updates during later picture transfers remain available.
-Use **MPE GUI firmware 1.2.23 or later**, or Travis's **MPE integration 1.2.24**
-with host library 1.2.23, on TeensyROM+ v0.4 and a Teensy 4.1.
-Download the [current GUI firmware](../firmware/) separately.
-See the [Prism+ overview](MHS-PRISM.md) and [release build record](NESVM-build.json).
-The [startup verification](CONSOLE-STARTUP-UPDATE.md) reproduces the old direct
-launch failure and checks the corrected route and picker on PAL and NTSC.
+NESVM runs compatible NES games with SID sound and Standard, Pan and scan,
+or Prism+ graphics. Use **MPE GUI firmware 1.2.23** on TeensyROM+ v0.4 with
+a Teensy 4.1. [Firmware installation](../firmware/README.md) ·
+[Prism+ overview](MHS-PRISM.md) · [Checksums](../vms/SHA256SUMS.txt).
 
 Download [NESVM.zip](../vms/NESVM.zip)
 and extract it to the SD card root, replacing the supplied runtime files while
 keeping your ROMs and saves. Exit and relaunch NESVM after installing.
 The engine and client must be installed together.
 
-Launch `NESVM.crt`, or select a compatible `.nes` file directly in the GUI or
-classic text SD browser. Direct launching retains the selected file's full
+Launch `NESVM.crt`, or select a compatible `.nes` file directly in the SD
+browser. Direct launching retains the selected file's full
 path, including nested folders and spaces. The installed NESVM package must
 be present and valid. For the built-in picker, put compatible ROMs in
 `/VMS/NESVM/ROMS/`. Only the authorized Crossbow demo is included.
@@ -38,7 +31,7 @@ Hold **Commodore + Control** and press an unshifted function key:
   borders. Eight source lines are trimmed from the top and bottom, then the
   remaining 224 lines are squeezed into 200.
 
-F7 Sharp has been removed and is ignored. It is not an alternate mode.
+F7 has no assigned display mode.
 
 MHS Prism+ is an independent MHS renderer for the C64's 320x200 display and
 16-color palette. It keeps a complete picture visible while preparing the
@@ -94,17 +87,6 @@ fixes are retained. DMC sample timing, mapped reads and interrupts now run,
 allowing games such as Dr. Mario to continue. DMC samples are not mixed into
 SID sound. Noise shares SID voice 3 with triangle; the NES triangle linear
 counter and cycle-exact DMA overlap/joypad quirks remain outside this build.
-
-## Validation
-
-The release engine passed 12 focused host suites covering CPU/PPU, APU/DMC
-timing, mapper behavior, input, saves, and video/audio acknowledgements. The
-compiled C64 receiver passed F1/F3/F5 controls, ignored-F7, memory-isolation
-and packet-ownership checks. All 16 PAL/NTSC VICE display checks passed.
-Seven generated-ROM cases passed direct-launch path and failure checks.
-The standalone engine source rebuilds byte-for-byte to the supplied engine.
-These are software checks, not new physical hardware measurements or a claim
-that every game is compatible.
 
 ## Source and credits
 

@@ -2,7 +2,7 @@
 
 The `gba` directory adapts GBADoom/PrBoom for TeensyROM+.
 The complete edited engine source is available separately in
-[Source/DoomEngine](../../DoomEngine/). [Build instructions](../../../docs/BUILDING.md).
+[Source/DoomEngine](../../DoomEngine/). [Build instructions](../../README.md).
 
 The engine is GPL-2.0-or-later. See `COPYING.GPL-2.0`; individual source files
 retain their original notices. The runtime ZIP includes converted Doom shareware

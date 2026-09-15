@@ -1,19 +1,7 @@
 # DoomVM 1.2.1
 
-DoomVM and firmware are versioned separately. This download is DoomVM 1.2.1;
-use MPE GUI firmware 1.2.23.
-
-TeensyROM hardware and Travis's original firmware:
-[SensoriumEmbedded/TeensyROM](https://github.com/SensoriumEmbedded/TeensyROM/tree/main).
-This Doom package needs TeensyROM+ and MPE-enabled firmware, not stock upstream firmware.
-
-## Changes in 1.2.1
-
-The engine can now read optional music packaged inside a self-contained .MPE
-cartridge. A CRC lookup uses read-only tables to fit the extra lookup within the existing
-executable-memory budget, while preserving the same checksum result. The modular SD-folder setup, controls, four-level route
-and display modes are unchanged. The complete ZIP retains the status-recovery
-launcher; extract it to update both launcher files together.
+DoomVM brings Doom shareware to TeensyROM+ v0.4 with a Teensy 4.1.
+Use **MPE GUI firmware 1.2.23**. Firmware and DoomVM have separate versions.
 
 ## Setup
 
@@ -91,15 +79,10 @@ maps retain the original cache. The tradeoff is more SD reads, so smoothness
 and stability on real hardware still need testing. Rendering, combat,
 transitions and all four video modes pass the host tests.
 
-The four-level gameplay and rendering remain unchanged. The 1.2.1 engine
-updates optional music lookup and CRC implementation. The package includes
-the same converted shareware game data. Optional music continues with the same tune
-across levels.
+Optional music continues with the same tune across levels and can also be
+included in a self-contained `.MPE` game.
 Saving is not supported. Display and sound are adapted to the C64's capabilities.
 
-The engine rebuilt with GCC 11.3.1 and passed its link limits. Native tests
-cover both music roots, CRC compatibility, video negotiation and audio scheduling;
-the actual launcher passed PAL and NTSC startup in VICE. These are software
-checks. Physical gameplay and custom-bus timing remain unverified for this release.
+Physical gameplay and custom-bus timing remain unverified for this release.
 
 [Credits and licenses](../README.md#credits)

@@ -31,13 +31,13 @@ a guarantee of a particular FPS or identical speed in every game. Current
 NES-specific fitting tests also preserve exact output while
 skipping its known black side margins.
 
-## Available now in NESVM 1.2.0
+## Using Prism+ in NESVM
 
 Use [firmware 1.2.23](../firmware/) and the [current NESVM package](NESVM.md).
 Hold **Ctrl + Commodore + F5** to select Prism+. All 256 NES columns remain
 centered between 32-pixel margins; the retained 224 source rows fit into 200.
 Standard (Ctrl + Commodore + F1) and Pan and scan (Ctrl + Commodore + F3) remain.
-F7 Sharp has been removed following a hardware crash report.
+F7 has no assigned display mode.
 
 Prism+ can improve color richness compared with simpler multicolor modes, but
 retains the C64 palette and raster constraints. SID sound is an approximation
