@@ -42,6 +42,54 @@ The normal route is E1M1 → E1M4 → E1M5 → E1M8; oversized maps are skipped.
 Host checks and VICE captures do not establish physical gameplay performance.
 [Setup, controls and optional music](../docs/DOOM.md).
 
+## GBVM — Game Boy and Game Boy Color
+
+[Download GBVM](GBVM.zip) · [SHA-256 checksums](SHA256SUMS.txt)
+
+Extract the ZIP to the SD root and open `GBVM.crt`. Put your own compatible
+`.gb` and `.gbc` ROMs in `/VMS/GBVM/ROMS/`, or select one directly in the
+firmware SD browser. No game ROMs or saves are included.
+
+GBVM supports cartridges up to **2 MiB**, using SD bank caching, with cartridge
+type 00 and the supported MBC1, MBC3 and MBC5 variants. Cartridge RAM may be
+0, 8 or 32 KiB; MBC1 ROMs above 512 KiB require 0/8 KiB RAM. MBC1M and other
+mapper types are unsupported. The included README lists exact cartridge types
+and save behavior. MBC3 clocks advance only while the game is running.
+
+F1 displays all 160×144 source pixels at double width, centered vertically.
+Game Boy Color colors are reduced to the C64 palette; sound is a SID
+approximation. F1 is the only supported gameplay display mode.
+
+Use joystick port 2 or cursors to move, Fire for A, Space or the C64GS second
+button for B, Return for Start, and Shift for Select. Start + Select saves and
+returns to the picker. Keep `/VMS/GBVM/SAVES/` when updating, and return to the
+picker before powering off. Other emulators' `.sav` files are not imported.
+
+## GGVM — Game Gear
+
+[Download GGVM](GGVM.zip) · [SHA-256 checksums](SHA256SUMS.txt)
+
+Extract the ZIP to the SD root and open `GGVM.crt`. Put your own compatible
+`.gg` cartridges in `/VMS/GGVM/ROMS/`, or select one directly in the firmware
+SD browser. The picker lists up to 256 games. No game ROMs or BIOS are included.
+
+GGVM supports standard Sega-mapper Game Gear cartridges up to **1 MiB** through
+SD bank caching. Codemasters cartridges, Master System mode, link cable, FM
+and save states are unsupported. F1 displays all 160×144 Game Gear pixels at
+double width, centered vertically, with colors converted to the C64 palette.
+Sound is a PSG-to-SID approximation. The package includes bounded Sonic 2
+boot-time "SEGA" speech support; replace the engine and client together.
+
+Use joystick port 2 or cursors to move, Fire for button 1, Space or the C64GS
+second button for button 2, and Return for Start. Shift + Return saves and
+returns to the picker. Keep `/VMS/GGVM/SAVES/` when updating, and return to the
+picker before powering off. Battery saves are separate from save states.
+
+Both handheld VM packages retain their existing development validation status:
+host/core/client checks are recorded, while physical C64 performance, audio
+and full-game compatibility remain unverified. Each ZIP includes runtime files,
+installation notes and component licenses, with no bundled source tree.
+
 ## Source and licenses
 
 Each download retains its component licenses and notices. Complete

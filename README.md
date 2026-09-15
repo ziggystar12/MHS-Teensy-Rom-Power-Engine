@@ -18,12 +18,16 @@ Hardware and original firmware: [SensoriumEmbedded/TeensyROM](https://github.com
 | [GUI firmware 1.2.23](firmware/MPE_Firmware-V1.2.23.hex) | Remembered drives, desktop shortcuts, direct NES ROM launch, .MPE games and the current Prism+ host | [Firmware notes](docs/FIRMWARE-1.2.23.md) |
 | [NESVM 1.2.0](vms/NESVM.zip) | Prism+, shared emulation improvements and sound updates during picture uploads | [Setup and controls](docs/NESVM.md) |
 | [DoomVM 1.2.1](vms/DOOMVM.zip) | Updated adapter and matching runtime/source package | [Setup and controls](docs/DOOM.md) |
+| [Game Boy / Game Boy Color VM](vms/GBVM.zip) | Compatible cartridges up to 2 MiB, SD bank caching and battery saves | [Setup and controls](vms/README.md#gbvm--game-boy-and-game-boy-color) |
+| [Game Gear VM](vms/GGVM.zip) | Compatible Sega-mapper cartridges up to 1 MiB, battery saves and Sonic 2 boot speech | [Setup and controls](vms/README.md#ggvm--game-gear) |
 
 Use firmware **1.2.23** with these current VM packages. Firmware and VMs have
 separate version numbers. Each VM has one complete runtime ZIP; firmware is a
 separate download. Existing ROMs, game files, music and saves should be preserved.
 
 [Release asset checksums](SHA256SUMS.txt) · [Release manifest](docs/RELEASE-1.2.23.json)
+
+[Game Boy and Game Gear download checksums](vms/SHA256SUMS.txt)
 
 ## MHS Prism+
 
@@ -51,8 +55,9 @@ Other MPE VMs remain in development and are not included in these downloads.
 1. Copy the firmware HEX to the SD root, install it through the GUI updater,
    restart, and confirm **1.2.23** in About.
 2. Extract the chosen VM ZIP to the SD root, retaining the existing ROM and save folders.
-3. Open `NESVM.crt` or `DOOMVM.crt`. With NESVM installed, you can also open a
-   supported `.nes` file directly from the SD browser, including nested folders.
+3. Open the chosen launcher: `NESVM.crt`, `DOOMVM.crt`, `GBVM.crt` or `GGVM.crt`.
+   With the matching VM installed, supported `.nes`, `.gb`, `.gbc` and `.gg`
+   files can also open directly from the SD browser, including nested folders.
 
 NESVM includes the authorized Crossbow demo. Supply your other compatible NTSC
 NES games; supported mappers are 0, 1, 2, 3, 4, 7 and 11. Mapper 1/4 cartridge
