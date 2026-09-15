@@ -21,10 +21,7 @@ rights. DOOMVM retains its existing GPL-covered engine source and notices;
 DOOMVM does not use Prism+.
 
 The MPE firmware includes separately licensed Teensy/Arduino libraries,
-including LGPL-covered components. The accompanying firmware relinking SDK
-supplies linkable application objects, the corresponding library sources,
-build recipes and image-combination tools. It permits rebuilding the libraries
-and relinking the firmware without exposing the Prism+ implementation source.
+including LGPL-covered components.
 The license expressly preserves the LGPL permissions for customer own-use
 modification and reverse engineering to debug those modifications.
 

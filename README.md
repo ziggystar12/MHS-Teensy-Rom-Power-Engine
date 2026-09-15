@@ -83,10 +83,7 @@ unmodified redistribution, with prior-license and LGPL exceptions preserved.
 
 Complete corresponding [NES engine source](Source/NESEngine/) and
 [Doom engine source](Source/DoomEngine/) remain available under their existing
-licenses. The firmware [relinking SDK](firmware/MPE-Firmware-1.2.23-Relink-SDK.zip)
-contains application objects and library sources for replacing/rebuilding the
-libraries without publishing the private Prism+ implementation.
-[Build and relink instructions](docs/BUILDING.md).
+licenses. [Engine and legacy GUI build instructions](docs/BUILDING.md).
 
 The older public GUI and NES client source snapshots remain available under
 their original terms. They do not build the new Prism+ release. Earlier MIT

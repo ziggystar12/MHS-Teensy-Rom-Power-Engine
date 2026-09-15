@@ -3,10 +3,6 @@
 ## Current firmware 1.2.23 and Prism+
 
 The current GUI firmware contains the private MHS Prism+ implementation.
-Use the [firmware relinking SDK](../firmware/MPE-Firmware-1.2.23-Relink-SDK.zip)
-to rebuild its supplied libraries and relink the compiled application objects.
-The SDK includes its own instructions, pinned compiler details, notices and
-verification hashes. It does not contain private Prism+ implementation source.
 [License and component boundaries](PRISM-PLUS-LICENSE.md).
 
 The public `Source/Teensy`, `Source/C64`, firmware version configuration and

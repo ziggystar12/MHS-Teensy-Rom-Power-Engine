@@ -49,6 +49,4 @@ reboot, media or shortcut acceptance.
 
 SHA-256: `3009715813faec679688fc939be20f6ed2271ebc9309744567520541819d4606`.
 
-The [relinking SDK](../firmware/MPE-Firmware-1.2.23-Relink-SDK.zip) provides
-compiled application objects and corresponding library source/rebuild materials.
 [License and source availability](PRISM-PLUS-LICENSE.md).

@@ -8,6 +8,5 @@
   "filename": "MPE_Firmware-V1.2.23.hex",
   "release": "v1.2.23-r2",
   "notes": "../docs/FIRMWARE-1.2.23.md",
-  "relinkSDK": "MPE-Firmware-1.2.23-Relink-SDK.zip",
   "packageRevision": 2
 }

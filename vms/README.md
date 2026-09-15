@@ -103,6 +103,5 @@ applies only to the identified new MHS contributions and preserves earlier
 MIT grants and third-party rights. [Source/NESClient](../Source/NESClient/)
 is the historical NESVM 1.1.2 client source, not this Prism+ client's source.
 
-The current firmware has separate [relinking materials and build instructions](../docs/BUILDING.md)
-for its LGPL libraries. Rebuilding a VM engine does not require relinking the
+Rebuilding a VM engine does not require relinking the
 firmware. [License and component boundaries](../docs/PRISM-PLUS-LICENSE.md).

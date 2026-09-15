@@ -28,14 +28,6 @@
       "releaseAsset": "DOOMVM.zip",
       "bytes": 1604888,
       "sha256": "0208da320030d0bddd853977185e89ae2ff10131df6f813322d050ebbce89104"
-    },
-    {
-      "product": "firmwareRelinkSDK",
-      "version": "1.2.23",
-      "path": "firmware/MPE-Firmware-1.2.23-Relink-SDK.zip",
-      "releaseAsset": "MPE-Firmware-1.2.23-Relink-SDK.zip",
-      "bytes": 17911250,
-      "sha256": "4c88567ce7fbe9c51c505a75ea8b845b0a591044388c025d397dac73bb6380af"
     }
   ],
   "documentation": {

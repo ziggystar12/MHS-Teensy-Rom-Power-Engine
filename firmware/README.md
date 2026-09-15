@@ -16,6 +16,5 @@ reinstallation. Preserve existing VM packages, ROMs, music and saves.
 
 SHA-256: `3009715813faec679688fc939be20f6ed2271ebc9309744567520541819d4606`.
 
-[Firmware relinking SDK](MPE-Firmware-1.2.23-Relink-SDK.zip) ·
 [Prism+ licensing](../docs/PRISM-PLUS-LICENSE.md) ·
 [Older 1.2.6 firmware](MPE_Firmware-V1.2.6.hex)
