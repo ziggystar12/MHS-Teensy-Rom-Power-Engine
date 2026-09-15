@@ -1,13 +1,14 @@
 # VM downloads
 
-Use **MPE GUI firmware 1.2.23 or later** with these releases on TeensyROM+
-v0.4 and a Teensy 4.1. [Download the firmware separately](../firmware/).
+Use **Travis text MPE firmware 1.2.24** or **MHS GUI firmware 1.2.23 or later**
+with these releases on TeensyROM+ v0.4 and a Teensy 4.1.
+[Download the GUI firmware separately](../firmware/).
 Extract each ZIP to the SD card root, replacing its matching engine and
 launcher together. Keep your existing ROMs, game data and saves.
 
-## NESVM 1.2.0
+## NESVM 1.2.1
 
-[Download NESVM 1.2.0](NESVM.zip)
+[Download NESVM 1.2.1](NESVM.zip)
 
 NESVM runs compatible NTSC mapper 0/1/2/3/4/7/11 NES games. This release adds
 the current core timing improvements, MHS Prism+ F5 graphics and continuing
@@ -15,6 +16,8 @@ SID updates during picture transfers. Prism+ keeps a complete picture visible
 while preparing the next display bank and reuses unchanged conversion work.
 F5 shows all 256 NES columns between black side margins. C64 palette and
 display constraints still apply; no particular hardware frame rate is promised.
+Version 1.2.1 also fixes direct ROM startup by waiting for the first display
+acknowledgment before sending audio.
 
 Hold Control + Commodore and press unshifted F1 for Standard, F3 for pan and
 scan, or F5 for Prism+. F7 is ignored. Port-2 Fire is A, a C64GS-compatible
@@ -42,19 +45,23 @@ The normal route is E1M1 → E1M4 → E1M5 → E1M8; oversized maps are skipped.
 Host checks and VICE captures do not establish physical gameplay performance.
 [Setup, controls and optional music](../docs/DOOM.md).
 
-## GBVM — Game Boy and Game Boy Color
+## GBVM 1.2.24 — Game Boy and Game Boy Color
 
-[Download GBVM](GBVM.zip) · [SHA-256 checksums](SHA256SUMS.txt)
+[Download GBVM 1.2.24](GBVM.zip) · [Build and hash record](../docs/GBVM-build.json)
 
 Extract the ZIP to the SD root and open `GBVM.crt`. Put your own compatible
-`.gb` and `.gbc` ROMs in `/VMS/GBVM/ROMS/`, or select one directly in the
-firmware SD browser. No game ROMs or saves are included.
+`.gb`, `.gbc` and `.gc` ROMs in `/VMS/GBVM/ROMS/`, or select one directly in
+the firmware SD browser. `.gc` is the Game Boy Color alias. No game ROMs or
+saves are included. This update waits for the first display acknowledgment
+before sending audio, fixing the SID-before-BASE error 09 during direct launch.
+The engine still supports firmware 1.1.9 and later; use the text or GUI version
+above for all three direct browser routes.
 
 GBVM supports cartridges up to **2 MiB**, using SD bank caching, with cartridge
 type 00 and the supported MBC1, MBC3 and MBC5 variants. Cartridge RAM may be
 0, 8 or 32 KiB; MBC1 ROMs above 512 KiB require 0/8 KiB RAM. MBC1M and other
-mapper types are unsupported. The included README lists exact cartridge types
-and save behavior. MBC3 clocks advance only while the game is running.
+mapper types are unsupported. The [package guide](../docs/GBVM.md) lists exact
+cartridge types and save behavior. MBC3 clocks advance only while the game is running.
 
 F1 displays all 160×144 source pixels at double width, centered vertically.
 Game Boy Color colors are reduced to the C64 palette; sound is a SID
@@ -65,13 +72,16 @@ button for B, Return for Start, and Shift for Select. Start + Select saves and
 returns to the picker. Keep `/VMS/GBVM/SAVES/` when updating, and return to the
 picker before powering off. Other emulators' `.sav` files are not imported.
 
-## GGVM — Game Gear
+## GGVM 1.2.24 — Game Gear
 
-[Download GGVM](GGVM.zip) · [SHA-256 checksums](SHA256SUMS.txt)
+[Download GGVM 1.2.24](GGVM.zip) · [Build and hash record](../docs/GGVM-build.json)
 
 Extract the ZIP to the SD root and open `GGVM.crt`. Put your own compatible
 `.gg` cartridges in `/VMS/GGVM/ROMS/`, or select one directly in the firmware
 SD browser. The picker lists up to 256 games. No game ROMs or BIOS are included.
+This update fixes the same startup audio ordering error for direct `.gg`
+launches. The engine still supports firmware 1.1.13 and later; use the text
+or GUI version above for the current direct browser route.
 
 GGVM supports standard Sega-mapper Game Gear cartridges up to **1 MiB** through
 SD bank caching. Codemasters cartridges, Master System mode, link cable, FM
@@ -84,11 +94,14 @@ Use joystick port 2 or cursors to move, Fire for button 1, Space or the C64GS
 second button for button 2, and Return for Start. Shift + Return saves and
 returns to the picker. Keep `/VMS/GGVM/SAVES/` when updating, and return to the
 picker before powering off. Battery saves are separate from save states.
+[Package guide and compatibility limits](../docs/GGVM.md).
 
 Both handheld VM packages retain their existing development validation status:
 host/core/client checks are recorded, while physical C64 performance, audio
-and full-game compatibility remain unverified. Each ZIP includes runtime files,
-installation notes and component licenses, with no bundled source tree.
+and full-game compatibility remain unverified. Each runtime ZIP includes
+installation notes and component licenses. This GB/GG release provides runtime
+packages only. The build records document matching engine and client rebuilds
+from retained developer source snapshots.
 
 ## Source and licenses
 
@@ -96,6 +109,10 @@ Each download retains its component licenses and notices. Complete
 corresponding engine source and rebuild instructions are available for
 [NESVM](../Source/NESEngine/) and [DoomVM](../Source/DoomEngine/). Nofrendo
 and the NES engine adapter retain GNU Library GPL version 2 rights.
+GBVM retains gnuboy's GNU GPL version 2 or later terms. GGVM retains its
+adapter's GNU GPL version 2 or later terms and the TotalSMS and scheduler MIT
+notices. Both handheld packages keep their established F1 display and do not
+use the private Prism+ receiver.
 
 The new MHS Prism+ C64 receiving and relocation implementation is supplied as
 compiled code with its implementation source private. Its restricted license

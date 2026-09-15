@@ -561,10 +561,13 @@ static FLASHMEM void MPE6PublishSid(bool frameEnd)
 static FLASHMEM void MPE6NextPacket()
 {
    if(!MPE6Active)return;if(MPE6ModeState==MPE6Mode::Menu&&MPE6MenuDirty&&!MPE6FrameReady)MPE6BuildMenu();
-   if(MPE6ModeState==MPE6Mode::Game&&MPE6FrameReady&&!MPE6VideoSubmitted&&
+   if(MPE6ModeState==MPE6Mode::Game&&!MPE6ForceReplace&&MPE6FrameReady&&!MPE6VideoSubmitted&&
       MPE6CycleDebt>MPE6VideoCatchupCycles&&uint32_t(micros()-MPE6VideoReadyMicros)<MPE6MaximumVideoWaitUs){
       // Catch up emulated time BEFORE beginning another blocking conversion/
       // DMA. Keep the captured image frozen and service changed audio meanwhile.
+      // This applies only after the first base image and frame-end ACK.
+      // Direct ROM launch skips the picker; its initial image must be sent
+      // before any SID, even when SD/startup delay leaves emulation debt.
       // Bound the wait so sustained core overload cannot freeze display/input.
       if(MPE6AudioRevision!=MPE6PendingAudioRevision)MPE6PublishSid(false);
       return;

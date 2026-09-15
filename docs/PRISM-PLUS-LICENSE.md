@@ -24,6 +24,9 @@ The MPE firmware includes separately licensed Teensy/Arduino libraries,
 including LGPL-covered components.
 The license expressly preserves the LGPL permissions for customer own-use
 modification and reverse engineering to debug those modifications.
+GBVM and GGVM keep their existing component licenses. Their public downloads
+are runtime packages; the Prism+ restricted license does not replace their
+engine licenses.
 
 Third-party software and game/demo media are not relicensed by this notice.
 Their copyright notices and distribution permissions remain with them.

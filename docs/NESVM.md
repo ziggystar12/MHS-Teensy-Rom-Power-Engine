@@ -1,10 +1,16 @@
-# NESVM 1.2.0 for TeensyROM+
+# NESVM 1.2.1 for TeensyROM+
 
-This release brings the current NES core timing improvements, MHS Prism+
-graphics, and continuing SID updates while a picture is being transferred.
-Use **MPE GUI firmware 1.2.23 or later**, TeensyROM+ v0.4 and a Teensy 4.1.
+This release fixes **STAGE 03 ERROR 09: SID OR END BEFORE BASE IMAGE** when
+opening a `.nes` file directly. Startup now establishes the first picture
+before sound packets, including when the emulation needs to catch up. The
+picker, current core timing improvements, MHS Prism+ graphics and continuing
+SID updates during later picture transfers remain available.
+Use **MPE GUI firmware 1.2.23 or later**, or Travis's **MPE integration 1.2.24**
+with host library 1.2.23, on TeensyROM+ v0.4 and a Teensy 4.1.
 Download the [current GUI firmware](../firmware/) separately.
 See the [Prism+ overview](MHS-PRISM.md) and [release build record](NESVM-build.json).
+The [startup verification](CONSOLE-STARTUP-UPDATE.md) reproduces the old direct
+launch failure and checks the corrected route and picker on PAL and NTSC.
 
 Download [NESVM.zip](../vms/NESVM.zip)
 and extract it to the SD card root, replacing the supplied runtime files while

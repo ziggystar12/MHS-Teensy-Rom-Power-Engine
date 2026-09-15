@@ -70,7 +70,7 @@ These tests do not require game data and do not replace hardware testing.
 
 The released NES engine has its own complete corresponding source and
 rebuild instructions in [Source/NESEngine](../Source/NESEngine/).
-The latest NESVM 1.2.0 engine source rebuilds the released engine without game
+The latest NESVM 1.2.1 engine source rebuilds the released engine without game
 ROMs. Replace `VMS/NESVM/engine.mvm` with your rebuilt engine and keep the matching
 client from the runtime package; the engine does not require firmware relinking.
 
@@ -78,3 +78,19 @@ client from the runtime package; the engine does not require firmware relinking.
 snapshot**, not the current Prism+ client. The new C64 client is distributed as
 a binary with its license and component manifest. It runs separately from the
 LGPL NES engine. See the [NESVM build record](NESVM-build.json).
+
+## Game Boy and Game Gear
+
+The public GBVM and GGVM downloads contain runtime files. Matching developer
+snapshots accompany [Travis's developer handoff](https://github.com/ziggystar12/TeensyROM/tree/codex/mpe-prism-plus-update/mpe/review/console-sources)
+and were used to rebuild both engines and
+clients byte for byte. Their [GBVM](GBVM-build.json) and [GGVM](GGVM-build.json)
+records describe those checks; no game ROMs were required for the rebuilds.
+
+## Travis's text firmware
+
+[Travis's MPE integration](https://github.com/SensoriumEmbedded/TeensyROM/pull/23)
+uses a separate compiled host library, public text-browser integration and
+its own relinking materials. Integration 1.2.24 adds self-contained `.MPE`
+loading while retaining host library version 1.2.23. Follow the instructions
+for that text firmware; the GUI is a separate build.

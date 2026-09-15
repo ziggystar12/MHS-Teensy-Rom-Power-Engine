@@ -1,18 +1,18 @@
 {
-  "version": "1.2.0",
-  "engineSourceCommit": "2cbde248ef6f67f8f487ca11bfa1bb1d0ee15561",
-  "clientSourceCommit": "2cbde248ef6f67f8f487ca11bfa1bb1d0ee15561",
+  "version": "1.2.1",
+  "engineSourceCommit": "de0b7d48dd284543fa9fcebe472336162d4eb5e9",
+  "clientSourceCommit": "de0b7d48dd284543fa9fcebe472336162d4eb5e9",
   "firmwareIncluded": false,
   "abi": 2,
   "module": {
     "abi": 2,
     "codeBase": 98304,
     "dataBase": 536952832,
-    "codeBytes": 95748,
+    "codeBytes": 95812,
     "dataBytes": 2432,
     "bssBytes": 14304,
     "guestRamBytes": 524288,
-    "sha256": "e924ef3402fd0cdd87d8021507996edeb50a9d5c73da710ca9f0b0bb6396d934",
+    "sha256": "dfb149be559874a06b7e1cfc5593735ad657cc84c704ac5967875fa38f2d2676",
     "workspaceBytes": 179872
   },
   "clientSha256": "376db1bc960cbee79ff5359201cc690611c3882fea10ea6e563adb8f0df79b3f",
@@ -30,12 +30,17 @@
     {
       "path": "VMS/NESVM/COMPONENTS.json",
       "bytes": 1907,
-      "sha256": "74f15c3b0fba74dd5016dc7b7f8d4fb250c99d582e205078e05e8b7ab5c7d416"
+      "sha256": "6fb2c691073a428b10c2f1ecfcdbfdb5ac7ab0c16a7480946308a2a6b521214b"
     },
     {
       "path": "VMS/NESVM/engine.mvm",
-      "bytes": 98244,
-      "sha256": "e924ef3402fd0cdd87d8021507996edeb50a9d5c73da710ca9f0b0bb6396d934"
+      "bytes": 98308,
+      "sha256": "dfb149be559874a06b7e1cfc5593735ad657cc84c704ac5967875fa38f2d2676"
+    },
+    {
+      "path": "VMS/NESVM/LICENSE-DISPLAY-COMPONENTS.txt",
+      "bytes": 1070,
+      "sha256": "1a969dd98763da79faa7d888975880da8529f8eea768fe7cc8f43befe0c2750f"
     },
     {
       "path": "VMS/NESVM/LICENSE-MHS.txt",
@@ -46,11 +51,6 @@
       "path": "VMS/NESVM/LICENSE-Nofrendo.txt",
       "bytes": 25270,
       "sha256": "cc535c21133c895b56b374c8a1dc1eb948d99003ed2b47372069456b62f42b24"
-    },
-    {
-      "path": "VMS/NESVM/LICENSE-DISPLAY-COMPONENTS.txt",
-      "bytes": 1070,
-      "sha256": "1a969dd98763da79faa7d888975880da8529f8eea768fe7cc8f43befe0c2750f"
     },
     {
       "path": "VMS/NESVM/LICENSE-PRISM-PLUS.txt",
@@ -69,8 +69,8 @@
     },
     {
       "path": "VMS/NESVM/README.md",
-      "bytes": 6444,
-      "sha256": "ecae78bd4c3f1e25c512fb18ba13e7628073f073fff46deff51723da2d4e8837"
+      "bytes": 6887,
+      "sha256": "d7a54436e7aa6b5b57015da3d5cf5b5e95f74e194201d5959f683d11b2d7cf8c"
     },
     {
       "path": "VMS/NESVM/ROMS/Crossbow.nes",
@@ -79,8 +79,8 @@
     },
     {
       "path": "VMS/NESVM/version.json",
-      "bytes": 152,
-      "sha256": "775d48a3569f79964c737f303c2efbbe975455fce1f4e6bc51004b8b4075cea0"
+      "bytes": 151,
+      "sha256": "fe4d53cf92cc52352e503ff50cfbdea7547d9f4164fe56685b78b91b9a372ccc"
     }
   ],
   "minimumFirmwareVersion": "1.2.23",
@@ -88,29 +88,12 @@
   "downloads": [
     {
       "file": "NESVM.zip",
-      "bytes": 108562,
-      "sha256": "94bccd62b9a11100b914f68efa4fc04b609946bcda7c23e2a0deb4f385b13c08",
+      "bytes": 108766,
+      "sha256": "8b2bcb64b1818fe64bc0991953e50306605d17fc2e9410f6ad1c870afca98848",
       "members": 13
     }
   ],
-  "engineSource": {
-    "path": "Source/NESEngine",
-    "sourceCommit": "2cbde248ef6f67f8f487ca11bfa1bb1d0ee15561",
-    "manifestSha256": "07d0189f0cf8c99b79417d937f6f9a09d239bdaaa7916ecaec5f78343d05364b",
-    "standaloneRebuildVerified": true
-  },
-  "clientSource": {
-    "public": false,
-    "sourceCommit": "2cbde248ef6f67f8f487ca11bfa1bb1d0ee15561",
-    "privateSourceFiles": 14,
-    "independentRebuildVerified": true,
-    "historicalDisplayTemplateIncluded": false
-  },
-  "validation": {
-    "physicalHardware": false,
-    "coreSuites": 12,
-    "compiledClientControls": "PASS",
-    "palNtscVicePictures": 16,
-    "directLaunchGeneratedRomCases": 7
-  }
+  "packagingNotes": [
+    "Restored the committed release license-scope preface. Engine and client bytes are unchanged from engineSourceCommit/clientSourceCommit."
+  ]
 }

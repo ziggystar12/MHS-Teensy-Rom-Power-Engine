@@ -1,9 +1,9 @@
-# NESVM 1.2.0 corresponding engine source
+# NESVM 1.2.1 corresponding engine source
 
 This standalone snapshot rebuilds engine.mvm with SHA-256
-`e924ef3402fd0cdd87d8021507996edeb50a9d5c73da710ca9f0b0bb6396d934`.
+`dfb149be559874a06b7e1cfc5593735ad657cc84c704ac5967875fa38f2d2676`.
 The compiled source and build script are exported unchanged from commit
-`2cbde248ef6f67f8f487ca11bfa1bb1d0ee15561`. Documentation is adapted for this source layout.
+`de0b7d48dd284543fa9fcebe472336162d4eb5e9`. Documentation is adapted for this source layout.
 
 ## Build
 
@@ -28,8 +28,8 @@ sha256sum build/relinked/engine.mvm
 ```
 
 The result is build/relinked/engine.mvm. Copy it over VMS/NESVM/engine.mvm
-on the SD card, retaining the matching client from the NESVM 1.2.0 runtime
-download. Use MPE GUI firmware 1.2.23 or later. Modified engines require no
+on the SD card, retaining the matching client from the NESVM 1.2.1 runtime
+download. Use MPE host library 1.2.23 or later, through either the GUI or text firmware. Modified engines require no
 signing or firmware relinking. Keep the ABI and memory limits in the build
 script compatible with the installed host and client.
 

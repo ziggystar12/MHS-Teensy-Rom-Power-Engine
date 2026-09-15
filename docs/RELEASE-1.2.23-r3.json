@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "release": "v1.2.23-r3",
+  "date": "2026-09-15",
+  "packageRevision": 3,
+  "revisionNote": "NES/GB/GG direct-ROM startup fixes; public VM runtime downloads. GUI firmware, its host and DoomVM unchanged. GUI SDK and GB/GG source are not public release assets.",
+  "artifacts": [
+    {
+      "product": "NESVM",
+      "version": "1.2.1",
+      "path": "vms/NESVM.zip",
+      "releaseAsset": "NESVM.zip",
+      "bytes": 108766,
+      "sha256": "8b2bcb64b1818fe64bc0991953e50306605d17fc2e9410f6ad1c870afca98848"
+    },
+    {
+      "product": "DoomVM",
+      "version": "1.2.1",
+      "path": "vms/DOOMVM.zip",
+      "releaseAsset": "DOOMVM.zip",
+      "bytes": 1604888,
+      "sha256": "0208da320030d0bddd853977185e89ae2ff10131df6f813322d050ebbce89104"
+    },
+    {
+      "product": "GBVM",
+      "version": "1.2.24",
+      "path": "vms/GBVM.zip",
+      "releaseAsset": "GBVM.zip",
+      "bytes": 69075,
+      "sha256": "174267fd57f1e80cdc52b850233362abd9cb5701b65087868ed2c5dd88304e84"
+    },
+    {
+      "product": "GGVM",
+      "version": "1.2.24",
+      "path": "vms/GGVM.zip",
+      "releaseAsset": "GGVM.zip",
+      "bytes": 71855,
+      "sha256": "294dc39c0de83112a445e8db9b93efac15e07d951bc0ac80bc03daf2b714a16a"
+    }
+  ],
+  "compatibility": {
+    "guiFirmware": "1.2.23",
+    "travisIntegration": "1.2.24",
+    "compiledHostLibrary": "1.2.23",
+    "travisPullRequest": "https://github.com/SensoriumEmbedded/TeensyROM/pull/23",
+    "extensions": {
+      "nes": "NESVM",
+      "gb": "GBVM",
+      "gbc": "GBVM",
+      "gc": "GBVM",
+      "gg": "GGVM",
+      "mpe": "Self-contained MGC1 cartridge; engine/client/content embedded"
+    }
+  },
+  "documentation": {
+    "startup": "CONSOLE-STARTUP-UPDATE.md",
+    "verification": "CONSOLE-STARTUP-VERIFICATION.json",
+    "NESVM": "NESVM.md",
+    "DoomVM": "DOOM.md",
+    "prismPlus": "MHS-PRISM.md",
+    "licensing": "PRISM-PLUS-LICENSE.md",
+    "build": "BUILDING.md"
+  },
+  "physicalAcceptance": false,
+  "privatePrismImplementationSourceIncluded": false
+}
