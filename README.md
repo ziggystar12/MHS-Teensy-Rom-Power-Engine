@@ -42,6 +42,10 @@ New MHS Prism+ implementation source stays private and is distributed as
 compiled code. Existing component licenses and earlier grants remain intact.
 [License details](docs/PRISM-PLUS-LICENSE.md) · [Source availability](Source/README.md).
 
+Developer integration: [MPE RFE framework preview](rfe/README.md), with public
+launch interfaces and image-validation tools. The preview is not an installable
+extension; the firmware and VM downloads above remain the current installation.
+
 ## Credits
 
 TeensyROM hardware and original firmware are by Travis Smith /

@@ -1,5 +1,12 @@
 # Source and building
 
+## MPE runtime extension
+
+[MPE RFE integration preview](../rfe/README.md) provides MIT-licensed launch
+integration code, the proposed memory contract and standalone image-validation
+tools. It does not contain the private Prism+ implementation or a loadable `.trx`
+yet. The same compiled runtime is intended for both the GUI and text firmware.
+
 ## NESVM
 
 [NESEngine](NESEngine/README.md) contains the corresponding NESVM 1.2.1 engine

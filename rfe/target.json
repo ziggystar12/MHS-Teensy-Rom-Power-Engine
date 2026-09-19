@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "id": "mhs-mpe-rfe",
+  "status": "development",
+  "installable": false,
+  "proposalRevision": 3,
+  "upstreamBaseline": "0e2b0a43",
+  "scope": "MHS MPE host build and runtime only; no TeensyROM loader implementation",
+  "flash": {
+    "slot0Base": 1618345984,
+    "slotBytes": 393216,
+    "payloadBytes": 389120,
+    "payloadLimit": 1618735104,
+    "metadataBase": 1618735104,
+    "metadataBytes": 4096,
+    "reserveBase": 1618739200,
+    "slot1Base": 1617952768,
+    "slot1Status": "reserved",
+    "eraseSectorBytes": 4096
+  },
+  "image": {
+    "format": "teensy-linked-raw",
+    "flashConfigBytes": 512,
+    "flashConfigMagic": 1111900998,
+    "ivtOffset": 4096,
+    "ivtMagic": 1126170833,
+    "bootDataOffset": 4128,
+    "entryMinOffset": 4096,
+    "entryMaxOffset": 12288
+  },
+  "vm": {
+    "abi": 2,
+    "codeBase": 98304,
+    "codeLimit": 196608,
+    "codeBytes": 98304,
+    "dataBase": 536952832,
+    "dataLimit": 537149440,
+    "dataBytes": 196608,
+    "guestBase": 538968064,
+    "guestBytes": 524288
+  },
+  "requirements": {
+    "busOwnership": "fullDMA",
+    "sources": [
+      "SD"
+    ],
+    "associations": [
+      "mpe",
+      "nes",
+      "gb",
+      "gbc",
+      "gc",
+      "gg"
+    ]
+  },
+  "wire": {
+    "format": null,
+    "headerBytes": null,
+    "codecImplemented": false,
+    "claimedHeaderBytes": 128,
+    "headerStatus": "unresolved: revision 3 lists fields exceeding its claimed 128-byte header"
+  },
+  "bus": {
+    "sharedExport": "Common/Bus",
+    "revisionSymbol": "TRBusRev",
+    "revision": null,
+    "implemented": false
+  },
+  "launch": {
+    "eepromAddressCandidate": 4235,
+    "minBootIndicatorCandidate": 4,
+    "status": "provisional",
+    "encoding": null,
+    "eepromMapMagic": null
+  },
+  "blockers": [
+    {
+      "id": "authoritative-header-codec",
+      "detail": "Await authoritative upstream RFE header field sizes/offsets and package codec; do not emit an installable .trx."
+    },
+    {
+      "id": "shared-bus-export",
+      "detail": "Await upstream Common/Bus export and TRBusRev contract for fullDMA."
+    },
+    {
+      "id": "eeprom-launch-encoding-map",
+      "detail": "Await exact EEPROM launch bytes, field bounds and map magic; address 4235 and indicator 4 remain provisional."
+    },
+    {
+      "id": "crash-contract-legacy-abi-overlap",
+      "detail": "Await an agreed crash/breadcrumb memory contract: the existing ABI-2 guest arena includes the proposed final 128 RAM2 bytes, and the RO96 profile uses that region for constants. Do not silently shrink the guest arena."
+    },
+    {
+      "id": "loader-hardware-validation",
+      "detail": "Installation, reset handoff, interrupted updates, bus ownership and PAL/NTSC/C128 behavior require upstream loader integration and physical hardware validation."
+    }
+  ],
+  "acceptance": {
+    "linkedImageValidation": false,
+    "physicalHardware": false,
+    "installablePackage": false
+  }
+}

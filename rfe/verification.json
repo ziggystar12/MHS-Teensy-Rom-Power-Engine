@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "version": "0.1.0-dev",
+  "distribution": "public integration source only",
+  "runtimeBinaryIncluded": false,
+  "installable": false,
+  "checkedOn": "2026-09-19",
+  "sourceRevision": "a3f5eb479b1ed3a2840defa496b6c665334f9b0c",
+  "upstream": {
+    "main": "0e2b0a431b896638b91a504c257767b01aabe96e",
+    "rfeImplementation": "8e8aa3ae3b3f36857d762a911d2acf8eb9a5dd32",
+    "packageCodecImplemented": false
+  },
+  "privateBuild": {
+    "imageBytes": 313344,
+    "imageSha256": "41dbe4d5a2f356cd7adf28114786ec0dd2d66a36012c024983dd928b651827de",
+    "imageBase": 1618345984,
+    "imageEnd": 1618659328,
+    "payloadLimit": 1618735104,
+    "entry": 1618351601,
+    "memory": {
+      "itcmBytes": 87240,
+      "heapBytes": 16384,
+      "moduleDataBase": 536952832,
+      "moduleDataBytes": 196608,
+      "stackBytes": 49152,
+      "guestRamBytes": 524288,
+      "ram2StaticBytes": 0
+    },
+    "checks": {
+      "sourceUnchanged": true,
+      "installedSdkUnchanged": true,
+      "stagedSourceUnchanged": true,
+      "stagedSdkUnchanged": true,
+      "hardwareTested": false,
+      "launchBindingInstalled": false,
+      "sharedBusIntegrated": false,
+      "publicPackageProduced": false
+    }
+  },
+  "privateTests": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0,
+    "skipped": 0,
+    "adapterAssertions": 13372,
+    "entryAssertions": 94,
+    "packageDispatchCallbacks": 12,
+    "cartridgeDispatchCallbacks": 7,
+    "scope": "Native fixtures exercise launch validation and save services; ARM module execution and hardware are not simulated."
+  },
+  "sharedSources": [
+    {
+      "path": "target.json",
+      "sha256": "b0ccb0c38a50a8665a0393fd683245bd1e97c163842e2ebe4eaf6eb014ae3dfa"
+    },
+    {
+      "path": "lib/contract.mjs",
+      "sha256": "7482741085aaba6e3957e4e2eb4f952e5e9d67e75855b7e461e6df53b6912efa"
+    },
+    {
+      "path": "lib/image.mjs",
+      "sha256": "c152549de991cb40f4bbc008fd959ed9325256c6185eeb02c866967ddc1db4f4"
+    },
+    {
+      "path": "tests/contract.test.mjs",
+      "sha256": "4b4a29104c0b8930527e89277e33c49560b6494f77ad08467f7cacc02054c030"
+    },
+    {
+      "path": "host/LaunchAdapter.h",
+      "sha256": "34b73c4616ef1f8c48dd2d7570e4b07360bbc2fd5c035f2ff4b72fb5ce6c4a8f"
+    },
+    {
+      "path": "host/RuntimeAdapter.h",
+      "sha256": "7bde9d9f10aff9e1f122f91c6a41ff09bd9cd6c14030cc0921a54c29912c737c"
+    },
+    {
+      "path": "host/Entry.h",
+      "sha256": "5496f3a29817e05c3f4140b1e5e9d32d2bdf6d5816d8cfb777fc992241ff8fbf"
+    },
+    {
+      "path": "host/EntryImpl.h",
+      "sha256": "0666d4c10a3ce084f474ca0264dfc3a79cfac0f8c870ea266bee70101a48a69a"
+    },
+    {
+      "path": "host/DevelopmentBinding.cpp",
+      "sha256": "7d0793a8c708c8c74164a17c10390b500cf3266afef8bd285861cdf07ef411db"
+    }
+  ],
+  "physicalHardwareTested": false,
+  "sharedSourceComparison": "Original source revision with LF line endings; implementation unchanged."
+}
